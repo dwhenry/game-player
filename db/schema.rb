@@ -17,7 +17,7 @@ ActiveRecord::Schema.define(version: 2020_02_21_094714) do
   enable_extension "plpgsql"
 
   create_table "game_configs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.jsonb "desks"
+    t.jsonb "decks"
     t.uuid "parent_id"
     t.jsonb "rules"
     t.boolean "locked", default: false, null: false

@@ -1,0 +1,13 @@
+<h2>Edit Game</h2>
+<div class="row">
+  <div class="col-3">
+    <%= react_component 'Decks', @game_config.decks %>
+  </div>
+  <div class="col-9">
+    <%= react_component 'CardEditor', id: :new %>
+    <%= react_component 'CardEditor', id: :edit %>
+    <div>
+      <h2>Rules....</h2>
+    </div>
+  </div>
+</div>

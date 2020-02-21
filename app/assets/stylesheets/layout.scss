@@ -3,9 +3,21 @@
   padding: 10px;
 }
 
+.col-3 {
+  display: inline-block;
+  width: 25%;
+  vertical-align: top;
+}
+
 .col-6 {
   display: inline-block;
-  width: 49%;
+  width: 50%;
+  vertical-align: top;
+}
+
+.col-6 {
+  display: inline-block;
+  width: 75%;
   vertical-align: top;
 }
 

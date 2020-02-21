@@ -1,51 +1,45 @@
 import React from "react"
 import PropTypes from "prop-types"
+class CardName extends React.Component {
+  render() {
+    <li>{this.props.card.name}</li>
+  }
+}
+
+CardName.propTypes = {
+  card: PropTypes.object
+};
+
 class Decks extends React.Component {
-  renderOverlay() {
-    if(this.props.overlay !== undefined) {
-      return <div className="card__overlay">{this.props.overlay}</div>
-    }
+  addCard(name) {
+    alert('add something')
   }
 
-  renderAction(action, i) {
-    if(action !== null) {
-      return <li key={i}><span><b>{i}:</b> {action}</span></li>
-    }
+  renderDeck(cards, name) {
+    return <div className={"deck-" + name}>
+      <div className="deck__title">{name} <a href="#" onClick={() => { this.addCard(name) }}>Add</a></div>
+      <ul>
+        {cards.map((card) => (
+          <CardName key={card.id} card={card} />
+        ))}
+      </ul>
+    </div>
   }
   render () {
-    if(this.props.visible) {
-      return (
-        <div className="card">
-          <div className={"card__element card__" + this.props.deck + "-deck card--size-" + this.props.size}>
-            <div className="card__title">{this.props.title}</div>
-            <div className="card__cost">{this.props.cost}G</div>
-            <ul className="card__actions">
-              {this.props.actions.map((action, i) => (
-                this.renderAction(action, i + 1)
-              ))}
-            </ul>
-          </div>
-          {this.renderOverlay()}
-        </div>
-      );
-    } else {
-      return (
-        <div className="card">
-          <div className={"card__element card__" + this.props.deck + "-deck card--face-down"}></div>
-        </div>
-      )
-    }
+    return (
+      <div>
+        { this.renderDeck(this.props.tasks, 'tasks') }
+        { this.renderDeck(this.props.achievements, 'achievements') }
+        { this.renderDeck(this.props.employees, 'employees') }
+      </div>
+    );
   }
 }
 
 Decks.propTypes = {
-  id: PropTypes.string,
-  title: PropTypes.string,
-  cost: PropTypes.number,
-  actions: PropTypes.array,
-  deck: PropTypes.string,
-  visible: PropTypes.bool,
-  overlay: PropTypes.string,
-  size: PropTypes.string
+  tasks: PropTypes.array,
+  employees: PropTypes.array,
+  achievements: PropTypes.array,
+  rules: PropTypes.object
 };
 export default Decks

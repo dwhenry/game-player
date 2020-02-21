@@ -1,0 +1,2 @@
+class GameConfig < ApplicationRecord
+end

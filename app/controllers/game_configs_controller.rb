@@ -13,7 +13,9 @@ class GameConfigsController < ApplicationController
 
   def edit
     @game_config = GameConfig.find(params[:id])
-    path = params.path.split(',').map(&:to_i)
-    @item = @game_config.decks.dig(path)
+  end
+
+  def update
+
   end
 end

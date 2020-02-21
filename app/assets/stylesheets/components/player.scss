@@ -1,0 +1,23 @@
+.player {
+  border: solid 2px black;
+  position: relative;
+}
+
+.player__title {
+  font-size: 1.2em;
+  color: #888;
+  margin-bottom: 4px;
+  position: absolute;
+  top: -8px;
+  left: 15px;
+  height: 20px;
+  border: solid 1px black;
+  border-radius: 10px;
+  line-height: 20px;
+  background: white;
+  padding: 0 15px
+}
+
+.hand {
+  display: inline-block;
+}

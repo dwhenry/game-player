@@ -44,7 +44,7 @@ class GamesController < ApplicationController
         { id: 'p1', name: 'David',
           hand: [{ id: :id8, title: 'Minor Refactor', cost: 3, actions: [nil, '+1 WU', '+1 WU'], deck: 'employee', visible: true }],
           fu_cards: [{ id: :id7, title: 'Minor Refactor', cost: 3, actions: [nil, '+1 WU', '+1 WU'], deck: 'employee', visible: true}], tokens: {} },
-        { id: 'p2', name: 'John', hand: [{deck: 'employee'}], fu_cards: [{deck: 'task'}], tokens: { cash: 10, energy: 12, achievement: 4 } },
+        { id: 'p2', name: 'John', hand: [{deck: 'employee'}], fu_cards: [{id: :id13, deck: 'task'}], tokens: { cash: 10, energy: 12, achievement: 4 } },
       ],
       log: ['......', '.......']
     }

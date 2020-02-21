@@ -9,7 +9,7 @@ class Card extends React.Component {
 
   renderAction(action, i) {
     if(action !== null) {
-      return <li><span><b>{i}:</b> {action}</span></li>
+      return <li key={i}><span><b>{i}:</b> {action}</span></li>
     }
   }
   render () {

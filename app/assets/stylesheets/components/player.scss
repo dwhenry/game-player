@@ -21,3 +21,41 @@
 .hand {
   display: inline-block;
 }
+
+.tokens {
+  display: inline-block;
+  vertical-align: top;
+  width: 100px;
+}
+
+.tokens_header {
+  font-weight: bold;
+  text-align: center;
+}
+
+.token__image {
+  border: solid 2px black;
+  border-radius: 20px;
+  width: 40px;
+  height: 40px;
+  margin: 0 0 5px 0;
+  display: inline-block;
+  line-height: 40px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.token__image-cash {
+  background: gold;
+  border-color: darkgoldenrod;
+}
+
+.token__image-energy {
+  background: lightblue;
+  border-color: blue;
+}
+
+.token__image-achievement {
+  background: lightcoral;
+  border-color: red;
+}

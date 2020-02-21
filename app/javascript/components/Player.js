@@ -9,9 +9,10 @@ class Player extends React.Component {
         <div className="player__title">Player: {this.props.name}</div>
         <div className="row">
           <div className="tokens">
-            <Token key="cash" name="Cash" quantity={this.props.tokens.cash} />
-            <Token key="energy" name="energy" quantity={this.props.tokens.energy} />
-            <Token key="achievement" name="achievement" quantity={this.props.tokens.achievement} />
+            <div className="token__header">Tokens</div>
+            <Token key="cash" name="cash" quantity={this.props.tokens.cash || 0} />
+            <Token key="energy" name="energy" quantity={this.props.tokens.energy || 0} />
+            <Token key="achievement" name="achievement" quantity={this.props.tokens.achievement || 0} />
           </div>
           {this.props.fu_cards.map((card) => (
             <Card key={card.id} {...card} />

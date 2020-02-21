@@ -7,7 +7,7 @@ class CardStack extends React.Component {
       let card = this.props.cards[0];
       console.log(card)
       return (
-        <Card {...card} deck={this.props.deck} overlay={this.props.type}/>
+        <Card key={card.id} {...card} deck={this.props.deck} overlay={this.props.type}/>
       )
     } else {
       return (

@@ -4,7 +4,7 @@ class Token extends React.Component {
   render () {
     return (
      <div className={"token token__" + this.props.name}>
-        {this.props.name}: {this.props.quantity}
+        <span className={"token__image token__image-" + this.props.name}>{this.props.quantity}</span>
      </div>
     );
   }

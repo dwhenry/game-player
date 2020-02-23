@@ -3,7 +3,7 @@ class GameConfig < ApplicationRecord
     hash = super
     # byebug
     hash['decks'].each do |deck, cards|
-      hash['decks'][deck] = hash['decks'][deck].values
+      hash['decks'][deck] = hash['decks'][deck].values.sort_by { |card| card['name'].downcase }
     end
     hash
   end

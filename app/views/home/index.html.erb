@@ -23,6 +23,7 @@
       <thead>
         <tr>
           <th>Version</th>
+          <th>Cards</th>
           <th>Parent</th>
           <th>Locked</th>
           <th></th>
@@ -32,8 +33,15 @@
       <tbody>
         <% GameConfig.all.each do |game_config| %>
           <tr>
-            <td><%= game_config.id %></td>
-            <td><%= game_config.parent_id %></td>
+            <td><%= game_config.id.split('-').first %></td>
+            <td>
+              <% game_config.decks.each do |deckname, cards| %>
+                <div>
+                  <%= "#{deckname}: #{cards.count}" %>
+                </div>
+              <% end %>
+            </td>
+            <td><%= game_config.parent_id&.split('-')&.first || '-' %></td>
             <td><%= game_config.locked ? 'Yes' : 'No' %></td>
             <td><%= link_to "Start Game", new_game_path(game_config: game_config) %></td>
             <td>

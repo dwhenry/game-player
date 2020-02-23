@@ -1,0 +1,51 @@
+<h1>
+  Games Testing Arena #1
+</h1>
+
+<div class="row"}>
+  <div class="col-6"}>
+    <h3>Games</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Game Version</th>
+          <th>Players</th>
+          <th>Sprint</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+
+  <div class="col-6"}>
+    <h3>Game Configs</h3>
+    <%= link_to new_game_path %>
+    <table>
+      <thead>
+        <tr>
+          <th>Version</th>
+          <th>Parent</th>
+          <th>Locked</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% GameConfig.all.each do |game_config| %>
+          <tr>
+            <td><%= game_config.id %></td>
+            <td><%= game_config.parent_id %></td>
+            <td><%= game_config.locked ? 'Yes' : 'No' %></td>
+            <td><%= link_to "Start Game", new_game_path(game_config: game_config) %></td>
+            <td>
+              <% if game_config.locked %>
+                <%= link_to "Edit", new_game_config_path(parent_id: game_config.id) %>
+              <% else %>
+                <%= link_to "Edit", edit_game_config_path(game_config) %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,4 +1,15 @@
 .deck__title {
   font-weight: bold;
   font-size: 18px;
+  display: inline-block;
+  text-transform: uppercase;
+}
+
+.deck__add-link {
+  margin-left: 10px;
+  display: inline-block;
+}
+
+.deck__card {
+  padding: 5px 0;
 }

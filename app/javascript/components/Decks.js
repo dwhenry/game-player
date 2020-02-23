@@ -1,31 +1,65 @@
 import React from "react"
 import PropTypes from "prop-types"
-class CardName extends React.Component {
+class CardItem extends React.Component {
+  constructor(props) {
+    super(props);
+    this.cloneCard = this.cloneCard.bind(this);
+    this.editCard = this.editCard.bind(this);
+  }
+
+  cloneCard(name) {
+    event.preventDefault();
+    this.props.setCard(this.props.card); // do this to ensure the cloned card is set (as we use ID for keying)
+    this.props.setCard({
+      id: "",
+      name: this.props.card.name,
+      cost: this.props.card.cost,
+      actions: this.props.card.actions,
+      deck: this.props.card.deck,
+      number: this.props.card.number
+    })
+  }
+
+  editCard(event) {
+    event.preventDefault();
+    this.props.setCard(this.props.card)
+  }
+
   render() {
-    <Q> </Q>
+    return <li className="deck__card">
+      ({this.props.card.number}) {this.props.card.name}
+      &nbsp;-&nbsp;
+      <a href="#" onClick={this.editCard}>Edit</a>
+      &nbsp;|&nbsp;
+      <a href="#" onClick={this.cloneCard}>Clone</a>
+    </li>
   }
 }
 
-CardName.propTypes = {
-  card: PropTypes.object
-};
-
 class Decks extends React.Component {
-  addCard(name) {
-    this.props.setCard({deck: name})
+  constructor(props) {
+    super(props);
+    this.setCard = this.setCard.bind(this);
+    this.addCard = this.addCard.bind(this);
   }
 
-  editCard(card) {
+  addCard(event) {
+    event.preventDefault()
+    const deckName = event.target.attribute('data-deck');
+    this.props.setCard({deck: deckName})
+  }
+
+  setCard(card) {
     this.props.setCard(card)
   }
 
   renderDeck(cards, name) {
     return <div className={"deck-" + name}>
-      <div className="deck__title">{name} </div>
-      <a href="#" onClick={(e) => { e.preventDefault(); this.addCard(name) }}>Add Card</a>
+      <div className="deck__title">({cards.length}) {name} </div>
+      <a className="deck__add-link" href="#" data-deck={name} onClick={this.addCard}>Add Card</a>
       <ul>
         {cards.map((card) => (
-          <li key={card.id}>({card.number}) {card.name} <a href="#" onClick={(e) => { e.preventDefault(); this.editCard(card) }}>Edit</a></li>
+          <CardItem key={card.id} card={card} setCard={this.setCard} />
         ))}
       </ul>
     </div>

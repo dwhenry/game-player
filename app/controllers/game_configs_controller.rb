@@ -18,7 +18,7 @@ class GameConfigsController < ApplicationController
 
   def update
     @game_config = GameConfig.find(params[:id])
-    @card = params[:card].permit(:id, :name, :cost, :actions, :deck).to_h
+    @card = params[:card].permit(:id, :name, :cost, :actions, :deck, :number).to_h
 
     if @game_config.update_card(@card)
       redirect_to edit_game_config_path(@game_config.id)

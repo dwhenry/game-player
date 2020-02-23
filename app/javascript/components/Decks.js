@@ -7,9 +7,8 @@ class CardItem extends React.Component {
     this.editCard = this.editCard.bind(this);
   }
 
-  cloneCard(name) {
+  cloneCard(event) {
     event.preventDefault();
-    this.props.setCard(this.props.card); // do this to ensure the cloned card is set (as we use ID for keying)
     this.props.setCard({
       id: "",
       name: this.props.card.name,
@@ -27,10 +26,8 @@ class CardItem extends React.Component {
 
   render() {
     return <li className="deck__card">
-      ({this.props.card.number}) {this.props.card.name}
+      <a href="#" onClick={this.editCard}>({this.props.card.number}) {this.props.card.name}</a>
       &nbsp;-&nbsp;
-      <a href="#" onClick={this.editCard}>Edit</a>
-      &nbsp;|&nbsp;
       <a href="#" onClick={this.cloneCard}>Clone</a>
     </li>
   }

@@ -27,3 +27,22 @@ ul {
   list-style-type: none;
 }
 
+.add-object {
+  color: green;
+  border: solid 3px green;
+  border-radius: 13px;
+  line-height: 14px;
+  height: 20px;
+  width: 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 34px;
+  top: -13px;
+  position: relative;
+
+  &:hover {
+    color: darkgreen;
+    border-color: darkgreen;
+  }
+}

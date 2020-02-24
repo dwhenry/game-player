@@ -10,7 +10,7 @@
 
   input, textarea {
     width: 300px;
-    padding: 5px;
+    //padding: 5px;
   }
 
   textarea {
@@ -20,8 +20,8 @@
 
   input[type=submit] {
     width: auto;
-    padding: 10px 40px;
+    padding: 0 40px;
+
     background-color: lightgreen;
-    border-radius: 10px;
   }
 }

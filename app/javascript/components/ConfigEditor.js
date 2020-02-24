@@ -19,10 +19,10 @@ class ConfigEditor extends React.Component {
 
   render () {
     return <div className="row">
-      <div className="col-3">
+      <div className="six columns">
         <Decks {...this.props.decks} setCard={this.setCard} />
       </div>
-      <div className="col-9">
+      <div className="six columns">
         <CardEditor {...this.state.card} game_id={this.props.id} />
         <div>
           <h2>Rules....</h2>

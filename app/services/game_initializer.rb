@@ -7,7 +7,7 @@ class GameInitializer
 
   def call
     Game.create!(
-      config: config,
+      game_config: config,
       cards: locations + players,
       sprint: 0,
       next_action: SecureRandom.uuid
@@ -43,6 +43,6 @@ class GameInitializer
   end
 
   def shuffled_deck(type)
-    config.decks[type].flat_map { |card| card['number'].to_i * card['id'] }.shuffle
+    config.decks[type].flat_map { |_id, card| Array.new(card['number'].to_i) { card['id'] } }.shuffle
   end
 end

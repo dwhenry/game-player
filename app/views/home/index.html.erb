@@ -38,7 +38,7 @@
             </td>
             <td><%= game_config.parent_id&.split('-')&.first || '-' %></td>
             <td><%= game_config.locked ? 'Yes' : 'No' %></td>
-            <td><%= link_to "Start Game", new_game_path(game_config: game_config) %></td>
+            <td><%= link_to "Start Game", new_game_path(game_config_id: game_config.id) %></td>
             <td>
               <% if game_config.locked %>
                 <%= link_to "Edit", new_game_config_path(parent_id: game_config.id) %>

@@ -1,3 +1,3 @@
 class Game < ApplicationRecord
-  belongs_to :config
+  belongs_to :game_config
 end

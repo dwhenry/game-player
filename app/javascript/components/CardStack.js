@@ -3,24 +3,24 @@ import PropTypes from "prop-types"
 import Card from './Card'
 class CardStack extends React.Component {
   render () {
-    return <React.Fragment>
+    return <div className="stack">
+      <div className="stack__name">{this.props.name}</div>
       {this.props.cards.map((card) => {
         if(card['visible'] === 'face') {
           return <Card key={card.id} {...card} visible={true} size={this.props.size} title="help" />
         } else if(card['visible'] === 'back') {
           return <Card key={card.id} {...card} visible={false} size={this.props.size} title="help" />
-        } else {
+        } else { // placeholder location
           return <Card key={card.id} size={this.props.size} title="help" />
         }
       })}
-    </React.Fragment>
+    </div>
   }
 }
 
 CardStack.propTypes = {
-  type: PropTypes.string,
-  count: PropTypes.number,
+  name: PropTypes.string,
   cards: PropTypes.array,
-  deck: PropTypes.string
+  size: PropTypes.string
 };
 export default CardStack

@@ -10,16 +10,16 @@ class GameBoard extends React.Component {
           <div className="game__title">{this.props.name}</div>
         </div>
         <div className="row">
-          <div className="col-6">
+          <div className="four columns">
             {this.props.locations.map((location) => (
               <Location key={location.id} {...location} />
             ))}
           </div>
-          {/*<div className="col-6">*/}
-            {/*{this.props.players.map((player) => (*/}
-              {/*<Player key={player.id} {...player} />*/}
-            {/*))}*/}
-          {/*</div>*/}
+          <div className="eight columns">
+            {this.props.players.map((player) => (
+              <Player key={player.id} {...player} />
+            ))}
+          </div>
         </div>
       </div>
     );

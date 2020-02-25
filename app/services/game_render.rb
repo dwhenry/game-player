@@ -48,7 +48,12 @@ class GameRender
         }
       elsif game.sprint.zero?
         {
-          status: stack['active']
+          id: SecureRandom.uuid,
+          status: stack['status'],
+          backlog: [empty_slot],
+          hand: [empty_slot],
+          fu_cards: [empty_slot],
+          board: [empty_slot]
         }
       end
     end.compact

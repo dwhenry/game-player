@@ -1,5 +1,19 @@
 class GamesController < ApplicationController
+  def new
+    config = GameConfig.find(params[:game_config_id])
+
+    game = GameInitializer.new(config).call
+
+    redirect_to game_path(game.id)
+  end
+
   def show
+    # game = Game.find_by(params[:id])
+    # if game
+    #   @game = GameRender.new(game, current_user).call
+    # else
+    #   redirect_to root_path
+    # end
     @game = {
       id: params[:id],
       name: 'Test Game 1',

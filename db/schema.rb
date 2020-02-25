@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_21_094714) do
+ActiveRecord::Schema.define(version: 2020_02_25_003130) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -25,4 +25,15 @@ ActiveRecord::Schema.define(version: 2020_02_21_094714) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "games", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "game_config_id", null: false
+    t.jsonb "cards"
+    t.integer "sprint", default: 0
+    t.uuid "next_action"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["game_config_id"], name: "index_games_on_game_config_id"
+  end
+
+  add_foreign_key "games", "game_configs"
 end

@@ -3,7 +3,7 @@ class Game < ApplicationRecord
 
   def player_stacks(status: 'all')
     cards.select do |stack|
-      stack['type'] == 'player' && ['all', stack['status']].include?(status)
+      stack['type'] == 'player' && ['all', 'active', stack['status']].include?(status) && (status != 'active' || stack['status'] != 'pending')
     end
   end
 

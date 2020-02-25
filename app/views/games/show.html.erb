@@ -1,6 +1,6 @@
 <%= react_component 'GameBoard', @game_board %>
 <% unless @game.player_stacks.map { |stack| stack['id'] }.include?(current_user)  %>
-  <div class="overlay">
+  <div class="overlay overlay__preview">
     <% if @game.player_stacks(status: 'pending').any? %>
       <div class="join-dialog">
         <h4>Waiting for players:</h4>
@@ -9,7 +9,7 @@
     <% end %>
   </div>
   <script>
-    overlay = document.querySelector(".overlay");
+    overlay = document.querySelector(".overlay__preview");
     var text = 'Preview';
     var canvas = document.createElement("canvas");
     var fontSize = 48;
@@ -28,3 +28,4 @@
     overlay.style.backgroundImage = "url(" + canvas.toDataURL("image/png") + ")";
   </script>
 <% end %>
+

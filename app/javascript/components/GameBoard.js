@@ -2,7 +2,20 @@ import React from "react"
 import PropTypes from "prop-types"
 import Location from "./Location";
 import Player from "./Player";
+import CardActions from "./CardActions";
 class GameBoard extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { displayCard: false, card: null };
+    window.setCard = this.setCard.bind(this);
+    this.removeCard = this.removeCard.bind(this);
+  }
+  setCard(card) {
+    this.setState({card: card, displayCard: true})
+  }
+  removeCard() {
+    this.setState({card: null, displayCard: false})
+  }
   render () {
     return (
       <div>
@@ -20,6 +33,9 @@ class GameBoard extends React.Component {
               <Player key={player.id} {...player} />
             ))}
           </div>
+        </div>
+        <div className="overlay overlay__card" style={{display: this.state.displayCard ? 'block' : 'none'}} onClick={this.removeCard}>
+          <CardActions card={this.state.card} game_id={this.props.id} />
         </div>
       </div>
     );

@@ -2,3 +2,29 @@
    - Edit Game Config
 <% end %>
 <%= react_component 'ConfigEditor', @game_config.as_json.merge(card: @card) %>
+<% if @game_config.locked %>
+  <div class="overlay overlay__preview">
+    <div class="join-dialog">
+      <%= button_to 'Clone game config', join_game_path(@game), class: 'btn' %>
+    </div>
+  </div>
+  <script>
+    overlay = document.querySelector(".overlay__preview");
+    var text = 'Preview';
+    var canvas = document.createElement("canvas");
+    var fontSize = 48;
+    canvas.setAttribute('height', fontSize * 3);
+    var context = canvas.getContext('2d');
+    context.fillStyle = 'rgba(0,0,0,0.1)';
+    context.font = fontSize + 'px sans-serif';
+
+    context.save();
+    context.translate(0, 0);
+    context.rotate(-Math.PI/8);
+    context.textAlign = "center";
+    context.fillText(text, 80, 100);
+    context.restore();
+
+    overlay.style.backgroundImage = "url(" + canvas.toDataURL("image/png") + ")";
+  </script>
+<% end %>

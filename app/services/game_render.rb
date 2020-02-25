@@ -34,7 +34,7 @@ class GameRender
   end
 
   def players
-    game.player_stacks.map do |stack|
+    game.player_stacks(status: 'active').map do |stack|
       player = stack['id']
       if stack['status'] != 'pending'
         {

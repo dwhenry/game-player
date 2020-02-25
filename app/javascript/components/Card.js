@@ -1,10 +1,28 @@
 import React from "react"
 import PropTypes from "prop-types"
 class Card extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    window.setCard(this.props.card)
+  }
+
   renderOverlay() {
     if(this.props.overlay !== undefined) {
       return <div className="card__overlay">{this.props.overlay}</div>
     }
+  }
+
+  renderActions(actions) {
+    if(!actions) return null
+
+    return actions.map((action, i) => (
+      this.renderAction(action, i + 1)
+    ))
   }
 
   renderAction(action, i) {
@@ -12,18 +30,16 @@ class Card extends React.Component {
       return <li key={i}><span><b>{i}:</b> {action}</span></li>
     }
   }
+
   render () {
-    // debugger
-    if(this.props.visible) {
+    if(this.props.card.visible === 'front') {
       return (
-        <div className="card">
-          <div className={"card__element card__" + this.props.deck + "-deck card--size-" + this.props.size}>
-            <div className="card__title">{this.props.title}</div>
-            <div className="card__cost">{this.props.cost}G</div>
+        <div className="card" onClick={this.handleClick}>
+          <div className={"card__element card__" + this.props.card.deck + "-deck card--size-" + this.props.size}>
+            <div className="card__title">{this.props.card.title}</div>
+            <div className="card__cost">{this.props.card.cost}G</div>
             <ul className="card__actions">
-              {this.props.actions.map((action, i) => (
-                this.renderAction(action, i + 1)
-              ))}
+              {this.renderActions(this.props.card.actions)}
             </ul>
           </div>
           {this.renderOverlay()}
@@ -31,8 +47,8 @@ class Card extends React.Component {
       );
     } else {
       return (
-        <div className="card">
-          <div className={"card__element card__" + this.props.deck + "-deck card--face-down card--size-" + this.props.size}></div>
+        <div className="card" onClick={this.handleClick}>
+          <div className={"card__element card__" + this.props.card.deck + "-deck card--face-down card--size-" + this.props.size}></div>
         </div>
       )
     }
@@ -40,13 +56,15 @@ class Card extends React.Component {
 }
 
 Card.propTypes = {
-  id: PropTypes.string,
-  title: PropTypes.string,
-  cost: PropTypes.number,
-  actions: PropTypes.array,
-  deck: PropTypes.string,
-  visible: PropTypes.bool,
-  overlay: PropTypes.string,
-  size: PropTypes.string
-};
+  card: PropTypes.object
+}
+//   id: PropTypes.string,
+//   title: PropTypes.string,
+//   cost: PropTypes.number,
+//   actions: PropTypes.array,
+//   deck: PropTypes.string,
+//   visible: PropTypes.bool,
+//   overlay: PropTypes.string,
+//   size: PropTypes.string
+// };
 export default Card

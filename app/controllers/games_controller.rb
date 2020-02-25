@@ -2,6 +2,7 @@ class GamesController < ApplicationController
   def new
     config = GameConfig.find(params[:game_config_id])
 
+    config.update(locked: true)
     game = GameInitializer.new(config).call
 
     redirect_to game_path(game.id)

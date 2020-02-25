@@ -4,6 +4,7 @@
       <thead>
         <tr>
           <th>Game Version</th>
+          <th>Config Version</th>
           <th>Players</th>
           <th>Sprint</th>
         </tr>
@@ -11,7 +12,8 @@
       <tbody>
         <% Game.order(updated_at: :desc).each do |game| %>
           <tr>
-            <td><%= link_to game.game_config_id.split('-').first, game_path(game) %></td>
+            <td><%= link_to game.id.split('-').first, game_path(game) %></td>
+            <td><%= game.game_config_id.split('-').first %></td>
             <td><%= game.player_stacks(status: 'active').map { |player| player['id'] }.join(', ') %></td>
             <td><%= game.sprint %></td>
           </tr>

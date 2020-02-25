@@ -1,3 +1,4 @@
+<div><%= flash[:error] %></div>
 <%= react_component 'GameBoard', @game_board %>
 <% unless @game.player_stacks.map { |stack| stack['id'] }.include?(current_user)  %>
   <div class="overlay overlay__preview">

@@ -13,8 +13,9 @@ class GameBoard extends React.Component {
   setCard(card) {
     this.setState({card: card, displayCard: true})
   }
-  removeCard() {
-    this.setState({card: null, displayCard: false})
+  removeCard(event) {
+    if(event.target === event.currentTarget)
+      this.setState({card: null, displayCard: false})
   }
   render () {
     return (

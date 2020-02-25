@@ -36,37 +36,25 @@ class GameRender
   def players
     game.player_stacks(status: 'active').map do |stack|
       player = stack['id']
-      if stack['status'] != 'pending'
-        {
-          status: stack['status'],
-          id: player,
-          name: player.titleize,
-          tokens: stack['tokens'],
-          # cards
-          employees: render_cards(stack['employees'], min: 1),
-          backlog: [render_card_back(stack['backlog'].last)],
-          hand: render_hand(stack),
-          fu_cards: render_cards(stack['fu'], min: 1),
-          board: render_cards(stack['board'], min: 1),
-        }
-      elsif game.sprint.zero?
-        {
-          id: SecureRandom.uuid,
-          name: 'Pending',
-          status: stack['status'],
-          backlog: [empty_slot],
-          hand: [empty_slot],
-          fu_cards: [empty_slot],
-          board: [empty_slot],
-          employees: [empty_slot],
-          tokens: { cash: 0, energy: 0, sp: 0 }
-        }
-      end
-    end.compact
+
+      {
+        status: stack['status'],
+        id: player,
+        name: player.titleize,
+        tokens: stack['tokens'],
+        # cards
+        employees: render_cards(stack['employees'], min: 1),
+        backlog: [render_card_back(stack['backlog'].last)],
+        hand: render_hand(stack, player),
+        fu_cards: render_cards(stack['fu'], min: 1),
+        board: render_cards(stack['board'], min: 1),
+      }
+    end
   end
 
-  def render_hand(stack)
+  def render_hand(stack, player)
     return [empty_slot] if stack['hand'].empty?
+
     stack['hand'].map { |card| (player == current_user) ? render_card(card) : render_card_back(card) }
   end
 
@@ -86,7 +74,7 @@ class GameRender
     details = lookup_card(card)
     return empty_slot unless details
     {
-      id: SecureRandom.uuid,
+      id: details['id'],
       deck: details['deck'],
       visible: 'back'
     }

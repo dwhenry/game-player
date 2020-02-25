@@ -24,6 +24,16 @@ class GamesController < ApplicationController
     end
   end
 
+  def update
+    game = Game.find_by(id: params[:id])
+    if game
+      flash[:error] = game.move_card(params[:card])
+      redirect_to game_path(game)
+    else
+      redirect_to root_path
+    end
+  end
+
   def join
     game = Game.find_by(id: params[:id])
     if game

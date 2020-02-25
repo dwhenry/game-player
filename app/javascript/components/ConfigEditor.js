@@ -4,8 +4,6 @@ import PropTypes from "prop-types"
 import Decks from './Decks'
 import CardEditor from './CardEditor'
 
-window.csrfToken = document.querySelector('[name=csrf-token]').content
-
 class ConfigEditor extends React.Component {
   constructor(props) {
     super(props)

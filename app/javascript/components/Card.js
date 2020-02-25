@@ -32,11 +32,11 @@ class Card extends React.Component {
   }
 
   render () {
-    if(this.props.card.visible === 'front') {
+    if(this.props.card.visible === 'face') {
       return (
         <div className="card" onClick={this.handleClick}>
           <div className={"card__element card__" + this.props.card.deck + "-deck card--size-" + this.props.size}>
-            <div className="card__title">{this.props.card.title}</div>
+            <div className="card__title">{this.props.card.name}</div>
             <div className="card__cost">{this.props.card.cost}G</div>
             <ul className="card__actions">
               {this.renderActions(this.props.card.actions)}

@@ -17,7 +17,7 @@ class GameInitializer
   private
 
   def locations
-    %w{tasks achievements employees}.map do |type|
+    %w[tasks achievements employees].map do |type|
       {
         id: type,
         type: 'deck',
@@ -31,7 +31,7 @@ class GameInitializer
   def players
     6.times.map do |i|
       {
-        active: false,
+        status: 'pending',
         id: "Player #{i}",
         type: 'player',
         backlog: [],

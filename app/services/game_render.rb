@@ -36,9 +36,9 @@ class GameRender
   def players
     game.player_stacks.map do |stack|
       player = stack['id']
-      if stack['active']
+      if stack['status'] != 'pending'
         {
-          status: stack['active'],
+          status: stack['status'],
           id: player,
           name: player.titleize,
           backlog: [render_card_back(stack['backlog'].last)],

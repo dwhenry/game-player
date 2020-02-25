@@ -53,3 +53,34 @@ ul {
 .inline + .inline {
   margin-right: 40px;
 }
+
+.overlay {
+  background-repeat: repeat;
+  height: calc(100vh);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.header {
+  z-index: 1000;
+  position: relative;
+  text-align: center;
+}
+
+.join-dialog {
+  display: inline-block;
+  padding: 10px;
+  background: whitesmoke;
+  border: solid 2px black;
+  border-radius: 10px;
+  margin:20px;
+  bottom: 0;
+  position: fixed;
+  right: 0;
+
+  .button_to, .btn {
+    margin-bottom: 0;
+  }
+}

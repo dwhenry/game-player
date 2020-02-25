@@ -8,7 +8,7 @@ class Location extends React.Component {
       <div className="location">
         <div className="location__title">{this.props.name}</div>
         <div className="row">
-          <div class="stacked">
+          <div className="stacked">
             <CardStack key={this.props.discard.id} cards={this.props.discard.cards} size="small"  />
             <CardStack key={this.props.pile.id} cards={this.props.pile.cards} size="small" />
           </div>

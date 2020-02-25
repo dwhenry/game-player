@@ -1,5 +1,30 @@
 <%= react_component 'GameBoard', @game_board %>
-<% unless @game.player_stacks.map { |stack| stack['id'].include?(current_user) } %>
+<% unless @game.player_stacks.map { |stack| stack['id'] }.include?(current_user)  %>
+  <div class="overlay">
+    <% if @game.player_stacks(status: 'pending').any? %>
+      <div class="join-dialog">
+        <h4>Waiting for players:</h4>
+        <%= button_to 'Join Game', join_game_path(@game), class: 'btn' %>
+      </div>
+    <% end %>
+  </div>
+  <script>
+    overlay = document.querySelector(".overlay");
+    var text = 'Preview';
+    var canvas = document.createElement("canvas");
+    var fontSize = 48;
+    canvas.setAttribute('height', fontSize * 3);
+    var context = canvas.getContext('2d');
+    context.fillStyle = 'rgba(0,0,0,0.1)';
+    context.font = fontSize + 'px sans-serif';
 
+    context.save();
+    context.translate(0, 0);
+    context.rotate(-Math.PI/8);
+    context.textAlign = "center";
+    context.fillText(text, 80, 100);
+    context.restore();
 
+    overlay.style.backgroundImage = "url(" + canvas.toDataURL("image/png") + ")";
+  </script>
 <% end %>

@@ -37,7 +37,9 @@ class GameInitializer
         backlog: [],
         hand: [],
         fu: [],
-        board: []
+        board: [],
+        employees: [],
+        tokens: { cash: 10, energy: 0, sp: 0 },
       }
     end
   end

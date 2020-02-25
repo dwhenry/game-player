@@ -22,4 +22,14 @@ class GamesController < ApplicationController
       redirect_to root_path
     end
   end
+
+  def join
+    game = Game.find_by(id: params[:id])
+    if game
+      game.join(current_user)
+      redirect_to game_path(game)
+    else
+      redirect_to root_path
+    end
+  end
 end

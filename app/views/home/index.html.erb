@@ -8,7 +8,17 @@
           <th>Sprint</th>
         </tr>
       </thead>
+      <tbody>
+        <% Game.order(updated_at: :desc).each do |game| %>
+          <tr>
+            <td><%= link_to game.game_config_id.split('-').first, game_path(game) %></td>
+            <td><%= game.player_stacks(status: 'active').map { |player| player['id'] }.join(', ') %></td>
+            <td><%= game.sprint %></td>
+          </tr>
+        <% end %>
+      </tbody>
     </table>
+
     <h3>
       Game Configs
       <%= link_to '+', new_game_config_path, class: "add-object" %>

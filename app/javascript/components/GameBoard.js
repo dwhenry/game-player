@@ -2,7 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import Location from "./Location";
 import Player from "./Player";
-class Game extends React.Component {
+class GameBoard extends React.Component {
   render () {
     return (
       <div>
@@ -26,7 +26,7 @@ class Game extends React.Component {
   }
 }
 
-Game.propTypes = {
+GameBoard.propTypes = {
   key: PropTypes.string,
   name: PropTypes.string,
   game_id: PropTypes.string,
@@ -34,4 +34,4 @@ Game.propTypes = {
   players: PropTypes.array,
   log: PropTypes.array
 };
-export default Game
+export default GameBoard

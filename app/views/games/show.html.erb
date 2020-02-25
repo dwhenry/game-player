@@ -1,1 +1,5 @@
-<%= react_component 'Game', @game %>
+<%= react_component 'GameBoard', @game_board %>
+<% unless @game.player_stacks.map { |stack| stack['id'].include?(current_user) } %>
+
+
+<% end %>

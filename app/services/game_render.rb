@@ -19,8 +19,7 @@ class GameRender
   end
 
   def locations
-    stacks = game.cards.select { |stack| stack['type'] == 'deck' }
-    stacks.map do |stack|
+    game.deck_stacks.map do |stack|
       deck = stack['id']
 
       {
@@ -35,13 +34,11 @@ class GameRender
   end
 
   def players
-    stacks = game.cards.select { |stack| stack['type'] == 'player' }
-
-    stacks.map do |stack|
+    game.player_stacks.map do |stack|
       player = stack['id']
       if stack['active']
         {
-          status: 'active',
+          status: stack['active'],
           id: player,
           name: player.titleize,
           backlog: [render_card_back(stack['backlog'].last)],
@@ -51,7 +48,7 @@ class GameRender
         }
       elsif game.sprint.zero?
         {
-          status: 'pending'
+          status: stack['active']
         }
       end
     end.compact

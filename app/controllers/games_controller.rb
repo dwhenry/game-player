@@ -8,13 +8,13 @@ class GamesController < ApplicationController
   end
 
   def show
-    game = Game.find_by(id: params[:id])
-    if game
-      @game = GameRender.new(game, current_user).call
+    @game = Game.find_by(id: params[:id])
+    if @game
+      @game_board = GameRender.new(@game, current_user).call
 
       respond_to do |format|
         format.json do
-          render json: @game
+          render json: @game_board
         end
         format.html {}
       end

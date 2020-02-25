@@ -13,6 +13,7 @@ class Card extends React.Component {
     }
   }
   render () {
+    // debugger
     if(this.props.visible) {
       return (
         <div className="card">
@@ -31,7 +32,7 @@ class Card extends React.Component {
     } else {
       return (
         <div className="card">
-          <div className={"card__element card__" + this.props.deck + "-deck card--face-down"}></div>
+          <div className={"card__element card__" + this.props.deck + "-deck card--face-down card--size-" + this.props.size}></div>
         </div>
       )
     }

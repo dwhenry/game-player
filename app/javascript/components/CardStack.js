@@ -3,19 +3,17 @@ import PropTypes from "prop-types"
 import Card from './Card'
 class CardStack extends React.Component {
   render () {
-    if (this.props.type === 'Discard') {
-      let card = this.props.cards[0];
-      console.log(card)
-      return (
-        <Card key={card.id} {...card} deck={this.props.deck} overlay={this.props.type}/>
-      )
-    } else {
-      return (
-        <div className="card">
-          <div className={"card-stack__element card-stack__" + this.props.deck + "-deck"}></div>
-        </div>
-      )
-    }
+    return <React.Fragment>
+      {this.props.cards.map((card) => {
+        if(card['visible'] === 'face') {
+          return <Card key={card.id} {...card} visible={true} size={this.props.size} title="help" />
+        } else if(card['visible'] === 'back') {
+          return <Card key={card.id} {...card} visible={false} size={this.props.size} title="help" />
+        } else {
+          return <Card key={card.id} size={this.props.size} title="help" />
+        }
+      })}
+    </React.Fragment>
   }
 }
 

@@ -15,11 +15,11 @@ class Game extends React.Component {
               <Location key={location.id} {...location} />
             ))}
           </div>
-          <div className="col-6">
-            {this.props.players.map((player) => (
-              <Player key={player.id} {...player} />
-            ))}
-          </div>
+          {/*<div className="col-6">*/}
+            {/*{this.props.players.map((player) => (*/}
+              {/*<Player key={player.id} {...player} />*/}
+            {/*))}*/}
+          {/*</div>*/}
         </div>
       </div>
     );

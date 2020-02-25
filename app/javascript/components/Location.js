@@ -1,6 +1,5 @@
 import React from "react"
 import PropTypes from "prop-types"
-import Card from "./Card";
 import CardStack from "./CardStack";
 class Location extends React.Component {
 
@@ -9,10 +8,11 @@ class Location extends React.Component {
       <div className="location">
         <div className="location__title">{this.props.name}</div>
         <div className="row">
-          <CardStack key={this.props.items[1].id} {...(this.props.items[1])} deck={this.props.deck} />
-          <CardStack key={this.props.items[0].id} {...(this.props.items[0])} deck={this.props.deck} />
-          <Card key={this.props.items[2].id} {...this.props.items[2]} />
-          <Card key={this.props.items[3].id} {...this.props.items[3]} />
+          <div class="stacked">
+            <CardStack key={this.props.discard.id} cards={this.props.discard.cards} size="small"  />
+            <CardStack key={this.props.pile.id} cards={this.props.pile.cards} size="small" />
+          </div>
+          <CardStack key={this.props.fu_cards.id} cards={this.props.fu_cards.cards}  />
         </div>
       </div>
     );

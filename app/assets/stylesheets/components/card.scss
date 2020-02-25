@@ -1,4 +1,4 @@
-$decks: ("task": blue, "achievement": red, "employee": gray);
+$decks: ("tasks": blue, "achievements": red, "employees": gray);
 
 .card {
   display: inline-block;
@@ -18,9 +18,17 @@ $decks: ("task": blue, "achievement": red, "employee": gray);
   &.card--size-small {
     border-width: 3px;
     width: 50px;
-    height: 75px;
+    height: 76px;
     margin: 0 10px 0 0;
     padding: 2px;
+  }
+}
+
+.stacked {
+  display: inline-block;
+
+  .card {
+    display: block;
   }
 }
 
@@ -42,20 +50,20 @@ $decks: ("task": blue, "achievement": red, "employee": gray);
 
     &.card--face-down {
       background: linear-gradient(45deg, #92baac 22px, transparent 22px) 32px 32px,
-        linear-gradient(45deg, #92baac 22px, transparent 22px,transparent 45px, $color 45px, $color 67px, transparent 67px),
-        linear-gradient(-45deg, #92baac 11px, transparent 11px, transparent 34px,#92baac 34px,#92baac 56px,transparent 56px,transparent 79px,#92baac 79px);
-        background-color: $color;
-        background-size: 64px 64px;
+      linear-gradient(45deg, #92baac 22px, transparent 22px,transparent 45px, $color 45px, $color 67px, transparent 67px),
+      linear-gradient(-45deg, #92baac 11px, transparent 11px, transparent 34px,#92baac 34px,#92baac 56px,transparent 56px,transparent 79px,#92baac 79px);
+      background-color: $color;
+      background-size: 64px 64px;
     }
   }
 
   .card-stack__#{$name}-deck {
     border-color: $color;
     background: linear-gradient(45deg, #92baac 22px, transparent 22px) 32px 32px,
-      linear-gradient(45deg, #92baac 22px, transparent 22px,transparent 45px, $color 45px, $color 67px, transparent 67px),
-      linear-gradient(-45deg, #92baac 11px, transparent 11px, transparent 34px,#92baac 34px,#92baac 56px,transparent 56px,transparent 79px,#92baac 79px);
-      background-color: $color;
-      background-size: 64px 64px;
+    linear-gradient(45deg, #92baac 22px, transparent 22px,transparent 45px, $color 45px, $color 67px, transparent 67px),
+    linear-gradient(-45deg, #92baac 11px, transparent 11px, transparent 34px,#92baac 34px,#92baac 56px,transparent 56px,transparent 79px,#92baac 79px);
+    background-color: $color;
+    background-size: 64px 64px;
 
   }
 }
@@ -109,3 +117,4 @@ $decks: ("task": blue, "achievement": red, "employee": gray);
 .card--size-small .card__actions {
   font-size: 0.6em;
 }
+

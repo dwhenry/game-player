@@ -11,9 +11,10 @@
 
   <body>
     <div class="container">
-      <h1>
+      <h1 class="inline">
         <%= link_to 'Games Testing Arena', root_path %>
       </h1>
+      <h3 class="inline"><%= yield :title %></h3>
       <%= yield %>
     </div>
   </body>

@@ -63,7 +63,7 @@ class Decks extends React.Component {
   }
   render () {
     return (
-      <div>
+      <div className="decks">
         { this.renderDeck(this.props.tasks, 'tasks') }
         <br />
         { this.renderDeck(this.props.achievements, 'achievements') }

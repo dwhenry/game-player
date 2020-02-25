@@ -1,2 +1,4 @@
-<h2>Edit Game</h2>
+<% content_for :title do %>
+   - Edit Game Config
+<% end %>
 <%= react_component 'ConfigEditor', @game_config.as_json.merge(card: @card) %>

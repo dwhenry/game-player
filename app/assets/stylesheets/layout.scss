@@ -46,3 +46,10 @@ ul {
     border-color: darkgreen;
   }
 }
+
+.inline {
+  display: inline-block;
+}
+.inline + .inline {
+  margin-right: 40px;
+}

@@ -3,6 +3,7 @@ import PropTypes from "prop-types"
 import Card from './Card'
 import DropTarget from "./DropTarget";
 import Rails from "@rails/ujs"
+// import ReactOnRails from 'react-on-rails';
 
 class CardStack extends React.Component {
   constructor(props) {
@@ -11,9 +12,9 @@ class CardStack extends React.Component {
     this.itemDropped = this.itemDropped.bind(this);
   }
   itemDropped(card_id) {
-    const data = JSON.stringify({card: {id: card_id, location: this.props.location, stack: this.props.stack}})
+    const data = JSON.stringify({card: {id: card_id, location: this.props.location, stack: this.props.stack, action_id: window.action_id}})
     Rails.ajax({
-      url: '/games/' + window.game_id + '.json',
+      url: '/games/' + window.game_id, // + '.json',
       type: 'put',
       beforeSend(xhr, options) {
         xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
@@ -23,11 +24,12 @@ class CardStack extends React.Component {
         return true
       },
       success: function(response) {
-        console.log('here')
+        // debugger
+        console.log('success')
       },
       error: function() {
-        debugger
-        console.log('here')
+        // debugger
+        alert('Error moving card...')
       },
     });
   }

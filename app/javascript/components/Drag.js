@@ -41,7 +41,7 @@ Drag.propTypes = {
     dragImage: PropTypes.string,
     dropEffect: PropTypes.string,
     className: PropTypes.string,
-    onClick: PropTypes.string,
+    onClick: PropTypes.func,
     children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
 };
 

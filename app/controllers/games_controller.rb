@@ -27,8 +27,21 @@ class GamesController < ApplicationController
   def update
     game = Game.find_by(id: params[:id])
     if game
-      flash[:error] = game.move_card(params[:card])
-      redirect_to game_path(game)
+      mover = CardMover.new(game, params[:card])
+      mover.call
+      if mover.error
+        flash[:error] = mover.error
+        redirect_to game_path(game)
+      else
+        respond_to do |format|
+          format.json do
+            render json: GameRender.new(game, current_user).call
+          end
+          format.html {
+            redirect_to game_path(game)
+          }
+        end
+      end
     else
       redirect_to root_path
     end

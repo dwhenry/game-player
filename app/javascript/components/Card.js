@@ -49,14 +49,14 @@ class Card extends React.Component {
     } else if(this.props.card.visible === 'back') {
       return (
         <Drag className="card" onClick={this.handleClick} dataItem={this.props.card.id}>
-          <div className={"card__element card__" + this.props.card.deck + "-deck card--face-down card--size-" + this.props.size}></div>
+          <div className={"card__element card__" + this.props.card.deck + "-deck card--face-down card--size-" + this.props.size} />
         </Drag>
       )
 
     } else {
       return (
         <div className="card" onClick={this.handleClick}>
-          <div className={"card__element card__" + this.props.card.deck + "-deck card--face-down card--size-" + this.props.size}></div>
+          <div className={"card__element card__" + this.props.card.deck + "-deck card--face-down card--size-" + this.props.size} />
         </div>
       )
     }

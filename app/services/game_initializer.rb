@@ -22,8 +22,8 @@ class GameInitializer
         id: type,
         type: 'deck',
         pile: shuffled_deck(type),
-        discard: {},
-        fu: {}
+        discard: [],
+        fu: []
       }
     end
   end
@@ -34,11 +34,11 @@ class GameInitializer
         status: 'pending',
         id: "Player #{i}",
         type: 'player',
-        backlog: {},
-        hand: {},
-        fu: {},
-        board: {},
-        employees: {},
+        backlog: [],
+        hand: [],
+        fu: [],
+        board: [],
+        employees: [],
         tokens: { cash: 10, energy: 0, sp: 0 },
       }
     end
@@ -48,6 +48,6 @@ class GameInitializer
     cards = config.decks[type].flat_map do |id, card|
       Array.new(card['number'].to_i) { id }
     end
-    cards.shuffle.each_with_object({}) { |card_id, deck| deck[SecureRandom.uuid] = card_id }
+    cards.shuffle.map { |card_id| [SecureRandom.uuid, card_id] }
   end
 end

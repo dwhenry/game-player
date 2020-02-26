@@ -26,8 +26,8 @@ class GameRender
         id: deck,
         name: deck.titleize,
         deck: deck.singularize,
-        pile: { id: "deck-#{deck}-pile", cards: [render_card_back(last(stack['pile']))], count: stack['pile'].count },
-        discard: { id: "deck-#{deck}-discard", cards: [render_card(last(stack['discard']))], count: stack['discard'].count },
+        pile: { id: "deck-#{deck}-pile", cards: [render_card_back(*stack['pile'].last)], count: stack['pile'].count },
+        discard: { id: "deck-#{deck}-discard", cards: [render_card(*stack['discard'].last)], count: stack['discard'].count },
         fu_cards: { id: "deck-#{deck}-fu", cards: render_cards(stack['fu'], min: 2) },
       }
     end
@@ -44,7 +44,7 @@ class GameRender
         tokens: stack['tokens'],
         # cards
         employees: render_cards(stack['employees'], min: 1),
-        backlog: [render_card_back(last(stack['backlog']))],
+        backlog: [render_card_back(stack['backlog'].last)],
         hand: render_hand(stack, player),
         fu_cards: render_cards(stack['fu'], min: 1),
         board: render_cards(stack['board'], min: 1),
@@ -55,26 +55,26 @@ class GameRender
   def render_hand(stack, player)
     return [empty_slot] if stack['hand'].empty?
 
-    stack['hand'].map { |card| (player == current_user) ? render_card(card) : render_card_back(card) }
+    stack['hand'].map { |card| (player == current_user) ? render_card(*card) : render_card_back(*card) }
   end
 
   def render_cards(cards, min:)
-    result = cards.map { |id, card_id| render_card([id, card_id]) }
+    result = cards.map { |id, card_id| render_card(id, card_id) }
     (min - cards.length).times { result << empty_slot }
     result
   end
 
-  def render_card(ids)
-    id, card_id = *ids
-    card = lookup_card(card_id)
+  def render_card(id = nil, card_id = nil)
+    card = card_id && lookup_card(card_id)
     return empty_slot unless card
-    card.merge(id: id, visible: 'face')
+
+    card.merge('id' => id, 'visible' => 'face')
   end
 
-  def render_card_back(ids)
-    id, card_id = *ids
-    card = lookup_card(card_id)
+  def render_card_back(id = nil, card_id = nil)
+    card = card_id && lookup_card(card_id)
     return empty_slot unless card
+
     {
       id: id,
       deck: card['deck'],
@@ -87,12 +87,6 @@ class GameRender
       id: SecureRandom.uuid,
       visible: 'slot'
     }
-  end
-
-  def last(stack)
-    key = stack.keys.last
-
-    [key, stack[key]]
   end
 
   def lookup_card(card_id)

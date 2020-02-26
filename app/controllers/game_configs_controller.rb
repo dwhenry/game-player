@@ -22,7 +22,10 @@ class GameConfigsController < ApplicationController
     @card['id'] ||= '' # otherwise you can't modify anything...
 
     if @game_config.update_card(@card)
-      redirect_to edit_game_config_path(@game_config.id)
+      respond_to do |format|
+        format.json { render json: @game_config.as_json.merge(card: @card) }
+        format.html { redirect_to edit_game_config_path(@game_config.id) }
+      end
     else
       render :edit
     end

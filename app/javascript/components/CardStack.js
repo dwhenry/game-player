@@ -13,7 +13,7 @@ class CardStack extends React.Component {
   itemDropped(card_id) {
     const data = JSON.stringify({card: {id: card_id, location: this.props.location, stack: this.props.stack}})
     Rails.ajax({
-      url: '/games/' + window.game_id,
+      url: '/games/' + window.game_id + '.json',
       type: 'put',
       beforeSend(xhr, options) {
         xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
@@ -22,8 +22,7 @@ class CardStack extends React.Component {
         options.data = data;
         return true
       },
-      success: function() {
-        debugger
+      success: function(response) {
         console.log('here')
       },
       error: function() {

@@ -67,15 +67,18 @@ $decks: ("tasks": blue, "achievements": red, "employees": gray);
 }
 
 .card__title {
-  font-size: 1.5em;
+  font-size: 14px;
+  line-height: 12px;
   font-wieght: bold;
   border-bottom: solid 1px gray;
-  padding-bottom: 4px;
-  margin-bottom: 4px;
+  padding-bottom: 2px;
+  margin-bottom: 2px;
 }
 
 .card--size-small .card__title {
-  font-size: 0.7em;
+  font-size: 8px;
+  line-height: 6px;
+  font-wieght: bold;
   padding-bottom: 2px;
   margin-bottom: 2px;
 }
@@ -107,13 +110,18 @@ $decks: ("tasks": blue, "achievements": red, "employees": gray);
   font-size: 0.5em;
 }
 
-.card__actions {
-  font-size: 0.8em;
+ul.card__actions {
+  font-size: 10px;
   color: #666;
+  list-style: none;
+  li {
+    margin-bottom: 0;
+  }
+
 }
 
 .card--size-small .card__actions {
-  font-size: 0.6em;
+  font-size: 6px;
 }
 
 .stack {

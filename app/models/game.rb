@@ -1,5 +1,7 @@
 class Game < ApplicationRecord
-  STACK_NAMES = %w[fu board backlog employees pile discard].freeze
+  STACK_NAMES = %w[fu board employees hand].freeze
+  TOP_ONLY_STACK_NAMES = %w[backlog pile discard ].freeze
+
   belongs_to :game_config
 
   def player_stacks(status: 'all')
@@ -32,14 +34,31 @@ class Game < ApplicationRecord
 
     # find and remove the card from it's existing location
     card = nil
+
     cards.each do |search_location|
       STACK_NAMES.each do |search_stack_name|
         next unless search_location[search_stack_name]
 
-        if search_location[search_stack_name][card_id]
-          card ||= location[stack_name][card_id] = search_location[search_stack_name].delete(card_id)
-          break
-        end
+        card = search_location[search_stack_name].detect { |id, _| id == card_id }
+
+        next unless card
+
+        search_location[search_stack_name].delete(card)
+        location[stack_name] << card
+
+        break
+      end
+      break if card
+
+      TOP_ONLY_STACK_NAMES.each do |search_stack_name|
+        next unless search_location[search_stack_name]
+
+        next unless search_location[search_stack_name].last && search_location[search_stack_name].last[0] == card_id
+
+        card = search_location[search_stack_name].pop
+        location[stack_name] << card
+
+        break
       end
       break if card
     end

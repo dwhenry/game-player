@@ -26,8 +26,8 @@ class GameRender
         id: deck,
         name: deck.titleize,
         deck: deck.singularize,
-        pile: { id: "deck-#{deck}-pile", cards: [render_card_back(stack['pile'].last)], count: stack['pile'].count },
-        discard: { id: "deck-#{deck}-discard", cards: [render_card(stack['discard'].last)], count: stack['discard'].count },
+        pile: { id: "deck-#{deck}-pile", cards: [render_card_back(last(stack['pile']))], count: stack['pile'].count },
+        discard: { id: "deck-#{deck}-discard", cards: [render_card(last(stack['discard']))], count: stack['discard'].count },
         fu_cards: { id: "deck-#{deck}-fu", cards: render_cards(stack['fu'], min: 2) },
       }
     end
@@ -44,7 +44,7 @@ class GameRender
         tokens: stack['tokens'],
         # cards
         employees: render_cards(stack['employees'], min: 1),
-        backlog: [render_card_back(stack['backlog'].last)],
+        backlog: [render_card_back(last(stack['backlog']))],
         hand: render_hand(stack, player),
         fu_cards: render_cards(stack['fu'], min: 1),
         board: render_cards(stack['board'], min: 1),
@@ -59,23 +59,25 @@ class GameRender
   end
 
   def render_cards(cards, min:)
-    result = cards.map { |card| render_card(card) }
+    result = cards.map { |id, card_id| render_card([id, card_id]) }
     (min - cards.length).times { result << empty_slot }
     result
   end
 
-  def render_card(card)
-    details = lookup_card(card)
-    return empty_slot unless details
-    details.merge(visible: 'face')
+  def render_card(ids)
+    id, card_id = *ids
+    card = lookup_card(card_id)
+    return empty_slot unless card
+    card.merge(id: id, visible: 'face')
   end
 
-  def render_card_back(card)
-    details = lookup_card(card)
-    return empty_slot unless details
+  def render_card_back(ids)
+    id, card_id = *ids
+    card = lookup_card(card_id)
+    return empty_slot unless card
     {
-      id: details['id'],
-      deck: details['deck'],
+      id: id,
+      deck: card['deck'],
       visible: 'back'
     }
   end
@@ -87,13 +89,14 @@ class GameRender
     }
   end
 
-  def lookup_card(card)
-    @cards ||= game.game_config.decks.values.inject(&:merge)
+  def last(stack)
+    key = stack.keys.last
 
-    if card.is_a?(Hash)
-      @cards[card['id']].merge(card)
-    else
-      @cards[card]
-    end
+    [key, stack[key]]
+  end
+
+  def lookup_card(card_id)
+    @cards ||= game.game_config.decks.values.inject(&:merge)
+    @cards[card_id]
   end
 end

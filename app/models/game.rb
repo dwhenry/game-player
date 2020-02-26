@@ -1,5 +1,5 @@
 class Game < ApplicationRecord
-  STACK_NAMES = %w[fu_cards board employees tokens pile discard].freeze
+  STACK_NAMES = %w[fu board backlog employees pile discard].freeze
   belongs_to :game_config
 
   def player_stacks(status: 'all')
@@ -36,16 +36,18 @@ class Game < ApplicationRecord
       STACK_NAMES.each do |search_stack_name|
         next unless search_location[search_stack_name]
 
-        card ||= search_location[search_stack_name].reject! { |c| c == card_id }&.first
+        if search_location[search_stack_name][card_id]
+          card ||= location[stack_name][card_id] = search_location[search_stack_name].delete(card_id)
+          break
+        end
       end
       break if card
     end
 
     return 'Invalid Card' unless card
 
-    location[stack_name] << card
-
     return nil if save
-    return 'Invalid Save'
+
+    'Invalid Save'
   end
 end

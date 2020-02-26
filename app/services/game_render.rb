@@ -36,7 +36,6 @@ class GameRender
   def players
     game.player_stacks(status: 'active').map do |stack|
       player = stack['id']
-
       {
         status: stack['status'],
         id: player,
@@ -44,7 +43,7 @@ class GameRender
         tokens: stack['tokens'],
         # cards
         employees: render_cards(stack['employees'], min: 1),
-        backlog: [render_card_back(stack['backlog'].last)],
+        backlog: [render_card_back(*stack['backlog'].last)],
         hand: render_hand(stack, player),
         fu_cards: render_cards(stack['fu'], min: 1),
         board: render_cards(stack['board'], min: 1),

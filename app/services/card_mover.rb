@@ -18,17 +18,14 @@ class CardMover
   def call
     game.with_lock do
       return error('invalid_action') if game.next_action != action_id
-      game.next_action = SecureRandom.uuid
 
-      # check that destination exists
+      game.next_action = SecureRandom.uuid
       return error('Invalid Location') unless new_stack
 
-      # find and remove the card from it's existing location
       card = find_card
-      new_stack << card
-
       return error('Invalid Card') unless card
 
+      new_stack << card
       return if game.save
 
       error('Invalid Save')

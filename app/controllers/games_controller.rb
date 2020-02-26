@@ -30,16 +30,21 @@ class GamesController < ApplicationController
       mover = CardMover.new(game, params[:card])
       mover.call
       if mover.error.present?
-        flash[:error] = mover.error
-        redirect_to game_path(game)
+        respond_to do |format|
+          format.json do
+            render json: { error: mover.error, next_action: game.next_action }, status: 500
+          end
+          format.html do
+            flash[:error] = mover.error
+            redirect_to game_path(game)
+          end
+        end
       else
         respond_to do |format|
           format.json do
             render json: GameRender.new(game, current_user).call
           end
-          format.html {
-            redirect_to game_path(game)
-          }
+          format.html { redirect_to game_path(game) }
         end
       end
     else

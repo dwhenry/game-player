@@ -18,18 +18,19 @@ class CardStack extends React.Component {
       type: 'put',
       beforeSend(xhr, options) {
         xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        // Workaround: add options.data late to avoid Content-Type header to already being set in stone
-        // https://github.com/rails/rails/blob/master/actionview/app/assets/javascripts/rails-ujs/utils/ajax.coffee#L53
         options.data = data;
         return true
       },
       success: function(response, t, x) {
-        window.update_board(response.locations, response.players, response.next_action);
-        console.log('success')
+        if (response.locations) {
+          window.update_board(response.locations, response.players, response.next_action);
+        }
       },
-      error: function() {
-        // debugger
-        alert('Error moving card...')
+      error: function(response) {
+        if(response.error) {
+          alert('Error moving card...' + response.error);
+          window.action_id = response.next_action;
+        }
       },
     });
   }

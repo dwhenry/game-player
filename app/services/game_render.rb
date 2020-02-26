@@ -13,7 +13,8 @@ class GameRender
       game_config_id: game.game_config_id,
       locations: locations,
       players: players,
-      log: ['......', '.......']
+      log: ['......', '.......'],
+      next_action: game.next_action
     }
 
   end

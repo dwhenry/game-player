@@ -29,7 +29,7 @@ class GamesController < ApplicationController
     if game
       mover = CardMover.new(game, params[:card])
       mover.call
-      if mover.error
+      if mover.error.present?
         flash[:error] = mover.error
         redirect_to game_path(game)
       else

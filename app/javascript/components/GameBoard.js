@@ -6,8 +6,9 @@ import CardActions from "./CardActions";
 class GameBoard extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { displayCard: false, card: null };
+    this.state = { displayCard: false, card: null, players: this.props.players, locations: this.props.locations };
     window.setCard = this.setCard.bind(this);
+    window.update_board = this.update_board.bind(this)
     this.removeCard = this.removeCard.bind(this);
   }
   setCard(card) {
@@ -17,6 +18,10 @@ class GameBoard extends React.Component {
     if(event.target === event.currentTarget)
       this.setState({card: null, displayCard: false})
   }
+  update_board(locations, players, next_action) {
+    this.setState({locations: locations, players: players});
+    window.action_id = next_action;
+  }
   render () {
     return (
       <div>
@@ -25,12 +30,12 @@ class GameBoard extends React.Component {
         </div>
         <div className="row">
           <div className="four columns">
-            {this.props.locations.map((location) => (
+            {this.state.locations.map((location) => (
               <Location key={location.id} {...location} location={location.id} />
             ))}
           </div>
           <div className="eight columns">
-            {this.props.players.map((player) => (
+            {this.state.players.map((player) => (
               <Player key={player.id} {...player} />
             ))}
           </div>

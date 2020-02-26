@@ -23,8 +23,8 @@ class CardStack extends React.Component {
         options.data = data;
         return true
       },
-      success: function(response) {
-        // debugger
+      success: function(response, t, x) {
+        window.update_board(response.locations, response.players, response.next_action);
         console.log('success')
       },
       error: function() {

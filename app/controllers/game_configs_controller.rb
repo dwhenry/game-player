@@ -3,7 +3,7 @@ class GameConfigsController < ApplicationController
     if params[:parent_id]
       parent = GameConfig.find(params[:parent_id])
       attrs = parent.attributes.except(:id, :created_at, :updated_at)
-      game_config = GameConfig.create!(attrs.merge(parent_id: parent.id))
+      game_config = GameConfig.create!(attrs.except(*%w[id created_at updated_at locked]).merge(parent_id: parent.id))
     else
       game_config = GameConfig.create!(decks: { tasks: {}, achievements: {}, employees: {} })
     end

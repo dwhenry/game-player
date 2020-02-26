@@ -5,7 +5,7 @@
 <% if @game_config.locked %>
   <div class="overlay overlay__preview">
     <div class="join-dialog">
-      <%= button_to 'Clone game config', join_game_path(@game), class: 'btn' %>
+      <%= button_to 'Clone game config', join_game_path(@game_config), class: 'btn' %>
     </div>
   </div>
   <script>

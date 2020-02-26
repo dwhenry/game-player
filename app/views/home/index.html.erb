@@ -53,7 +53,7 @@
             <td><%= link_to "Start Game", new_game_path(game_config_id: game_config.id) %></td>
             <td>
               <% if game_config.locked %>
-                <%= link_to "Edit", new_game_config_path(parent_id: game_config.id) %>
+                <%= link_to "Clone", new_game_config_path(parent_id: game_config.id) %>
               <% else %>
                 <%= link_to "Edit", edit_game_config_path(game_config) %>
               <% end %>

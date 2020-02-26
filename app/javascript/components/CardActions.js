@@ -23,26 +23,6 @@ class CardActions extends React.Component {
       return(
         <div className="card-actions">
           {this.renderCard()}
-          <form action={'/games/' + this.props.game_id} method="POST">
-            <input name="_method" type="hidden" value="patch" />
-            <input name="authenticity_token" type="hidden" value={window.csrfToken} />
-
-            <input name="card[id]" type="hidden" value={this.props.card.id} />
-
-            <div className="editorField">
-              <label htmlFor="location">Location</label>
-              <Select id="location" name="card[location]" type="text" defaultValue={this.props.id} options={this.state.locations}/>
-            </div>
-
-            <div className="editorField">
-              <label htmlFor="stack">Stack</label>
-              <input id="stack" name="card[stack]" type="text" defaultValue={this.props.id} />
-            </div>
-
-            <div className="editorField">
-              <input type="submit" value="Move" />
-            </div>
-          </form>
         </div>
       )
     }

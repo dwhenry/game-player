@@ -23,7 +23,7 @@ class GameRender
       deck = stack['id']
 
       {
-        id: "deck-#{deck}",
+        id: deck,
         name: deck.titleize,
         deck: deck.singularize,
         pile: { id: "deck-#{deck}-pile", cards: [render_card_back(stack['pile'].last)], count: stack['pile'].count },

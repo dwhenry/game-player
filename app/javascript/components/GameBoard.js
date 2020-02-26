@@ -26,7 +26,7 @@ class GameBoard extends React.Component {
         <div className="row">
           <div className="four columns">
             {this.props.locations.map((location) => (
-              <Location key={location.id} {...location} />
+              <Location key={location.id} {...location} location={location.id} />
             ))}
           </div>
           <div className="eight columns">
@@ -35,7 +35,7 @@ class GameBoard extends React.Component {
             ))}
           </div>
         </div>
-        <div className="overlay overlay__card" style={{display: this.state.displayCard ? 'block' : 'none'}} onClick={this.removeCard}>
+        <div className="fixed__top-right" style={{display: this.state.displayCard ? 'block' : 'none'}} onClick={this.removeCard}>
           <CardActions card={this.state.card} game_id={this.props.id} />
         </div>
       </div>

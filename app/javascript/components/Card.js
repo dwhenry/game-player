@@ -1,5 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
+import Drag from "./Drag";
 class Card extends React.Component {
   constructor(props) {
     super(props);
@@ -34,7 +35,7 @@ class Card extends React.Component {
   render () {
     if(this.props.card.visible === 'face') {
       return (
-        <div className="card" onClick={this.handleClick}>
+        <Drag className="card" onClick={this.handleClick}  dataItem={this.props.card.id}>
           <div className={"card__element card__" + this.props.card.deck + "-deck card--size-" + this.props.size}>
             <div className="card__title">{this.props.card.name}</div>
             <div className="card__cost">{this.props.card.cost}G</div>
@@ -43,8 +44,15 @@ class Card extends React.Component {
             </ul>
           </div>
           {this.renderOverlay()}
-        </div>
+        </Drag>
       );
+    } else if(this.props.card.visible === 'back') {
+      return (
+        <Drag className="card" onClick={this.handleClick} dataItem={this.props.card.id}>
+          <div className={"card__element card__" + this.props.card.deck + "-deck card--face-down card--size-" + this.props.size}></div>
+        </Drag>
+      )
+
     } else {
       return (
         <div className="card" onClick={this.handleClick}>

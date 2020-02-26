@@ -63,6 +63,12 @@ ul {
   width: 100%;
 }
 
+.fixed__top-right {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: inline-block;
+}
 .header {
   z-index: 1000;
   position: relative;

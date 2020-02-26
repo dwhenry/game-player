@@ -14,11 +14,11 @@ class Player extends React.Component {
             <Token key="energy" name="energy" quantity={this.props.tokens.energy || 0}/>
             <Token key="achievement" name="achievement" quantity={this.props.tokens.achievement || 0}/>
           </div>
-          <CardStack cards={this.props.backlog}  size="small" name="Backlog" />
-          <CardStack cards={this.props.hand} size="small" name="Hand" />
-          <CardStack cards={this.props.board}  size="small" name="Board" />
-          <CardStack cards={this.props.fu_cards}  size="small" name="Face Up" />
-          <CardStack cards={this.props.employees}  size="small" name="Staff" />
+          <CardStack cards={this.props.backlog} location={this.props.id} stack="backlog" size="small" name="Backlog" />
+          <CardStack cards={this.props.hand} location={this.props.id} stack="hand" size="small" name="Hand" />
+          <CardStack cards={this.props.board} location={this.props.id} stack="board" size="small" name="Board" />
+          <CardStack cards={this.props.fu_cards} location={this.props.id} stack="fu" size="small" name="Face Up" />
+          <CardStack cards={this.props.employees} location={this.props.id} stack="employees" size="small" name="Staff" />
         </div>
       </div>
     );

@@ -11,10 +11,10 @@ class Player extends React.Component {
 
     this.incrementRound = this.incrementRound.bind(this);
   }
-  incrementRound() {
+  incrementRound(ev) {
+    ev.stopPropagation();
     const data = JSON.stringify({task: 'incRound', action_id: window.action_id, player: {id: this.props.id}})
     ajaxUpdate(data, 'Error incrementing round...');
-
   }
   render () {
     return (
@@ -23,9 +23,9 @@ class Player extends React.Component {
         <div className="player__inc-round"><a href="#" onClick={this.incrementRound}>Increment Round</a></div>
         <div className="row">
           <div className="tokens">
-            <Token key="cash" name="cash" quantity={this.props.tokens.cash || 0}/>
-            <Token key="energy" name="energy" quantity={this.props.tokens.energy || 0}/>
-            <Token key="achievement" name="achievement" quantity={this.props.tokens.achievement || 0}/>
+            <Token key="cash" playerId={this.props.id} name="cash" quantity={this.props.tokens.cash || 0}/>
+            <Token key="energy" playerId={this.props.id} name="energy" quantity={this.props.tokens.energy || 0}/>
+            <Token key="achievement" playerId={this.props.id} name="sp" quantity={this.props.tokens.sp || 0}/>
           </div>
           <CardStack cards={this.props.backlog} location={this.props.id} stack="backlog" size="small" name="Backlog" />
           <CardStack cards={this.props.hand} location={this.props.id} stack="hand" size="small" name="Hand" />

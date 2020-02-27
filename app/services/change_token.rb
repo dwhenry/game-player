@@ -1,13 +1,13 @@
-class IncrementRound
-  STACK_NAMES = %w[fu board].freeze
+class ChangeToken
+  attr_reader :game, :player_id, :token_type, :changed, :action_id
 
-  attr_reader :game, :player_id, :action_id
-
-  def initialize(game, player_id, action_id)
+  def initialize(game, token, action_id)
     @game = game
     @action_id = action_id
 
-    @player_id = player_id
+    @player_id = token[:player_id]
+    @token_type = token[:tokenType]
+    @changed = token[:changed].to_i
 
     @errors = []
   end
@@ -21,7 +21,9 @@ class IncrementRound
       player_deck = game.cards.detect { |deck| deck['id'] == player_id && deck['type'] == 'player'}
       return error('Invalid player') unless player_deck
 
-      STACK_NAMES.each { |stack_name| player_deck[stack_name].each { |card| card[2] = [card[2] + 1, 3].min } }
+      return error("Invalid token type: #{token_type}") unless player_deck['tokens'][token_type]
+
+      player_deck['tokens'][token_type] += changed
       return if game.save
 
       error('Invalid Save')

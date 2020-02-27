@@ -32,8 +32,10 @@ class GamesController < ApplicationController
                  CardMover.new(game, params[:card], params[:action_id])
                when 'incRound'
                  IncrementRound.new(game, params[:player][:id], params[:action_id])
+               when 'changeTokens'
+                 ChangeToken.new(game, params[:token], params[:action_id])
                else
-                 render json: { error: "Unknown action: #{params[:action]}", next_action: game.next_action }, status: 500
+                 render json: { error: "Unknown action: #{params[:taskl]}", next_action: game.next_action }, status: 500
                  return
                end
       action.call

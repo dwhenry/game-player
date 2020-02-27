@@ -3,11 +3,24 @@ import PropTypes from "prop-types"
 import Token from "./Token";
 import Card from "./Card";
 import CardStack from "./CardStack";
+import { ajaxUpdate } from "./utils"
+
 class Player extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.incrementRound = this.incrementRound.bind(this);
+  }
+  incrementRound() {
+    const data = JSON.stringify({task: 'incRound', action_id: window.action_id, player: {id: this.props.id}})
+    ajaxUpdate(data, 'Error incrementing round...');
+
+  }
   render () {
     return (
       <div className="player">
         <div className="player__title">Player: {this.props.name}</div>
+        <div className="player__inc-round"><a href="#" onClick={this.incrementRound}>Increment Round</a></div>
         <div className="row">
           <div className="tokens">
             <Token key="cash" name="cash" quantity={this.props.tokens.cash || 0}/>
@@ -26,6 +39,7 @@ class Player extends React.Component {
 }
 
 Player.propTypes = {
+  id: PropTypes.string,
   name: PropTypes.string,
   hand: PropTypes.array,
   fu_cards: PropTypes.array,

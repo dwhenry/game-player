@@ -59,19 +59,19 @@ class GameRender
   end
 
   def render_cards(cards, min:)
-    result = cards.map { |id, card_id| render_card(id, card_id) }
+    result = cards.map { |args| render_card(*args) }
     (min - cards.length).times { result << empty_slot }
     result
   end
 
-  def render_card(id = nil, card_id = nil)
+  def render_card(id = nil, card_id = nil, round = nil)
     card = card_id && lookup_card(card_id)
     return empty_slot unless card
 
-    card.merge('id' => id, 'visible' => 'face')
+    card.merge('id' => id, 'visible' => 'face', round: round)
   end
 
-  def render_card_back(id = nil, card_id = nil)
+  def render_card_back(id = nil, card_id = nil, round = nil)
     card = card_id && lookup_card(card_id)
     return empty_slot unless card
 

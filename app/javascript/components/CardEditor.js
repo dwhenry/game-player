@@ -20,7 +20,12 @@ class CardEditor extends React.Component {
 
         <div className="editorField">
           <label htmlFor="cost">Cost</label>
-          <input id="cost" name="card[cost]" type="number" defaultValue={this.props.cost} required={true} />
+          <input id="cost" name="card[cost]" type="text" defaultValue={this.props.cost} required={true} />
+        </div>
+
+        <div className="editorField">
+          <label htmlFor="rounds">Cost</label>
+          <input id="rounds" name="card[rounds]" type="number" defaultValue={this.props.rounds} required={true} />
         </div>
 
         <div className="editorField">
@@ -52,7 +57,8 @@ CardEditor.propTypes = {
   cost: PropTypes.string,
   actions: PropTypes.array,
   deck: PropTypes.string,
-  number: PropTypes.string
+  number: PropTypes.string,
+  rounds: PropTypes.string
 };
 
 export default CardEditor

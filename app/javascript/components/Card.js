@@ -38,7 +38,12 @@ class Card extends React.Component {
         <Drag className="card" onClick={this.handleClick}  dataItem={this.props.card.id}>
           <div className={"card__element card__" + this.props.card.deck + "-deck card--size-" + this.props.size}>
             <div className="card__title">{this.props.card.name}</div>
-            <div className="card__cost">{this.props.card.cost}G</div>
+            <div className="card__cost">{this.props.card.cost}</div>
+            <div className={"card__round card__round__" + this.props.card.round + " card__rounds__" + this.props.card.rounds} >
+              <span className="round__1">&nbsp;</span>
+              <span className="round__2">&nbsp;</span>
+              <span className="round__3">&nbsp;</span>
+            </div>
             <ul className="card__actions">
               {this.renderActions(this.props.card.actions)}
             </ul>
@@ -66,13 +71,5 @@ class Card extends React.Component {
 Card.propTypes = {
   card: PropTypes.object
 }
-//   id: PropTypes.string,
-//   title: PropTypes.string,
-//   cost: PropTypes.number,
-//   actions: PropTypes.array,
-//   deck: PropTypes.string,
-//   visible: PropTypes.bool,
-//   overlay: PropTypes.string,
-//   size: PropTypes.string
-// };
+
 export default Card

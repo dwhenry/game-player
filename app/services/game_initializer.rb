@@ -48,6 +48,6 @@ class GameInitializer
     cards = config.decks[type].flat_map do |id, card|
       Array.new(card['number'].to_i) { id }
     end
-    cards.shuffle.map { |card_id| [SecureRandom.uuid, card_id] }
+    cards.shuffle.map { |card_id| [SecureRandom.uuid, card_id, 0] }
   end
 end

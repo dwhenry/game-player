@@ -85,13 +85,13 @@ $decks: ("tasks": blue, "achievements": red, "employees": gray);
 
 .card__cost {
   position: absolute;
-  top: -10px;
-  right: -10px;
+  top: -15px;
+  right: -3px;
   width: 30px;
   text-align: center;
-  line-height: 30px;
-  height: 30px;
-  border-radius: 15px;
+  line-height: 20px;
+  height: 20px;
+  border-radius: 10px;
   border: solid gray 2px;
   background: #CCC;
   color: darkgoldenrod;
@@ -99,15 +99,66 @@ $decks: ("tasks": blue, "achievements": red, "employees": gray);
 }
 
 .card--size-small .card__cost {
-  top: -8px;
-  right: -8px;
+  top: -11px;
+  right: -2px;
   width: 16px;
   text-align: center;
-  line-height: 16px;
-  height: 16px;
-  border-radius: 8px;
+  line-height: 10px;
+  height: 10px;
+  border-radius: 5px;
   border: solid gray 1px;
-  font-size: 0.5em;
+  font-size: 8px;
+}
+
+.card__round {
+  position: absolute;
+  top: -10px;
+  left: -4px;
+  height: 10px;
+
+  .round__1, .round__2, .round__3 {
+    display: inline-block;
+    border: solid 1px black;
+    background: whitesmoke;
+    height: 10px;
+    width: 10px;
+    border-radius: 10px;
+    padding: 2px;
+  }
+
+  &.card__round__1 .round__1,
+  &.card__round__2 .round__1,
+  &.card__round__2 .round__2,
+  &.card__round__3 .round__1,
+  &.card__round__3 .round__2,
+  &.card__round__3 .round__3 {
+    background: #333333;
+  }
+
+  &.card__rounds__0 .round__1,
+  &.card__rounds__0 .round__2,
+  &.card__rounds__0 .round__3,
+  &.card__rounds__1 .round__2,
+  &.card__rounds__1 .round__3,
+  &.card__rounds__2 .round__3 {
+    border-style: dashed;
+    opacity: 0.7;
+    background: whitesmoke;
+  }
+
+}
+
+.card--size-small .card__round {
+  top: -8px;
+  left: -2px;
+  height: 10px;
+
+  .round__1, .round__2, .round__3 {
+    height: 4px;
+    width: 4px;
+    border-radius: 5px;
+    padding: 2px;
+  }
 }
 
 ul.card__actions {
@@ -140,3 +191,4 @@ ul.card__actions {
   padding: 10px;
   background-color: whitesmoke;
 }
+

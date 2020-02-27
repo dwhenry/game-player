@@ -1,16 +1,13 @@
-class CardMover
-  STACK_NAMES = %w[fu board employees hand].freeze
-  TOP_ONLY_STACK_NAMES = %w[backlog pile discard ].freeze
+class IncrementRound
+  STACK_NAMES = %w[fu board employees].freeze
 
-  attr_reader :game, :card_id, :location_name, :stack_name, :action_id
+  attr_reader :game, :player_id, :action_id
 
-  def initialize(game, options, action_id)
+  def initialize(game, player_id, action_id)
     @game = game
     @action_id = action_id
 
-    @card_id = options['id']
-    @location_name = options['location']
-    @stack_name = options['stack']
+    @player_id = player_id
 
     @errors = []
   end
@@ -20,12 +17,11 @@ class CardMover
       return error('invalid_action') if game.next_action != action_id
 
       game.next_action = SecureRandom.uuid
-      return error('Invalid Location') unless new_stack
 
-      card = find_card
-      return error('Invalid Card') unless card
+      player_deck = game.cards.detect { |deck| deck['id'] == player_id && deck['type'] == 'player'}
+      return error('Invalid player') unless player_deck
 
-      new_stack << card
+      STACK_NAMES.each { |stack_name| player_deck[stack_name].each { |card| card[2] = [card[2] + 1, 3].min } }
       return if game.save
 
       error('Invalid Save')

@@ -27,25 +27,20 @@ class GamesController < ApplicationController
   def update
     game = Game.find_by(id: params[:id])
     if game
-      mover = CardMover.new(game, params[:card])
-      mover.call
-      if mover.error.present?
-        respond_to do |format|
-          format.json do
-            render json: { error: mover.error, next_action: game.next_action }, status: 500
-          end
-          format.html do
-            flash[:error] = mover.error
-            redirect_to game_path(game)
-          end
-        end
+      action = case params[:task]
+               when 'cardMove'
+                 CardMover.new(game, params[:card], params[:action_id])
+               when 'incRound'
+                 IncrementRound.new(game, params[:player][:id], params[:action_id])
+               else
+                 render json: { error: "Unknown action: #{params[:action]}", next_action: game.next_action }, status: 500
+                 return
+               end
+      action.call
+      if action.error.present?
+        render json: { error: action.error, next_action: game.next_action }, status: 500
       else
-        respond_to do |format|
-          format.json do
-            render json: GameRender.new(game, current_user).call
-          end
-          format.html { redirect_to game_path(game) }
-        end
+        render json: GameRender.new(game, current_user).call
       end
     else
       redirect_to root_path

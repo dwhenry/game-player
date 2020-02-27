@@ -44,7 +44,8 @@ class CardEditor extends React.Component {
         </div>
 
         <div className="editorField">
-          <input type="submit" value="Save" />
+          <input type="submit" className="button-primary" value="Save" />
+          <a href="#" className="button" onClick={this.props.editJson}>Edit as JSON</a>
         </div>
       </form>
     );
@@ -58,7 +59,8 @@ CardEditor.propTypes = {
   actions: PropTypes.array,
   deck: PropTypes.string,
   number: PropTypes.string,
-  rounds: PropTypes.string
+  rounds: PropTypes.string,
+  editJson: Props.func,
 };
 
 export default CardEditor

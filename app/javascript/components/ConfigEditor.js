@@ -10,9 +10,12 @@ class ConfigEditor extends React.Component {
     this.state = { card: props.card };
   }
 
-
   setCard = (card) => {
     this.setState({card: card})
+  };
+
+  editJson = () => {
+
   };
 
   render () {
@@ -21,11 +24,12 @@ class ConfigEditor extends React.Component {
         <Decks {...this.props.decks} setCard={this.setCard} />
       </div>
       <div className="six columns">
-        <CardEditor {...this.state.card} game_id={this.props.id} />
+        <CardEditor {...this.state.card} game_id={this.props.id} editJson={this.editJson} />
         <div>
           <h2>Rules....</h2>
         </div>
       </div>
+      <JsonEditor
     </div>
   }
 }

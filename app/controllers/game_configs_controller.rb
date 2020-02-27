@@ -11,6 +11,11 @@ class GameConfigsController < ApplicationController
     redirect_to edit_game_config_path(game_config)
   end
 
+  def show
+    game_config = GameConfig.find(params[:id])
+    render json: game_config
+  end
+
   def edit
     @game_config = GameConfig.find(params[:id])
     @card = { id: '' }

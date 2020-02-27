@@ -90,3 +90,18 @@ ul {
     margin-bottom: 0;
   }
 }
+.modal {
+  position: fixed;
+  background: white;
+  top: 120px;
+  max-height: calc(100vh - 200px);
+  overflow-y: scroll;
+  width: 720px;
+  left: calc(50% - 400px);
+  padding: 39px;
+  border: solid 1px black;
+
+  table {
+    margin-bottom: 0;
+  }
+}

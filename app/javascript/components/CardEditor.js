@@ -60,7 +60,7 @@ CardEditor.propTypes = {
   deck: PropTypes.string,
   number: PropTypes.string,
   rounds: PropTypes.string,
-  editJson: Props.func,
+  editJson: PropTypes.func,
 };
 
 export default CardEditor

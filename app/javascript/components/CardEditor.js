@@ -24,7 +24,7 @@ class CardEditor extends React.Component {
         </div>
 
         <div className="editorField">
-          <label htmlFor="rounds">Cost</label>
+          <label htmlFor="rounds">Rounds</label>
           <input id="rounds" name="card[rounds]" type="number" defaultValue={this.props.rounds} required={true} />
         </div>
 

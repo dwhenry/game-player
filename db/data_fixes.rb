@@ -9,7 +9,7 @@ class DataFixes
   end
 
   def add_g_to_costs
-    GameConfig.all.each {|gc| gc.decks.each {|name, d| d.each {|_id, card| card['cost'] = "#{card['cost']}G" } }; gc.save }
+    GameConfig.all.each {|gc| gc.decks.each {|name, d| d.each {|_id, card| card['cost'] = "#{card['cost']}B" } }; gc.save }
   end
 
   def add_rounds_to_cards

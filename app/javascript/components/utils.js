@@ -2,7 +2,7 @@ import Rails from "@rails/ujs"
 
 export function ajaxUpdate(data, error) {
   Rails.ajax({
-    url: url || ('/games/' + window.game_id + '.json'),
+    url: '/games/' + window.game_id + '.json',
     type: 'put',
     beforeSend(xhr, options) {
       xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');

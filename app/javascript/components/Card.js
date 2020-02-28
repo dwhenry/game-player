@@ -21,7 +21,7 @@ class Card extends React.Component {
   renderActions(actions) {
     if(!actions) return null
 
-    return actions.map((action, i) => (
+    return actions.split("\n").map((action, i) => (
       this.renderAction(action, i + 1)
     ))
   }

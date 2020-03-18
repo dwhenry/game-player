@@ -1,0 +1,32 @@
+.dices {
+  padding: 20px;
+  border: solid 2px black;
+  overflow: auto;
+
+  .dices__area {
+    overflow: hidden;
+    height: 60px;
+    padding-top: 20px
+  }
+
+  .dices__wrapper {
+    position: relative;
+    display: inline-block;
+    top: -60px;
+  }
+}
+
+.dice { /* HTML symbols */
+  font-size: 100px;
+  font-weight: 800;
+}
+
+.dice {
+  content:'';
+  &.dice__side_1::after {content:'\2680';}
+  &.dice__side_2::after {content:'\2681';}
+  &.dice__side_3::after {content:'\2682';}
+  &.dice__side_4::after {content:'\2683';}
+  &.dice__side_5::after {content:'\2684';}
+  &.dice__side_6::after {content:'\2685';}
+}

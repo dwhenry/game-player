@@ -3,6 +3,8 @@ import PropTypes from "prop-types"
 import Location from "./Location";
 import Player from "./Player";
 import CardActions from "./CardActions";
+import Dices from "./Dices";
+
 class GameBoard extends React.Component {
   constructor(props) {
     super(props);
@@ -25,8 +27,9 @@ class GameBoard extends React.Component {
   render () {
     return (
       <div>
+        <div className="game__title">{this.props.name}</div>
         <div className="row">
-          <div className="game__title">{this.props.name}</div>
+            <Dices />
         </div>
         <div className="row">
           <div className="four columns">

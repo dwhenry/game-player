@@ -13,7 +13,7 @@ class GameConfig < ApplicationRecord
     return false if card_params['deck'].blank?
 
     deck = self.decks[card_params['deck']]
-    self.decks.each { |deck| deck.delete(card_params['id']) }
+    self.decks.each { |_name, deck| deck.delete(card_params['id']) }
     deck[card_params['id']] = card_params
 
     save!

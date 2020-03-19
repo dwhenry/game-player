@@ -38,7 +38,7 @@
         </tr>
       </thead>
       <tbody>
-        <% GameConfig.all.each do |game_config| %>
+        <% GameConfig.order(updated_at: :desc).each do |game_config| %>
           <tr>
             <td><%= game_config.id.split('-').first %></td>
             <td>

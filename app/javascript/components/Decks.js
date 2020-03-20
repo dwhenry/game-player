@@ -15,7 +15,8 @@ class CardItem extends React.Component {
       cost: this.props.card.cost,
       actions: this.props.card.actions,
       deck: this.props.card.deck,
-      number: this.props.card.number
+      number: this.props.card.number,
+      rounds: this.props.card.rounds,
     })
   }
 

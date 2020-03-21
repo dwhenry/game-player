@@ -3,49 +3,46 @@ import PropTypes from "prop-types"
 class CardEditor extends React.Component {
   render () {
     return (
-      <form action={"/game_configs/" + this.props.game_id} method="POST">
+      <form>
         <h2>Card Editor</h2>
-        <input name="_method" type="hidden" value="patch" />
-        <input name="authenticity_token" type="hidden" value={window.csrfToken} />
 
         <div className="editorField">
           <label htmlFor="id">ID</label>
-          <input id="id" name="card[id]" readOnly={true} type="text" defaultValue={this.props.id} />
+          <input id="id" name="card[id]" readOnly={true} type="text" value={this.props.id} onChange={this.props.updateCard} />
         </div>
 
         <div className="editorField">
           <label htmlFor="name">Name</label>
-          <input id="name" name="card[name]" type="text" defaultValue={this.props.name} />
+          <input id="name" name="card[name]" type="text" value={this.props.name} onChange={this.props.updateCard} />
         </div>
 
         <div className="editorField">
           <label htmlFor="cost">Cost</label>
-          <input id="cost" name="card[cost]" type="text" defaultValue={this.props.cost} required={true} />
+          <input id="cost" name="card[cost]" type="text" value={this.props.cost} onChange={this.props.updateCard} required={true} />
         </div>
 
         <div className="editorField">
           <label htmlFor="rounds">Rounds</label>
-          <input id="rounds" name="card[rounds]" type="number" defaultValue={this.props.rounds} required={true} />
+          <input id="rounds" name="card[rounds]" type="number" value={this.props.rounds} onChange={this.props.updateCard} required={true} />
         </div>
 
         <div className="editorField">
           <label htmlFor="actions">Actions</label>
-          <textarea id="actions" name="card[actions]" defaultValue={this.props.actions} />
+          <textarea id="actions" name="card[actions]" value={this.props.actions} onChange={this.props.updateCard} />
         </div>
 
         <div className="editorField">
           <label htmlFor="deck">Deck</label>
-          <input id="deck" name="card[deck]" type="text" defaultValue={this.props.deck} required={true} />
+          <input id="deck" name="card[deck]" type="text" value={this.props.deck} onChange={this.props.updateCard} required={true} />
         </div>
 
         <div className="editorField">
           <label htmlFor="number">Number</label>
-          <input id="number" name="card[number]" type="number" defaultValue={this.props.number} onChange={this.handleInputChange} required={true} />
+          <input id="number" name="card[number]" type="number" value={this.props.number} onChange={this.props.updateCard} required={true} />
         </div>
 
         <div className="editorField">
-          <input type="submit" className="button-primary" value="Save" />
-          <a href="#" className="button" onClick={this.props.editJson}>Edit as JSON</a>
+          <a className="button button-primary" onClick={this.props.saveCard}>Save</a>
         </div>
       </form>
     );
@@ -60,7 +57,8 @@ CardEditor.propTypes = {
   deck: PropTypes.string,
   number: PropTypes.string,
   rounds: PropTypes.string,
-  editJson: PropTypes.func,
+  updateCard: PropTypes.func,
+  saveCard: PropTypes.func
 };
 
 export default CardEditor

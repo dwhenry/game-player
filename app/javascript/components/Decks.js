@@ -42,8 +42,8 @@ class Decks extends React.Component {
   }
 
   addCard(event) {
-    event.preventDefault()
-    const deckName = event.target.attribute('data-deck');
+    event.preventDefault();
+    const deckName = event.currentTarget.getAttribute('data-deck');
     this.props.setCard({deck: deckName})
   }
 

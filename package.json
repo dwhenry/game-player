@@ -9,8 +9,6 @@
     "@rails/webpacker": "4.2.2",
     "ajv": "^6.12.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
-    "jsoneditor": "^8.6.1",
-    "jsoneditor-react": "^3.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
@@ -20,6 +18,29 @@
   },
   "version": "0.1.0",
   "devDependencies": {
+    "@testing-library/react": "^10.0.1",
+    "@testing-library/user-event": "^10.0.0",
+    "jest": "^25.1.0",
+    "jest-dom": "^4.0.0",
+    "nock": "^12.0.3",
     "webpack-dev-server": "^3.10.3"
+  },
+  "scripts": {
+    "test": "jest",
+    "test-watch": "jest --watch"
+  },
+  "jest": {
+    "roots": [
+      "test/javascript"
+    ],
+    "moduleDirectories": [
+      "node_modules",
+      "app/javascript/packs",
+      "app/javascript/components"
+    ],
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/test/javascript/__mocks__/fileMock.js",
+      "\\.(css|less)$": "<rootDir>/test/javascript/__mocks__/styleMock.js"
+    }
   }
 }

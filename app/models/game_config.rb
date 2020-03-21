@@ -18,6 +18,6 @@ class GameConfig < ApplicationRecord
 
     save!
 
-    true
+    card_params
   end
 end

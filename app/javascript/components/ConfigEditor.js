@@ -3,22 +3,10 @@ import PropTypes from "prop-types"
 import Decks from './Decks'
 import CardEditor from './CardEditor'
 import { cardUpdate } from "./utils";
-// import JsonEditor from "./JsonEditor";
 
 const ConfigEditor = ({ id, card :initCard, decks :initDecks }) => {
-  const fixCard = (card) => {
-    card.id || (card.id = '');
-    card.name || (card.name = '');
-    card.cost || (card.cost = '');
-    card.actions || (card.actions = []);
-    card.deck || (card.deck = '');
-    card.number || (card.number = '');
-    card.rounds || (card.rounds = '');
 
-    return card;
-  };
-
-  const [card, setCard] = useState(fixCard(initCard));
+  const [card, setCard] = useState(initCard);
   const [decks, setDecks] = useState(initDecks);
   const [edits, setEdits] = useState(false);
 
@@ -27,7 +15,7 @@ const ConfigEditor = ({ id, card :initCard, decks :initDecks }) => {
     //   alert('Unable to Change card as pending edits exist')
     // } else {
     //   initialCard = card;
-      setCard(fixCard(card));
+      setCard(card);
     // }
   };
   const updateCard = (event) => {
@@ -58,7 +46,7 @@ const ConfigEditor = ({ id, card :initCard, decks :initDecks }) => {
       <Decks {...decks} setCard={setCurrentCard} />
     </div>
     <div className="six columns">
-      <CardEditor {card} updateCard={updateCard} saveCard={saveCard} />
+      <CardEditor {...card} updateCard={updateCard} saveCard={saveCard} />
       <div>
         <h2>Rules....</h2>
       </div>

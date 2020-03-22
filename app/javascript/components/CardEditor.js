@@ -53,12 +53,22 @@ CardEditor.propTypes = {
   id: PropTypes.string,
   name: PropTypes.string,
   cost: PropTypes.string,
-  actions: PropTypes.array,
+  actions: PropTypes.string,
   deck: PropTypes.string,
   number: PropTypes.string,
   rounds: PropTypes.string,
   updateCard: PropTypes.func,
   saveCard: PropTypes.func
+};
+
+CardEditor.defaultProps = {
+  id : '',
+  name : '',
+  cost : '',
+  actions : '',
+  deck : '',
+  number : '',
+  rounds : ''
 };
 
 export default CardEditor

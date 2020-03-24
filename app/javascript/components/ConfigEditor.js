@@ -26,18 +26,15 @@ const ConfigEditor = ({ id, card :initCard, decks :initDecks }) => {
     event.stopPropagation();
     cardUpdate(
       { card: card },
-      id,
-      (response) => {
-        setEdits(false)
-        debugger
-        if(card.id === '') {
-          card.id = response.card.id;
-          this.state.desks[card.type].push(card)
-        }
-
-        // ensure it is in the right deck???
-      }
-    )
+      id
+    ).then(response => {
+      setEdits(false)
+      card.id = response.card.id;
+      this.state.desks[card.type].push(card)
+    }).catch(response => {
+      console.log(response);
+    })
+      console.log('here')
 
   };
 

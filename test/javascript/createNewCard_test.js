@@ -1,5 +1,5 @@
 import React from 'react';
-import nock from 'nock';
+import fetchMock from 'fetch-mock';
 import { render, cleanup, waitForElement, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 // import 'jest-dom/extend-expect';
@@ -11,19 +11,11 @@ describe('When editing an empty deck', () => {
 
 
   it('allow a card to be added to the tasks deck', async () => {
-    nock.recorder.rec()
+    console.log("Rec: " + window.location.origin);
 
-    const scope = nock("http://localhost:9876/")
-      .post('/game_configs/1')
-      .reply(200, {
-        license: {
-          key: 'mit',
-          name: 'MIT License',
-          spdx_id: 'MIT',
-          url: 'https://api.github.com/licenses/mit',
-          node_id: 'MDc6TGljZW5zZTEz',
-        },
-      });
+    fetchMock.post('/game_configs/1', { card: { id: 100 }, {
+      delay: 1000, // fake a slow network
+    });
 
     const { getByText, getByLabelText, getByPlaceholderText, queryByText } = render(
       <ConfigEditor id={1} decks={{ tasks: [], achievements: [], employees: [] }} />
@@ -36,9 +28,8 @@ describe('When editing an empty deck', () => {
     userEvent.type(getByLabelText('Number'), '3');
     userEvent.click(getByText('Save'));
 
-    let called = false
-    setTimeout(() => { called = true; console.log(nock.recorder.play()) }, 1000)
-    await waitFor(() => expect(called).toBe(true), {timeout: 2500})
+
+    // await waitUntil(() => root.state('weather').summary !== null);
 
     expect(1 + 1).toBe(2);
   })

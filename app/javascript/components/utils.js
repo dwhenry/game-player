@@ -10,6 +10,25 @@ function getCSRFToken() {
   }
 }
 
+function sortedIndex(array, value, proc) {
+    let low = 0,
+        high = array.length,
+        calcValue = proc(value);
+
+    while (low < high) {
+        let mid = (low + high) >>> 1;
+        if (proc(array[mid]) < calcValue) low = mid + 1;
+        else high = mid;
+    }
+    return low;
+}
+
+export function sortedInsert(element, array, proc) {
+  if(proc === undefined) proc = (item) => item;
+  array.splice(sortedIndex(element, array, proc) + 1, 0, element);
+  return array;
+}
+
 export function ajaxUpdate(data, error) {
   Rails.ajax({
     url: '/games/' + window.game_id + '.json',
@@ -34,7 +53,6 @@ export function ajaxUpdate(data, error) {
 }
 
 export async function cardUpdate(data, game_id) {
-  console.log(window.location.origin);
   const response = await fetch('/game_configs/' + game_id, {
     method: 'PATCH',
     headers: {

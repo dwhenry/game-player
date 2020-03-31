@@ -11,13 +11,11 @@ describe('When editing an empty deck', () => {
 
 
   it('allow a card to be added to the tasks deck', async () => {
-    console.log("Rec: " + window.location.origin);
-
-    fetchMock.post('/game_configs/1', { card: { id: 100 }, {
+    fetchMock.patch('/game_configs/1', { card: { id: 100, name: 'Apples', number: 1 } }, {
       delay: 1000, // fake a slow network
     });
 
-    const { getByText, getByLabelText, getByPlaceholderText, queryByText } = render(
+    const { getByText, getByLabelText } = render(
       <ConfigEditor id={1} decks={{ tasks: [], achievements: [], employees: [] }} />
     );
     userEvent.type(getByLabelText('Name'), 'test card');
@@ -29,7 +27,9 @@ describe('When editing an empty deck', () => {
     userEvent.click(getByText('Save'));
 
 
-    // await waitUntil(() => root.state('weather').summary !== null);
+    let a = getByText('(1) test card')
+console.log('here')
+debugger
 
     expect(1 + 1).toBe(2);
   })

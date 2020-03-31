@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import PropTypes from "prop-types"
 import Decks from './Decks'
 import CardEditor from './CardEditor'
-import { cardUpdate } from "./utils";
+import { cardUpdate, sortedInsert } from "./utils";
 
 const ConfigEditor = ({ id, card :initCard, decks :initDecks }) => {
 
@@ -29,13 +29,12 @@ const ConfigEditor = ({ id, card :initCard, decks :initDecks }) => {
       id
     ).then(response => {
       setEdits(false)
-      card.id = response.card.id;
-      this.state.desks[card.type].push(card)
+      let savedCard = response.card;
+      setCard({ ...savedCard })
+      setDecks({ [savedCard.deck]: sortedInsert(savedCard, decks[savedCard.deck], (card) => card.name ) })
     }).catch(response => {
       console.log(response);
     })
-      console.log('here')
-
   };
 
   return <div className="row">

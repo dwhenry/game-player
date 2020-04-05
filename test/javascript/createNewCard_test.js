@@ -5,13 +5,11 @@ import userEvent from '@testing-library/user-event';
 // import 'jest-dom/extend-expect';
 import ConfigEditor from '../../app/javascript/components/ConfigEditor'
 
-
 describe('When editing an empty deck', () => {
   afterEach(cleanup);
 
-
   it('allow a card to be added to the tasks deck', async () => {
-    fetchMock.patch('/game_configs/1', { card: { id: 100, name: 'Apples', number: 1 } }, {
+    fetchMock.patch('/game_configs/1', { card: { id: '100', name: 'Apples', number: '1', deck: 'tasks' }, }, {
       delay: 1000, // fake a slow network
     });
 
@@ -25,9 +23,9 @@ describe('When editing an empty deck', () => {
     userEvent.type(getByLabelText('Deck'), 'tasks');
     userEvent.type(getByLabelText('Number'), '3');
     userEvent.click(getByText('Save'));
-
-
-    let a = getByText('(1) test card')
+    fetchMock.flush()
+console.log('fuck here')
+    let a = await waitFor(() => expect(getByText('(1) test card')).toEqual('apples and pears'));
 console.log('here')
 debugger
 

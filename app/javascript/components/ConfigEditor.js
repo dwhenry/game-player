@@ -22,19 +22,24 @@ const ConfigEditor = ({ id, card :initCard, decks :initDecks }) => {
     setCard({ ...card, [event.currentTarget.id]: event.currentTarget.value });
     setEdits(true);
   };
-  const saveCard = (event) => {
+
+  const saveCard = async (event) => {
     event.stopPropagation();
-    cardUpdate(
+    let response = await cardUpdate(
       { card: card },
       id
-    ).then(response => {
+    )
+    // ).then(response => {
+      console.log('oioioioio')
       setEdits(false)
       let savedCard = response.card;
       setCard({ ...savedCard })
-      setDecks({ [savedCard.deck]: sortedInsert(savedCard, decks[savedCard.deck], (card) => card.name ) })
-    }).catch(response => {
-      console.log(response);
-    })
+      let newd = { ...decks, [savedCard.deck]: sortedInsert(savedCard, decks[savedCard.deck], (card) => card.name ) }
+
+      setDecks(newd)
+    // }).catch(response => {
+    //   console.log(response);
+    // })
   };
 
   return <div className="row">
@@ -51,4 +56,3 @@ const ConfigEditor = ({ id, card :initCard, decks :initDecks }) => {
 }
 
 export default ConfigEditor
-

@@ -26,6 +26,7 @@ function sortedIndex(array, value, proc) {
 export function sortedInsert(element, array, proc) {
   if(proc === undefined) proc = (item) => item;
   array.splice(sortedIndex(element, array, proc) + 1, 0, element);
+  console.log(array)
   return array;
 }
 
@@ -53,6 +54,7 @@ export function ajaxUpdate(data, error) {
 }
 
 export async function cardUpdate(data, game_id) {
+  console.log('-----------------------------' + game_id)
   const response = await fetch('/game_configs/' + game_id, {
     method: 'PATCH',
     headers: {
@@ -61,8 +63,8 @@ export async function cardUpdate(data, game_id) {
     },
     body: JSON.stringify(data),
   });
-
-  return await response.json();
+console.log('-----------------------------!!!!!!! FUCK THIS AT THE END')
+    return response.json();
 
 
   // Rails.ajax({

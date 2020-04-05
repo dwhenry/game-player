@@ -1,8 +1,7 @@
 import React from 'react';
 import fetchMock from 'fetch-mock';
-import { render, cleanup, waitForElement, waitFor } from '@testing-library/react';
+import { render, cleanup, waitForElement, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-// import 'jest-dom/extend-expect';
 import ConfigEditor from '../../app/javascript/components/ConfigEditor'
 
 describe('When editing an empty deck', () => {
@@ -10,25 +9,23 @@ describe('When editing an empty deck', () => {
 
   it('allow a card to be added to the tasks deck', async () => {
     fetchMock.patch('/game_configs/1', { card: { id: '100', name: 'Apples', number: '1', deck: 'tasks' }, }, {
-      delay: 1000, // fake a slow network
+      delay: 10, // fake a slow network
     });
 
-    const { getByText, getByLabelText } = render(
-      <ConfigEditor id={1} decks={{ tasks: [], achievements: [], employees: [] }} />
-    );
-    userEvent.type(getByLabelText('Name'), 'test card');
-    userEvent.type(getByLabelText('Cost'), '1');
-    userEvent.type(getByLabelText('Rounds'), '1');
-    userEvent.type(getByLabelText('Actions'), 'TBC');
-    userEvent.type(getByLabelText('Deck'), 'tasks');
-    userEvent.type(getByLabelText('Number'), '3');
-    userEvent.click(getByText('Save'));
-    fetchMock.flush()
-console.log('fuck here')
-    let a = await waitFor(() => expect(getByText('(1) test card')).toEqual('apples and pears'));
-console.log('here')
-debugger
+    let container = document.createElement('div');
+    let elem;
+    act(() => {
+      elem = render(<ConfigEditor id={1} decks={{ tasks: [], achievements: [], employees: [] }} />);
 
-    expect(1 + 1).toBe(2);
+      userEvent.type(elem.getByLabelText('Name'), 'test card');
+      userEvent.type(elem.getByLabelText('Cost'), '1');
+      userEvent.type(elem.getByLabelText('Rounds'), '1');
+      userEvent.type(elem.getByLabelText('Actions'), 'TBC');
+      userEvent.type(elem.getByLabelText('Deck'), 'tasks');
+      userEvent.type(elem.getByLabelText('Number'), '3');
+      userEvent.click(elem.getByText('Save'));
+    })
+
+    let a = await waitFor(() => expect(elem.getByText('(1) Apples').text).toMatch('(1) Apples'));
   })
 });

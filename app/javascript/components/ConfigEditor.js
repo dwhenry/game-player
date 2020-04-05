@@ -28,18 +28,11 @@ const ConfigEditor = ({ id, card :initCard, decks :initDecks }) => {
     let response = await cardUpdate(
       { card: card },
       id
-    )
-    // ).then(response => {
-      console.log('oioioioio')
-      setEdits(false)
-      let savedCard = response.card;
-      setCard({ ...savedCard })
-      let newd = { ...decks, [savedCard.deck]: sortedInsert(savedCard, decks[savedCard.deck], (card) => card.name ) }
-
-      setDecks(newd)
-    // }).catch(response => {
-    //   console.log(response);
-    // })
+    );
+    setEdits(false)
+    let savedCard = response.card;
+    setCard({ ...savedCard })
+    setDecks({ ...decks, [savedCard.deck]: sortedInsert(savedCard, decks[savedCard.deck], (card) => card.name ) })
   };
 
   return <div className="row">

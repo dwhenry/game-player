@@ -27,7 +27,7 @@ class CardItem extends React.Component {
 
   render() {
     return <li className="deck__card">
-      <a href="#" onClick={this.editCard}>({this.props.card.number}) {this.props.card.name}</a>
+      <a onClick={this.editCard}>({this.props.card.number}) {this.props.card.name}</a>
       &nbsp;-&nbsp;
       <a href="#" onClick={this.cloneCard}>Clone</a>
     </li>

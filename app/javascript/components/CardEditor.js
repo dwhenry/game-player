@@ -1,52 +1,51 @@
 import React from "react"
 import PropTypes from "prop-types"
-class CardEditor extends React.Component {
-  render () {
-    return (
-      <form>
-        <h2>Card Editor</h2>
 
-        <div className="editorField">
-          <label htmlFor="id">ID</label>
-          <input id="id" name="card[id]" readOnly={true} type="text" value={this.props.id} onChange={this.props.updateCard} />
-        </div>
+const CardEditor = (props) => {
+  return (
+    <form>
+      <h2>Card Editor</h2>
 
-        <div className="editorField">
-          <label htmlFor="name">Name</label>
-          <input id="name" name="card[name]" type="text" value={this.props.name} onChange={this.props.updateCard} />
-        </div>
+      <div className="editorField">
+        <label htmlFor="id">ID</label>
+        <input id="id" name="card[id]" readOnly={true} type="text" value={props.id} onChange={props.updateCard} />
+      </div>
 
-        <div className="editorField">
-          <label htmlFor="cost">Cost</label>
-          <input id="cost" name="card[cost]" type="text" value={this.props.cost} onChange={this.props.updateCard} required={true} />
-        </div>
+      <div className="editorField">
+        <label htmlFor="name">Name</label>
+        <input id="name" name="card[name]" type="text" value={props.name} onChange={props.updateCard} />
+      </div>
 
-        <div className="editorField">
-          <label htmlFor="rounds">Rounds</label>
-          <input id="rounds" name="card[rounds]" type="number" value={this.props.rounds} onChange={this.props.updateCard} required={true} />
-        </div>
+      <div className="editorField">
+        <label htmlFor="cost">Cost</label>
+        <input id="cost" name="card[cost]" type="text" value={props.cost} onChange={props.updateCard} required={true} />
+      </div>
 
-        <div className="editorField">
-          <label htmlFor="actions">Actions</label>
-          <textarea id="actions" name="card[actions]" value={this.props.actions} onChange={this.props.updateCard} />
-        </div>
+      <div className="editorField">
+        <label htmlFor="rounds">Rounds</label>
+        <input id="rounds" name="card[rounds]" type="number" value={props.rounds} onChange={props.updateCard} required={true} />
+      </div>
 
-        <div className="editorField">
-          <label htmlFor="deck">Deck</label>
-          <input id="deck" name="card[deck]" type="text" value={this.props.deck} onChange={this.props.updateCard} required={true} />
-        </div>
+      <div className="editorField">
+        <label htmlFor="actions">Actions</label>
+        <textarea id="actions" name="card[actions]" value={props.actions} onChange={props.updateCard} />
+      </div>
 
-        <div className="editorField">
-          <label htmlFor="number">Number</label>
-          <input id="number" name="card[number]" type="number" value={this.props.number} onChange={this.props.updateCard} required={true} />
-        </div>
+      <div className="editorField">
+        <label htmlFor="deck">Deck</label>
+        <input id="deck" name="card[deck]" type="text" value={props.deck} onChange={props.updateCard} required={true} />
+      </div>
 
-        <div className="editorField">
-          <a className="button button-primary" onClick={this.props.saveCard}>Save</a>
-        </div>
-      </form>
-    );
-  }
+      <div className="editorField">
+        <label htmlFor="number">Number</label>
+        <input id="number" name="card[number]" type="number" value={props.number} onChange={props.updateCard} required={true} />
+      </div>
+
+      <div className="editorField">
+        <a className="button button-primary" onClick={props.saveCard}>Save</a>
+      </div>
+    </form>
+  );
 }
 
 CardEditor.propTypes = {

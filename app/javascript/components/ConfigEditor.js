@@ -1,5 +1,4 @@
 import React, { useState } from "react"
-import PropTypes from "prop-types"
 import Decks from './Decks'
 import CardEditor from './CardEditor'
 import { cardUpdate, sortedInsert } from "./utils";

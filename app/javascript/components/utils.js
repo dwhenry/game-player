@@ -25,6 +25,7 @@ function sortedIndex(array, value, proc) {
 
 export function sortedInsert(element, array, proc) {
   if(proc === undefined) proc = (item) => item;
+  array = array.filter((item) => item.id != element.id);
   array.splice(sortedIndex(array, element, proc), 0, element);
   return array;
 }

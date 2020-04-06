@@ -8,12 +8,15 @@ class GameConfig < ApplicationRecord
   end
 
   def update_card(card_params)
+    raise("Invalid Deck") unless self.decks.keys.include?(card_params['deck'])
+
     card_params['actions'].gsub!(/\r\n/, "\n")
     card_params['id'] = SecureRandom.uuid unless card_params['id'].present?
     return false if card_params['deck'].blank?
 
-    deck = self.decks[card_params['deck']]
     self.decks.each { |_name, deck| deck.delete(card_params['id']) }
+
+    deck = self.decks[card_params['deck']]
     deck[card_params['id']] = card_params
 
     save!

@@ -92,8 +92,8 @@ const Dices = () => {
   const [sides, setSides] = useState([]);
 
   const updateSpots = (s) => {
-    setSpots(s)
-    setSides([...Array(s).keys()])
+    setSpots(s);
+    setSides([...Array(s).keys()]);
   };
 
   const renderedDice = () => {

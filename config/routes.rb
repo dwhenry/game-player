@@ -3,9 +3,7 @@ Rails.application.routes.draw do
   resources :games do
     member { post :join }
   end
-  resources :game_configs do
-    member { put :update_all }
-  end
+  resources :game_configs
 
   root 'home#index'
 end

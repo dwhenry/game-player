@@ -1,79 +1,61 @@
 import React from "react"
 import PropTypes from "prop-types"
-class CardItem extends React.Component {
-  constructor(props) {
-    super(props);
-    this.cloneCard = this.cloneCard.bind(this);
-    this.editCard = this.editCard.bind(this);
-  }
 
-  cloneCard(event) {
+const CardItem = (props) => {
+  function cloneCard(event) {
     event.preventDefault();
-    this.props.setCard({
+    props.setCard({
       id: "",
-      name: this.props.card.name,
-      cost: this.props.card.cost,
-      actions: this.props.card.actions,
-      deck: this.props.card.deck,
-      number: this.props.card.number,
-      rounds: this.props.card.rounds,
+      name: props.card.name,
+      cost: props.card.cost,
+      actions: props.card.actions,
+      deck: props.card.deck,
+      number: props.card.number,
+      rounds: props.card.rounds,
     })
   }
 
-  editCard(event) {
+  function editCard(event) {
     event.preventDefault();
-    this.props.setCard(this.props.card)
+    props.setCard(props.card)
   }
 
-  render() {
-    return <li className="deck__card">
-      <a href="#" onClick={this.editCard}>({this.props.card.number}) {this.props.card.name}</a>
-      &nbsp;-&nbsp;
-      <a href="#" onClick={this.cloneCard}>Clone</a>
-    </li>
-  }
-}
+  return <li className="deck__card">
+    <a href="#" onClick={editCard}>({props.card.number}) {props.card.name}</a>
+    &nbsp;-&nbsp;
+    <a href="#" onClick={cloneCard}>Clone</a>
+  </li>
+};
 
-class Decks extends React.Component {
-  constructor(props) {
-    super(props);
-    this.setCard = this.setCard.bind(this);
-    this.addCard = this.addCard.bind(this);
+const Decks = (props) => {
+  function addCard(event) {
+    event.preventDefault();
+    const deckName = event.currentTarget.getAttribute('data-deck');
+    props.setCard({deck: deckName})
   }
 
-  addCard(event) {
-    event.preventDefault()
-    const deckName = event.target.attribute('data-deck');
-    this.props.setCard({deck: deckName})
-  }
-
-  setCard(card) {
-    this.props.setCard(card)
-  }
-
-  renderDeck(cards, name) {
+  function renderDeck(cards, name) {
     return <div className={"deck-" + name}>
       <div className="deck__title">({cards.length}) {name} </div>
-      <a className="deck__add-link" href="#" data-deck={name} onClick={this.addCard}>Add Card</a>
+      <a className="deck__add-link" href="#" data-deck={name} onClick={addCard}>Add Card</a>
       <ul>
         {cards.map((card) => (
-          <CardItem key={card.id} card={card} setCard={this.setCard} />
+          <CardItem key={card.id} card={card} setCard={props.setCard} />
         ))}
       </ul>
     </div>
   }
-  render () {
-    return (
-      <div className="decks">
-        { this.renderDeck(this.props.tasks, 'tasks') }
-        <br />
-        { this.renderDeck(this.props.achievements, 'achievements') }
-        <br />
-        { this.renderDeck(this.props.employees, 'employees') }
-      </div>
-    );
-  }
-}
+
+  return (
+    <div className="decks">
+      { renderDeck(props.tasks, 'tasks') }
+      <br />
+      { renderDeck(props.achievements, 'achievements') }
+      <br />
+      { renderDeck(props.employees, 'employees') }
+    </div>
+  );
+};
 
 Decks.propTypes = {
   tasks: PropTypes.array,

@@ -1,6 +1,8 @@
+// use strict
 import React from "react"
 import PropTypes from "prop-types"
 import Drag from "./Drag";
+
 class Card extends React.Component {
   constructor(props) {
     super(props);

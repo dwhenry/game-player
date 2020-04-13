@@ -7,19 +7,13 @@ import ConfigEditor from '../../app/javascript/components/ConfigEditor'
 describe('When adding cards to a deck', () => {
   let elem;
 
-  beforeAll(() => {
-    fetchMock.patch('/game_configs/1', {card: {id: '100', name: 'Apples', number: '1', deck: 'tasks'},}, {
-      delay: 10, // fake a slow network
-    });
-  });
   afterEach(cleanup);
+  afterEach(fetchMock.reset);
 
   describe('and deck is empty', () => {
     it('allow a card to be added to the tasks deck', async () => {
-
       act(() => {
         elem = render(<ConfigEditor id={1} decks={{tasks: [], achievements: [], employees: []}}/>);
-
         fillInDeck(userEvent, elem)
       });
 
@@ -32,7 +26,7 @@ describe('When adding cards to a deck', () => {
       act(() => {
         elem = render(<ConfigEditor id={1} decks={{ tasks: [{ id: '101', name: 'Bananas', number: '2', deck: 'tasks' }], achievements: [], employees: [] }} />);
 
-        fillInDeck(userEvent, elem)
+        saveWithValues(elem)
       });
 
       await elem.findByText(/\(1\) Apples/);
@@ -45,7 +39,7 @@ describe('When adding cards to a deck', () => {
     it('inserts the card into the correct order at the front of the deck', async () => {
       act(() => {
         elem = render(<ConfigEditor id={1} decks={{ tasks: [{ id: '101', name: 'An Apple', number: '2', deck: 'tasks' }], achievements: [], employees: [] }} />);
-        fillInDeck(userEvent, elem)
+        saveWithValues(elem)
       });
 
       await elem.findByText(/\(1\) Apples/);
@@ -76,26 +70,14 @@ describe('When adding cards to a deck', () => {
             actions: "Action 1\nAction2"
           }], achievements: [], employees: []
         }}/>);
-
-        // const card = await elem.findByText(/\(\d\) An Apple/)
-
       });
 
       const card = await elem.findByText(/\(\d\) Pears/);
 
       fireEvent.click(card);
-      await expect(elem.getByLabelText('ID').value).toEqual('100');
-      await expect(elem.getByLabelText('Name').value).toEqual('Pears');
-      await expect(elem.getByLabelText('Cost').value).toEqual('1G');
-      await expect(elem.getByLabelText('Rounds').value).toEqual('0');
-      await expect(elem.getByLabelText('Actions').value).toEqual("Action 1\nAction2");
-      await expect(elem.getByLabelText('Deck').value).toEqual('tasks');
-      await expect(elem.getByLabelText('Number').value).toEqual('3');
 
       act(() => {
-        userEvent.type(elem.getByLabelText('Name'), 'Apples');
-        userEvent.type(elem.getByLabelText('Number'), '1');
-        userEvent.click(elem.getByText('Save'));
+        saveWithValues(elem)
       })
 
       await elem.findByText(/\(1\) Apples/);
@@ -106,13 +88,38 @@ describe('When adding cards to a deck', () => {
     })
   });
 
-  function fillInDeck(userEvent, elem) {
-    userEvent.type(elem.getByLabelText('Name'), 'Apples');
-    userEvent.type(elem.getByLabelText('Cost'), '1');
-    userEvent.type(elem.getByLabelText('Rounds'), '1');
-    userEvent.type(elem.getByLabelText('Actions'), 'TBC');
-    userEvent.type(elem.getByLabelText('Deck'), 'tasks');
-    userEvent.type(elem.getByLabelText('Number'), '3');
+  async function fillInDeck(userEvent, elem) {
+    let card = {
+      name : 'Apples',
+      cost : '1G',
+      actions : 'TBC',
+      deck : 'tasks',
+      number : '1',
+      rounds : '2'
+    }
+    let cardWithID = {...card, id: '101'};
+
+    fetchMock.patch({url: '/game_configs/1', body: { card: card }}, {card: cardWithID}, {
+      delay: 10, // fake a slow network
+    })
+
+    await userEvent.type(elem.getByLabelText('Name'), card.name);
+    await userEvent.type(elem.getByLabelText('Cost'), card.cost);
+    await userEvent.type(elem.getByLabelText('Rounds'), card.rounds);
+    await userEvent.type(elem.getByLabelText('Actions'), card.actions);
+    await userEvent.type(elem.getByLabelText('Deck'), card.deck);
+    await userEvent.type(elem.getByLabelText('Number'), card.number);
+
+    userEvent.click(elem.getByText('Save'));
+  }
+  function saveWithValues(elem, card) {
+    let cardWithDefaults = Object.assign(
+      {id: '100', name: 'Apples', number: '1', deck: 'tasks'},
+      card
+    );
+    fetchMock.patch('/game_configs/1', {card: cardWithDefaults}, {
+      delay: 10, // fake a slow network
+    });
     userEvent.click(elem.getByText('Save'));
   }
 });

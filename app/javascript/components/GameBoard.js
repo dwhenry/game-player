@@ -8,7 +8,13 @@ import Dices from "./Dices";
 class GameBoard extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { displayCard: false, card: null, players: this.props.players, locations: this.props.locations };
+    this.state = {
+      displayCard: false,
+      card: null,
+      players: this.props.players,
+      locations: this.props.locations,
+      next_action: this.props.next_action
+    };
     window.setCard = this.setCard.bind(this);
     window.update_board = this.update_board.bind(this)
     this.removeCard = this.removeCard.bind(this);
@@ -26,7 +32,7 @@ class GameBoard extends React.Component {
   }
   render () {
     return (
-      <div>
+      <div data-testid={this.state.next_action}>
         <div className="game__title">{this.props.name}</div>
         <div className="row">
             <Dices />
@@ -57,6 +63,7 @@ GameBoard.propTypes = {
   game_id: PropTypes.string,
   locations: PropTypes.array,
   players: PropTypes.array,
-  log: PropTypes.array
+  log: PropTypes.array,
+  next_action: PropTypes.string
 };
 export default GameBoard

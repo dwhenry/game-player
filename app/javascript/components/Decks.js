@@ -21,9 +21,7 @@ const CardItem = (props) => {
   }
 
   return <li className="deck__card">
-    <a href="#" onClick={editCard}>({props.card.number}) {props.card.name}</a>
-    &nbsp;-&nbsp;
-    <a href="#" onClick={cloneCard}>Clone</a>
+    <a href="#" onClick={editCard}>({props.card.number}) {props.card.name}</a> - <a href="#" onClick={cloneCard}>Clone</a>
   </li>
 };
 
@@ -35,11 +33,12 @@ const Decks = (props) => {
   }
 
   function renderDeck(cards, name) {
+    const filteredCards = cards.filter(c => c.deck === name);
     return <div className={"deck-" + name}>
-      <div className="deck__title">({cards.length}) {name} </div>
+      <div className="deck__title">({filteredCards.length}) {name} </div>
       <a className="deck__add-link" href="#" data-deck={name} onClick={addCard}>Add Card</a>
       <ul>
-        {cards.map((card) => (
+        {filteredCards.map((card) => (
           <CardItem key={card.id} card={card} setCard={props.setCard} />
         ))}
       </ul>
@@ -48,11 +47,11 @@ const Decks = (props) => {
 
   return (
     <div className="decks">
-      { renderDeck(props.tasks, 'tasks') }
+      { renderDeck(props.cards, 'tasks') }
       <br />
-      { renderDeck(props.achievements, 'achievements') }
+      { renderDeck(props.cards, 'achievements') }
       <br />
-      { renderDeck(props.employees, 'employees') }
+      { renderDeck(props.cards, 'employees') }
     </div>
   );
 };

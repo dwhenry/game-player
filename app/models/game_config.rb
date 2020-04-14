@@ -1,9 +1,8 @@
 class GameConfig < ApplicationRecord
   def as_json(*)
+    # TODO: Fix data model to avoid needing this...
     hash = super
-    hash['decks'].each do |deck, _cards|
-      hash['decks'][deck] = hash['decks'][deck].values.sort_by { |card| card['name'].downcase }
-    end
+    hash['cards'] = hash.delete('decks').flat_map {|_deck, cards| cards.values }.sort_by { |card| card['name'].downcase }
     hash
   end
 

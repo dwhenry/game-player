@@ -3,10 +3,10 @@ import Decks from './Decks'
 import CardEditor from './CardEditor'
 import { cardUpdate, sortedInsert } from "./utils";
 
-const ConfigEditor = ({ id, card :initCard, decks :initDecks }) => {
+const ConfigEditor = ({ id, card :selectedCard, cards :initialCards }) => {
 
-  const [card, setCard] = useState(initCard);
-  const [decks, setDecks] = useState(initDecks);
+  const [card, setCard] = useState(selectedCard);
+  const [cards, setCards] = useState(initialCards);
   const [edits, setEdits] = useState(false);
 
   const setCurrentCard = (card) => {
@@ -31,12 +31,13 @@ const ConfigEditor = ({ id, card :initCard, decks :initDecks }) => {
     setEdits(false)
     let savedCard = response.card;
     setCard({ ...savedCard })
-    setDecks({ ...decks, [savedCard.deck]: sortedInsert(savedCard, decks[savedCard.deck], (card) => card.name ) })
+
+    setCards(sortedInsert(savedCard, cards, (card) => card.name ))
   };
 
   return <div className="row">
-    <div className="six columns">
-      <Decks {...decks} setCard={setCurrentCard} />
+    <div className="six columns" data-testid="all-decks">
+      <Decks cards={cards} setCard={setCurrentCard} />
     </div>
     <div className="six columns">
       <CardEditor {...card} updateCard={updateCard} saveCard={saveCard} />

@@ -13,7 +13,7 @@ describe('When adding cards to a deck', () => {
   describe('and deck is empty', () => {
     it('allow a card to be added to the tasks deck', async () => {
       act(() => {
-        elem = render(<ConfigEditor id={1} decks={{tasks: [], achievements: [], employees: []}}/>);
+        elem = render(<ConfigEditor id={1} cards={[]}/>);
         fillInDeck(userEvent, elem)
       });
 
@@ -24,7 +24,9 @@ describe('When adding cards to a deck', () => {
   describe('and deck is not empty', () => {
     it('inserts the card into the correct order at the front of the deck', async () => {
       act(() => {
-        elem = render(<ConfigEditor id={1} decks={{ tasks: [{ id: '101', name: 'Bananas', number: '2', deck: 'tasks' }], achievements: [], employees: [] }} />);
+        elem = render(<ConfigEditor id={1} cards={
+          [{ id: '101', name: 'Bananas', number: '2', deck: 'tasks' }]
+        } />);
 
         saveWithValues(elem)
       });
@@ -38,7 +40,9 @@ describe('When adding cards to a deck', () => {
 
     it('inserts the card into the correct order at the front of the deck', async () => {
       act(() => {
-        elem = render(<ConfigEditor id={1} decks={{ tasks: [{ id: '101', name: 'An Apple', number: '2', deck: 'tasks' }], achievements: [], employees: [] }} />);
+        elem = render(<ConfigEditor id={1} cards={
+          [{ id: '101', name: 'An Apple', number: '2', deck: 'tasks' }]
+        } />);
         saveWithValues(elem)
       });
 
@@ -51,8 +55,8 @@ describe('When adding cards to a deck', () => {
 
     it('Can edit an existing card', async () => {
       act(() => {
-        elem = render(<ConfigEditor id={1} decks={{
-          tasks: [{
+        elem = render(<ConfigEditor id={1} cards={
+          [{
             id: '101',
             name: 'Bananas',
             number: '2',
@@ -68,8 +72,8 @@ describe('When adding cards to a deck', () => {
             cost: '1G',
             rounds: '0',
             actions: "Action 1\nAction2"
-          }], achievements: [], employees: []
-        }}/>);
+          }]
+        }/>);
       });
 
       const card = await elem.findByText(/\(\d\) Pears/);
@@ -82,11 +86,41 @@ describe('When adding cards to a deck', () => {
 
       await elem.findByText(/\(1\) Apples/);
 
-      const items = await elem.findAllByText(/\(\d\) (Bananas|Apples)/);
-
-      expect(items.map((i) => i.text)).toEqual(['(1) Apples', '(2) Bananas']);
+      expect(screen.getByTestId('all-decks').textContent).toEqual(
+        '(2) tasks Add Card(1) Apples - Clone(2) Bananas - Clone(0) achievements Add Card(0) employees Add Card'
+      )
     })
   });
+
+  it('Can change the deck on a existing card', async () => {
+    act(() => {
+      elem = render(<ConfigEditor id={1} cards={
+        [{
+          id: '100',
+          name: 'Apples',
+          number: '1',
+          deck: 'tasks',
+          cost: '1G',
+          rounds: '0',
+          actions: "Action 1\nAction2"
+        }]
+      }/>);
+    });
+
+    const card = await elem.findByText('(1) Apples');
+
+    fireEvent.click(card);
+
+    act(() => {
+      saveWithValues(elem, {deck: 'employees', number: '2'})
+    })
+
+    await elem.findByText(/\(2\) Apples/);
+
+    expect(screen.getByTestId('all-decks').textContent).toEqual(
+      '(0) tasks Add Card(0) achievements Add Card(1) employees Add Card(2) Apples - Clone'
+    )
+  })
 
   async function fillInDeck(userEvent, elem) {
     let card = {

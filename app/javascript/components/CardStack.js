@@ -18,7 +18,7 @@ class CardStack extends React.Component {
     return <DropTarget className="stack" onItemDropped={this.itemDropped}>
       <div className="stack__name">{this.props.name}</div>
       {this.props.cards.map((card) => {
-        return <Card key={card.id} card={card} size={this.props.size} />
+        return <Card key={card.id} card={card} size={this.props.size} count={this.props.count} />
       })}
     </DropTarget>
   }
@@ -30,5 +30,6 @@ CardStack.propTypes = {
   size: PropTypes.string,
   location: PropTypes.string,
   stack: PropTypes.string,
+  count: PropTypes.number
 };
 export default CardStack

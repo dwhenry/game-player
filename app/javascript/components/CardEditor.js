@@ -43,6 +43,7 @@ const CardEditor = (props) => {
 
       <div className="editorField">
         <a className="button button-primary" onClick={props.saveCard}>Save</a>
+        <a className="button button-secondary" onClick={props.cancelEdit}>Cancel</a>
       </div>
     </form>
   );
@@ -57,7 +58,8 @@ CardEditor.propTypes = {
   number: PropTypes.string,
   rounds: PropTypes.string,
   updateCard: PropTypes.func,
-  saveCard: PropTypes.func
+  saveCard: PropTypes.func,
+  cancelEdit: PropTypes.func
 };
 
 CardEditor.defaultProps = {

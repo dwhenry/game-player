@@ -16,11 +16,11 @@ describe('Playing the game', () => {
 
     await waitFor(() => expect(elem.getByTestId(initialGameState.next_action).text).not.toEqual(''));
 
-    let actual = [...document.querySelectorAll('.location__title,.player__title,.stack__name')].map(e => e.textContent);
+    let actual = [...document.querySelectorAll('.player__title,.location__title,.stack__name,.card__type')].map(e => e.textContent);
     let expected = [
-      "Tasks", "Discard", "Backlog", "Face up",
-      "Player: Make me editable", "Backlog", "Board", "Face Up", "Staff", "Hand",
-      "Player: Player 2", "Backlog", "Board", "Face Up", "Staff", "Hand"];
+      "Tasks",                    "Backlog", "Hidden: 10", "Discard", "None", "Face up", "None", "None",
+      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face Up", "None", "Staff", "None", "Hand", "None",
+      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face Up", "None", "Staff", "None", "Hand", "None", ];
 
     // this is just a check of the location as no card are currently visible
     expect(actual).toEqual(expected)
@@ -43,15 +43,15 @@ describe('Playing the game', () => {
           name: 'Tasks',
           deck: 'tasks',
           pile: {
-            id: "deck-task-pile",
+            key: "deck-task-pile",
             cards: [{id: nextUuid(), deck: 'tasks', visible: 'back'}],
             count: 10
           },
           discard: {
-            id: "deck-tasks-discard", cards: [{id: nextUuid(), visible: 'slot'}], count: 0
+            key: "deck-tasks-discard", cards: [{id: nextUuid(), visible: 'slot'}], count: 0
           },
           fu_cards: {
-            id: "deck-tasks-fu", cards: [{id: nextUuid(), visible: 'slot'}, {id: nextUuid(), visible: 'slot'}] },
+            key: "deck-tasks-fu", cards: [{id: nextUuid(), visible: 'slot'}, {id: nextUuid(), visible: 'slot'}] },
         }
       ],
       players: [

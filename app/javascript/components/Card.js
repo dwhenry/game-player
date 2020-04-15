@@ -38,6 +38,7 @@ class Card extends React.Component {
     if(this.props.card.visible === 'face') {
       return (
         <Drag className="card" onClick={this.handleClick}  dataItem={this.props.card.id}>
+          <div style={{display: 'none'}} className="card__type">Visible: {this.props.card.name}</div>
           <div className={"card__element card__" + this.props.card.deck + "-deck card--size-" + this.props.size}>
             <div className="card__title">{this.props.card.name}</div>
             <div className="card__cost">{this.props.card.cost}</div>
@@ -56,13 +57,16 @@ class Card extends React.Component {
     } else if(this.props.card.visible === 'back') {
       return (
         <Drag className="card" onClick={this.handleClick} dataItem={this.props.card.id}>
-          <div className={"card__element card__" + this.props.card.deck + "-deck card--face-down card--size-" + this.props.size} />
+          <div style={{display: 'none'}} className="card__type">Hidden: {this.props.count}</div>
+          <div className={"card__element card__" + this.props.card.deck + "-deck card--face-down card--size-" + this.props.size}>
+            <div className="card__cost">{this.props.count}</div>
+          </div>
         </Drag>
       )
-
     } else {
       return (
         <div className="card" onClick={this.handleClick}>
+          <div style={{display: 'none'}} className="card__type">None</div>
           <div className={"card__element card__" + this.props.card.deck + "-deck card--face-down card--size-" + this.props.size} />
         </div>
       )
@@ -71,7 +75,8 @@ class Card extends React.Component {
 }
 
 Card.propTypes = {
-  card: PropTypes.object
-}
+  card: PropTypes.object,
+  count: PropTypes.number
+};
 
 export default Card

@@ -1,21 +1,19 @@
 import React from "react"
 import PropTypes from "prop-types"
 import CardStack from "./CardStack";
-class Location extends React.Component {
+const Location = (props) => {
 
-  render () {
-    return (
-      <div className="location">
-        <div className="location__title">{this.props.name}</div>
-        <div className="row">
-          <CardStack {...this.props.pile} location={this.props.location} size="small" name="Backlog" stack="pile" />
-          <CardStack {...this.props.discard} location={this.props.location} size="small" name="Discard" stack="discard" />
-          <CardStack {...this.props.fu_cards} location={this.props.location} size="small" name="Face up" stack="fu" />
-        </div>
+  return (
+    <div className="location">
+      <div className="location__title">{props.name}</div>
+      <div className="row">
+        <CardStack {...props.pile} location={props.location} size="small" name="Backlog" stack="pile" />
+        <CardStack {...props.discard} location={props.location} size="small" name="Discard" stack="discard" />
+        <CardStack {...props.fu_cards} location={props.location} size="small" name="Face up" stack="fu" />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 Location.propTypes = {
   name: PropTypes.string,

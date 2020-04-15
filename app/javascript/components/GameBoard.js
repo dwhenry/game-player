@@ -1,60 +1,58 @@
-import React from "react"
+import React, { useState } from "react"
 import PropTypes from "prop-types"
 import Location from "./Location";
 import Player from "./Player";
 import CardActions from "./CardActions";
 import Dices from "./Dices";
 
-class GameBoard extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      displayCard: false,
-      card: null,
-      players: this.props.players,
-      locations: this.props.locations,
-      next_action: this.props.next_action
-    };
-    window.setCard = this.setCard.bind(this);
-    window.update_board = this.update_board.bind(this)
-    this.removeCard = this.removeCard.bind(this);
-  }
-  setCard(card) {
-    this.setState({card: card, displayCard: true})
-  }
-  removeCard(event) {
+const GameBoard = (props) =>  {
+
+  const [displayCard, setDisplayCard] = useState(false);
+  const [card, setCard] = useState();
+  const [players, setPlayers] = useState(props.players);
+  const [locations, setLocations] = useState(props.locations);
+  const [nextAction, setNextAction] = useState(props.next_action);
+
+  // TODO: stop these being window functions and final a better way to pass state
+  window.setCard = (newCard) => {
+    setCard(newCard);
+    setDisplayCard(true)
+  };
+
+  window.update_board = (locations, players, next_action) => {
+    setLocations(locations);
+    setPlayers(players);
+    window.action_id = nextAction;
+  };
+
+  function removeCard(event) {
     if(event.target === event.currentTarget)
       this.setState({card: null, displayCard: false})
   }
-  update_board(locations, players, next_action) {
-    this.setState({locations: locations, players: players});
-    window.action_id = next_action;
-  }
-  render () {
-    return (
-      <div data-testid={this.state.next_action}>
-        <div className="game__title">{this.props.name}</div>
-        <div className="row">
-            <Dices />
+
+  return (
+    <div data-testid={nextAction}>
+      <div className="game__title">{props.name}</div>
+      <div className="row">
+          <Dices />
+      </div>
+      <div className="row">
+        <div className="four columns">
+          {locations.map((location) => (
+            <Location key={location.id} {...location} location={location.id} />
+          ))}
         </div>
-        <div className="row">
-          <div className="four columns">
-            {this.state.locations.map((location) => (
-              <Location key={location.id} {...location} location={location.id} />
-            ))}
-          </div>
-          <div className="eight columns">
-            {this.state.players.map((player) => (
-              <Player key={player.id} {...player} />
-            ))}
-          </div>
-        </div>
-        <div className="fixed__top-right" style={{display: this.state.displayCard ? 'block' : 'none'}} onClick={this.removeCard}>
-          <CardActions card={this.state.card} game_id={this.props.id} />
+        <div className="eight columns">
+          {players.map((player) => (
+            <Player key={player.id} {...player} />
+          ))}
         </div>
       </div>
-    );
-  }
+      <div className="fixed__top-right" style={{display: card ? 'block' : 'none'}} onClick={removeCard}>
+        <CardActions card={card} game_id={props.id} />
+      </div>
+    </div>
+  );
 }
 
 GameBoard.propTypes = {

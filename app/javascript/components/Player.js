@@ -5,37 +5,31 @@ import Card from "./Card";
 import CardStack from "./CardStack";
 import { ajaxUpdate } from "./utils"
 
-class Player extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.incrementRound = this.incrementRound.bind(this);
-  }
-  incrementRound(ev) {
+const Player = (props) => {
+  function incrementRound(ev) {
     ev.stopPropagation();
-    const data = JSON.stringify({task: 'incRound', action_id: window.action_id, player: {id: this.props.id}})
+    const data = JSON.stringify({task: 'incRound', action_id: window.action_id, player: {id: props.id}})
     ajaxUpdate(data, 'Error incrementing round...');
   }
-  render () {
-    return (
-      <div className="player">
-        <div className="player__title">Player: {this.props.name}</div>
-        <div className="player__inc-round"><a href="#" onClick={this.incrementRound}>Increment Round</a></div>
-        <div className="row">
-          <div className="tokens">
-            <Token key="cash" playerId={this.props.id} name="cash" quantity={this.props.tokens.cash || 0}/>
-            <Token key="energy" playerId={this.props.id} name="energy" quantity={this.props.tokens.energy || 0}/>
-            <Token key="achievement" playerId={this.props.id} name="sp" quantity={this.props.tokens.sp || 0}/>
-          </div>
-          <CardStack cards={this.props.backlog} location={this.props.id} stack="backlog" size="small" name="Backlog" />
-          <CardStack cards={this.props.board} location={this.props.id} stack="board" size="small" name="Board" />
-          <CardStack cards={this.props.fu_cards} location={this.props.id} stack="fu" size="small" name="Face Up" />
-          <CardStack cards={this.props.employees} location={this.props.id} stack="employees" size="small" name="Staff" />
-          <CardStack cards={this.props.hand} location={this.props.id} stack="hand" size="small" name="Hand" />
+
+  return (
+    <div className="player">
+      <div className="player__title">Player: {props.name}</div>
+      <div className="player__inc-round"><a href="#" onClick={incrementRound}>Increment Round</a></div>
+      <div className="row">
+        <div className="tokens">
+          <Token key="cash" playerId={props.id} name="cash" quantity={props.tokens.cash || 0}/>
+          <Token key="energy" playerId={props.id} name="energy" quantity={props.tokens.energy || 0}/>
+          <Token key="achievement" playerId={props.id} name="sp" quantity={props.tokens.sp || 0}/>
         </div>
+        <CardStack cards={props.backlog} location={props.id} stack="backlog" size="small" name="Backlog" />
+        <CardStack cards={props.board} location={props.id} stack="board" size="small" name="Board" />
+        <CardStack cards={props.fu_cards} location={props.id} stack="fu" size="small" name="Face Up" />
+        <CardStack cards={props.employees} location={props.id} stack="employees" size="small" name="Staff" />
+        <CardStack cards={props.hand} location={props.id} stack="hand" size="small" name="Hand" />
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 Player.propTypes = {

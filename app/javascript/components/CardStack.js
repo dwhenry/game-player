@@ -4,25 +4,19 @@ import Card from './Card'
 import DropTarget from "./DropTarget";
 import { ajaxUpdate } from "./utils"
 
-class CardStack extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.itemDropped = this.itemDropped.bind(this);
-  }
-  itemDropped(card_id) {
+const CardStack = (props) => {
+  const itemDropped = (card_id) => {
     const data = JSON.stringify({task: 'cardMove', action_id: window.action_id, card: {id: card_id, location: this.props.location, stack: this.props.stack}})
     ajaxUpdate(data, 'Error moving card...');
-  }
-  render () {
-    return <DropTarget className="stack" onItemDropped={this.itemDropped}>
-      <div className="stack__name">{this.props.name}</div>
-      {this.props.cards.map((card) => {
-        return <Card key={card.id} card={card} size={this.props.size} />
-      })}
-    </DropTarget>
-  }
-}
+  };
+
+  return <DropTarget className="stack" onItemDropped={itemDropped}>
+    <div className="stack__name">{props.name}</div>
+    {props.cards.map((card) => {
+      return <Card key={card.id} card={card} size={props.size} count={props.count} />
+    })}
+  </DropTarget>
+};
 
 CardStack.propTypes = {
   name: PropTypes.string,
@@ -30,5 +24,7 @@ CardStack.propTypes = {
   size: PropTypes.string,
   location: PropTypes.string,
   stack: PropTypes.string,
+  count: PropTypes.number
 };
+
 export default CardStack

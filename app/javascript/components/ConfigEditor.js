@@ -10,12 +10,12 @@ const ConfigEditor = ({ id, card :selectedCard, cards :initialCards }) => {
   const [edits, setEdits] = useState(false);
 
   const setCurrentCard = (card) => {
-    // if(edits) {
-    //   alert('Unable to Change card as pending edits exist')
-    // } else {
-    //   initialCard = card;
+    if(edits) {
+      alert('Unable to Change card as pending edits exist');
+    } else {
+      // let initialCard = card;
       setCard(card);
-    // }
+    }
   };
   const updateCard = (event) => {
     setCard({ ...card, [event.currentTarget.id]: event.currentTarget.value });
@@ -35,12 +35,17 @@ const ConfigEditor = ({ id, card :selectedCard, cards :initialCards }) => {
     setCards(sortedInsert(savedCard, cards, (card) => card.name ))
   };
 
+  const cancelEdit = () => {
+    setCard({});
+    setEdits(false);
+  }
+
   return <div className="row">
     <div className="six columns" data-testid="all-decks">
       <Decks cards={cards} setCard={setCurrentCard} />
     </div>
     <div className="six columns">
-      <CardEditor {...card} updateCard={updateCard} saveCard={saveCard} />
+      <CardEditor {...card} updateCard={updateCard} saveCard={saveCard} cancelEdit={cancelEdit} />
       <div>
         <h2>Rules....</h2>
       </div>

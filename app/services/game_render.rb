@@ -27,9 +27,9 @@ class GameRender
         id: deck,
         name: deck.titleize,
         deck: deck.singularize,
-        pile: { id: "deck-#{deck}-pile", cards: [render_card_back(*stack['pile'].last)], count: stack['pile'].count },
-        discard: { id: "deck-#{deck}-discard", cards: [render_card(*stack['discard'].last)], count: stack['discard'].count },
-        fu_cards: { id: "deck-#{deck}-fu", cards: render_cards(stack['fu'], min: 2) },
+        pile: { key: "deck-#{deck}-pile", cards: [render_card_back(*stack['pile'].last)], count: stack['pile'].count },
+        discard: { key: "deck-#{deck}-discard", cards: [render_card(*stack['discard'].last)], count: stack['discard'].count },
+        fu_cards: { key: "deck-#{deck}-fu", cards: render_cards(stack['fu'], min: 2) },
       }
     end
   end

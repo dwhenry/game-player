@@ -13,7 +13,7 @@ const Player = (props) => {
   }
 
   return (
-    <div className="player">
+    <div className={"player player-" + props.id}>
       <div className="player__title">Player: {props.name}</div>
       <div className="player__inc-round"><a href="#" onClick={incrementRound}>Increment Round</a></div>
       <div className="row">

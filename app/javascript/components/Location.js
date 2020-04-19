@@ -4,7 +4,7 @@ import CardStack from "./CardStack";
 const Location = (props) => {
 
   return (
-    <div className="location">
+    <div className={"location location-" + props.deck}>
       <div className="location__title">{props.name}</div>
       <div className="row">
         <CardStack {...props.pile} location={props.location} size="small" name="Backlog" stack="pile" />

@@ -30,31 +30,44 @@ export function sortedInsert(element, array, proc) {
   return array;
 }
 
-export function ajaxUpdate(data, error) {
-  Rails.ajax({
-    url: '/games/' + window.game_id + '.json',
-    type: 'put',
-    beforeSend(xhr, options) {
-      xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-      options.data = data;
-      return true
+export async function ajaxUpdate(data, error) {
+  const response = await fetch( '/games/' + window.gameId, {
+    method: 'PATCH',
+    headers: {
+      "X-CSRF-Token": getCSRFToken(),
+      'Content-Type': 'application/json'
     },
-    success: function (response, t, x) {
-      if (response.locations) {
-        window.update_board(response.locations, response.players, response.next_action);
-      }
-    },
-    error: function (response) {
-      if (response.error) {
-        alert(error + response.error);
-        window.action_id = response.next_action;
-      }
-    },
+    body: JSON.stringify(data),
   });
+
+  if(response.success) {
+    let json = response.json();
+    window.update_board(json.locations, json.players, json.next_action);
+  } 
+  // Rails.ajax({
+  //   url: '/games/' + window.game_id + '.json',
+  //   type: 'put',
+  //   beforeSend(xhr, options) {
+  //     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+  //     options.data = data;
+  //     return true
+  //   },
+  //   success: function (response, t, x) {
+  //     if (response.locations) {
+        
+  //     }
+  //   },
+  //   error: function (response) {
+  //     if (response.error) {
+  //       alert(error + response.error);
+  //       window.action_id = response.next_action;
+  //     }
+  //   },
+  // });
 }
 
-export async function cardUpdate(data, game_id) {
-  const response = await fetch('/game_configs/' + game_id, {
+export async function cardUpdate(data) {
+  const response = await fetch('/game_configs/' + window.gameId, {
     method: 'PATCH',
     headers: {
       "X-CSRF-Token": getCSRFToken(),

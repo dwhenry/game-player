@@ -5,15 +5,23 @@ import DropTarget from "./DropTarget";
 import { ajaxUpdate } from "./utils"
 
 const CardStack = (props) => {
-  const itemDropped = (card_id) => {
-    const data = JSON.stringify({task: 'cardMove', action_id: window.action_id, card: {id: card_id, location: this.props.location, stack: this.props.stack}})
+  const itemDropped = (cardId) => {
+    const data = {
+      task: 'cardMove',
+      action_id: window.actionId,
+      card: {
+        id: cardId,
+        location: props.location,
+        stack: props.stack
+      }
+    }
     ajaxUpdate(data, 'Error moving card...');
   };
 
-  return <DropTarget className="stack" onItemDropped={itemDropped}>
+  return <DropTarget onItemDropped={itemDropped} className={"stack stack-" + props.stack}>
     <div className="stack__name">{props.name}</div>
     {props.cards.map((card) => {
-      return <Card key={card.id} card={card} size={props.size} count={props.count} />
+      return <Card key={card.id} id={card.id} card={card} size={props.size} count={props.count}/>
     })}
   </DropTarget>
 };

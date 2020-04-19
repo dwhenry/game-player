@@ -30,7 +30,7 @@ const Card = (props) => {
 
   if(props.card.visible === 'face') {
     return (
-      <Drag className="card" onClick={handleClick}  dataItem={props.card.id}>
+      <Drag className={"card card-" + props.id} onClick={handleClick}  dataItem={props.card.id}>
         <div style={{display: 'none'}} className="card__type">Visible: {props.card.name}</div>
         <div className={"card__element card__" + props.card.deck + "-deck card--size-" + props.size}>
           <div className="card__title">{props.card.name}</div>
@@ -51,7 +51,7 @@ const Card = (props) => {
 
   if(props.card.visible === 'back') {
     return (
-      <Drag className="card" onClick={handleClick} dataItem={props.card.id}>
+      <Drag className={"card card-" + props.id} onClick={handleClick} dataItem={props.card.id}>
         <div style={{display: 'none'}} className="card__type">Hidden: {props.count}</div>
         <div className={"card__element card__" + props.card.deck + "-deck card--face-down card--size-" + props.size}>
           <div className="card__cost">{props.count}</div>
@@ -61,7 +61,7 @@ const Card = (props) => {
   }
 
   return (
-    <div className="card" onClick={handleClick}>
+    <div className={"card card-" + props.id} onClick={handleClick}>
       <div style={{display: 'none'}} className="card__type">None</div>
       <div className={"card__element card__" + props.card.deck + "-deck card--face-down card--size-" + props.size} />
     </div>

@@ -6,6 +6,8 @@ import CardActions from "./CardActions";
 import Dices from "./Dices";
 
 const GameBoard = (props) =>  {
+  window.gameId = props.id;
+  window.actionId = props.next_action;
 
   const [displayCard, setDisplayCard] = useState(false);
   const [card, setCard] = useState();
@@ -22,7 +24,7 @@ const GameBoard = (props) =>  {
   window.update_board = (locations, players, next_action) => {
     setLocations(locations);
     setPlayers(players);
-    window.action_id = nextAction;
+    window.actionId = nextAction;
   };
 
   function removeCard(event) {
@@ -49,7 +51,7 @@ const GameBoard = (props) =>  {
         </div>
       </div>
       <div className="fixed__top-right" style={{display: card ? 'block' : 'none'}} onClick={removeCard}>
-        <CardActions card={card} game_id={props.id} />
+        <CardActions card={card}/>
       </div>
     </div>
   );
@@ -58,7 +60,7 @@ const GameBoard = (props) =>  {
 GameBoard.propTypes = {
   key: PropTypes.string,
   name: PropTypes.string,
-  game_id: PropTypes.string,
+  gameId: PropTypes.string,
   locations: PropTypes.array,
   players: PropTypes.array,
   log: PropTypes.array,

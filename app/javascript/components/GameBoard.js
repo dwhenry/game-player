@@ -7,14 +7,13 @@ import Dices from "./Dices";
 
 const GameBoard = (props) =>  {
   window.gameId = props.id;
-  window.actionId = props.next_action;
 
   const [displayCard, setDisplayCard] = useState(false);
   const [card, setCard] = useState();
-  const [players, setPlayers] = useState(props.players);
-  const [locations, setLocations] = useState(props.locations);
-  const [nextAction, setNextAction] = useState(props.next_action);
-
+  const [playerTokens, setPlayerTokens] = useState(props.player_tokens); 
+  const [cards, setCards] = useState(props.cards);
+  const [locationParams, setlocationParams] = useState(props.location_params); 
+  
   // TODO: stop these being window functions and final a better way to pass state
   window.setCard = (newCard) => {
     setCard(newCard);
@@ -33,22 +32,22 @@ const GameBoard = (props) =>  {
   }
 
   return (
-    <div data-testid={nextAction}>
+    <div>
       <div className="game__title">{props.name}</div>
       <div className="row">
           <Dices />
       </div>
       <div className="row">
         <div className="four columns">
-          {locations.map((location) => (
-            <Location key={location.id} {...location} location={location.id} />
+          {props.locations.map((location) => (
+            <Location key={location.id} {...location} stacks={props.location_stacks} params={locationParams[location.id]} cards={cards} />
           ))}
         </div>
-        <div className="eight columns">
-          {players.map((player) => (
-            <Player key={player.id} {...player} />
+        {/* <div className="eight columns">
+          {props.players.map((player) => (
+            <Player key={player.id} {...player} stacks={props.player_stacks} tokens={playerTokens[player.id]} />
           ))}
-        </div>
+        </div> */}
       </div>
       <div className="fixed__top-right" style={{display: card ? 'block' : 'none'}} onClick={removeCard}>
         <CardActions card={card}/>
@@ -61,9 +60,13 @@ GameBoard.propTypes = {
   key: PropTypes.string,
   name: PropTypes.string,
   gameId: PropTypes.string,
+  cards: PropTypes.array,
   locations: PropTypes.array,
+  location_stacks: PropTypes.array,
+  location_params: PropTypes.object,
   players: PropTypes.array,
-  log: PropTypes.array,
-  next_action: PropTypes.string
+  player_stacks: PropTypes.array,
+  player_tokens: PropTypes.object,
+
 };
 export default GameBoard

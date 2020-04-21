@@ -1,23 +1,32 @@
 import React from "react"
 import PropTypes from "prop-types"
 import CardStack from "./CardStack";
-const Location = (props) => {
+
+
+const Location = (props) => {  
+  function sentenceCase (str) {
+    return str.replace(/[a-z]/i, function (letter) {
+      return letter.toUpperCase();
+    }).trim();
+  }
 
   return (
     <div className={"location location-" + props.deck}>
       <div className="location__title">{props.name}</div>
       <div className="row">
-        <CardStack {...props.pile} location={props.location} size="small" name="Backlog" stack="pile" />
-        <CardStack {...props.discard} location={props.location} size="small" name="Discard" stack="discard" />
-        <CardStack {...props.fu_cards} location={props.location} size="small" name="Face up" stack="fu" />
+        {props.stacks.map(([name, stack]) => <CardStack key={props.id + '-' + stack} locationId={props.id} name={name} cards={props.cards} size="small" stack={stack} {...props.params[stack]} />)}
       </div>
     </div>
   );
 };
 
 Location.propTypes = {
+  id: PropTypes.string,
   name: PropTypes.string,
+  cards: PropTypes.array,
   deck: PropTypes.string,
-  location: PropTypes.string,
+  stacks: PropTypes.array,
+  params: PropTypes.object,
 };
+
 export default Location

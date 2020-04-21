@@ -5,34 +5,48 @@ import DropTarget from "./DropTarget";
 import { ajaxUpdate } from "./utils"
 
 const CardStack = (props) => {
-  const itemDropped = (cardId) => {
+  const locationId = props.id + '-' + props.stack;
+  const itemDropped = (cardId, fromLocationId) => {
     const data = {
       task: 'cardMove',
       action_id: window.actionId,
       card: {
         id: cardId,
-        location: props.location,
+        locationId: locationId,
+        fromLocationId: fromLocationId,
         stack: props.stack
       }
     }
     ajaxUpdate(data, 'Error moving card...');
   };
+  let id = 0;
+  const cards = () => {
+    let cards = props.cards.filter((card) => card.location_id === (props.locationId + '-' + props.stack));
+    while(cards.length < props.min_cards) {
+      cards.push({id: 'slot-' + id++, visible: 'slot'});
+    } 
+    return cards;
+  }
 
   return <DropTarget onItemDropped={itemDropped} className={"stack stack-" + props.stack}>
     <div className="stack__name">{props.name}</div>
-    {props.cards.map((card) => {
-      return <Card key={card.id} id={card.id} card={card} size={props.size} count={props.count}/>
-    })}
+    {cards().map((card) => <Card key={card.id} id={card.id} card={card} size={props.size} count={props.count}/>)}
   </DropTarget>
 };
 
 CardStack.propTypes = {
+  locationId: PropTypes.string,
   name: PropTypes.string,
   cards: PropTypes.array,
   size: PropTypes.string,
-  location: PropTypes.string,
   stack: PropTypes.string,
-  count: PropTypes.number
+  count: PropTypes.number,
+  min_cards: PropTypes.number,
+};
+
+CardStack.defaultProps = {
+  min_cards: 1,
+  count: 1
 };
 
 export default CardStack

@@ -30,7 +30,7 @@ describe('Playing the game', () => {
   });
 
   xit("Can edit your player name", () => {});
-  it("Can move cards around", async () => {
+  xit("Can move cards around", async () => {
     const cardId = initialGameState.cards[0].id;
     const player1Id = initialGameState.players[0].id;
     let startingNode = document.querySelector(".card-" + cardId);
@@ -42,7 +42,6 @@ describe('Playing the game', () => {
       card: {id: cardId, location: player1Id, stack: 'hand'}
     };
   
-    // console.log(data)
     fetchMock.patch({url: '/games/' + initialGameState.id, body: data}, {}, {
       delay: 10, // fake a slow network
     });

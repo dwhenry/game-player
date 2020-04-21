@@ -11,12 +11,12 @@ class Token extends React.Component {
   }
   incTokens(ev) {
     ev.stopPropagation()
-    const data = JSON.stringify({task: 'changeTokens', action_id: window.action_id, token: {player_id: this.props.playerId, tokenType: this.props.name, changed: 1}})
+    const data = JSON.stringify({task: 'changeTokens', action_id: window.actionId, token: {player_id: this.props.playerId, tokenType: this.props.name, changed: 1}})
     ajaxUpdate(data, 'Error updating tokens...');
   }
   decTokens(ev) {
     ev.stopPropagation()
-    const data = JSON.stringify({task: 'changeTokens', action_id: window.action_id, token: {player_id: this.props.playerId, tokenType: this.props.name, changed: -1}})
+    const data = JSON.stringify({task: 'changeTokens', action_id: window.actionId, token: {player_id: this.props.playerId, tokenType: this.props.name, changed: -1}})
     ajaxUpdate(data, 'Error updating tokens...');
   }
   render () {

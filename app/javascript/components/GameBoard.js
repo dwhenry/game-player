@@ -6,7 +6,7 @@ import CardActions from "./CardActions";
 import Dices from "./Dices";
 
 const GameBoard = (props) =>  {
-  window.gameId = props.id;
+  window.gameBoardId = props.id;
 
   const [displayCard, setDisplayCard] = useState(false);
   const [card, setCard] = useState();
@@ -45,7 +45,7 @@ const GameBoard = (props) =>  {
         </div>
         <div className="eight columns">
           {props.players.map((player) => (
-            <Player key={player.id} {...player} stacks={props.player_stacks} tokens={playerTokens[player.id]} cards={cards} />
+            <Player key={player.id} {...player} stacks={props.player_stacks} tokens={playerTokens[player.id]}  cards={cards} />
           ))}
         </div>
       </div>
@@ -57,6 +57,7 @@ const GameBoard = (props) =>  {
 }
 
 GameBoard.propTypes = {
+  id: PropTypes.string,
   key: PropTypes.string,
   name: PropTypes.string,
   gameId: PropTypes.string,

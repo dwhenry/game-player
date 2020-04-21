@@ -46,7 +46,7 @@ export function takeOwnership(event) {
     }
   } else {
     ownershipEvents[event.objectId] = [event];
-    fetch('/games/' + gameId + '/objects/' + event.objectId + '/take', {
+    fetch('/games/' + gameBoardId + '/objects/' + event.objectId + '/take', {
       method: 'POST',
       headers: {
         "X-CSRF-Token": getCSRFToken(),

@@ -15,7 +15,6 @@ describe('Playing the game', () => {
       elem = render(<GameBoard {...initialGameState} />);
     });
 
-    // await waitFor(() => expect(elem.getByTestId(initialGameState.next_action).text).not.toEqual(''));
     done()
   });
 
@@ -23,33 +22,27 @@ describe('Playing the game', () => {
     let actual = [...document.querySelectorAll('.player__title,.location__title,.stack__name,.card__type')].map(e => e.textContent);
     let expected = [
       "Tasks",                    "Backlog", "Hidden: 10", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face Up", "None", "Staff", "None", "Hand", "None",
-      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face Up", "None", "Staff", "None", "Hand", "None", ];
+      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
+      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ];
 
     // this is just a check of the location as no card are currently visible
     expect(actual).toEqual(expected)
   });
 
   xit("Can edit your player name", () => {});
-  xit("Can move cards around", async () => {
-    const cardId = initialGameState.card[0].id;
+  it("Can move cards around", async () => {
+    const cardId = initialGameState.cards[0].id;
     const player1Id = initialGameState.players[0].id;
-    
     let startingNode = document.querySelector(".card-" + cardId);
-    let endingNode = document.querySelector(".player-" + player1Id + " .stack-hand");
-    
-    // console.log(".player-" + player1Id + " .stack-hand");
-    // console.log(endingNode);
+    let endingNode = elem.getByTestId(player1Id + '-hand');
 
-    // await elem.findByText(/help me you stupid thing/)
-    // .player-UUID-833c9lr32 .stack-hand
     let data = {
       task: 'cardMove', 
       action_id: initialGameState.next_action, 
       card: {id: cardId, location: player1Id, stack: 'hand'}
     };
-
-  console.log(data)
+  
+    // console.log(data)
     fetchMock.patch({url: '/games/' + initialGameState.id, body: data}, {}, {
       delay: 10, // fake a slow network
     });
@@ -123,14 +116,13 @@ describe('Playing the game', () => {
           name: "Player 2",
         },
       ],
-      player_stacks: ['employees', 'backlog', 'hand', 'fu_cards', 'board'],
+      player_stacks: [['Backlog', 'pile'], ['Board', 'board'], ['Face up', 'fu_cards'], ['Staff', 'employees'], ['Hand', 'hand']],
       player_tokens: {
         [player1Id]: {cash: 0, energy: 0, sp: 0},
         [player2Id]: {cash: 0, energy: 0, sp: 0},
       }
     }
-
-
+    
     return {
       id: nextUuid(),
       name: "Test 123",

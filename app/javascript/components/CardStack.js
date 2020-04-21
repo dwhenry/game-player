@@ -28,9 +28,9 @@ const CardStack = (props) => {
     return cards;
   }
 
-  return <DropTarget onItemDropped={itemDropped} className={"stack stack-" + props.stack}>
-    <div className="stack__name">{props.name}</div>
-    {cards().map((card) => <Card key={card.id} id={card.id} card={card} size={props.size} count={props.count}/>)}
+  return <DropTarget onItemDropped={itemDropped} className={"stack stack-" + props.stack} >
+    <div className="stack__name" data-testid={props.locationId + '-' + props.stack}>{props.name}</div>
+    {cards().map((card) => <Card key={card.id} card={card} size={props.size} count={props.count} stackId={props.locationId + '-' + props.stack} />)}
   </DropTarget>
 };
 

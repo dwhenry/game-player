@@ -43,11 +43,11 @@ const GameBoard = (props) =>  {
             <Location key={location.id} {...location} stacks={props.location_stacks} params={locationParams[location.id]} cards={cards} />
           ))}
         </div>
-        {/* <div className="eight columns">
+        <div className="eight columns">
           {props.players.map((player) => (
-            <Player key={player.id} {...player} stacks={props.player_stacks} tokens={playerTokens[player.id]} />
+            <Player key={player.id} {...player} stacks={props.player_stacks} tokens={playerTokens[player.id]} cards={cards} />
           ))}
-        </div> */}
+        </div>
       </div>
       <div className="fixed__top-right" style={{display: card ? 'block' : 'none'}} onClick={removeCard}>
         <CardActions card={card}/>

@@ -1,6 +1,6 @@
 import Rails from "@rails/ujs"
 
-function getCSRFToken() {
+export function getCSRFToken() {
   const csrfToken = document.querySelector("[name='csrf-token']")
 
   if (csrfToken) {
@@ -31,7 +31,7 @@ export function sortedInsert(element, array, proc) {
 }
 
 export async function ajaxUpdate(data, error) {
-  const response = await fetch( '/games/' + window.gameId, {
+  const response = await fetch( '/games/' + window.gameBoardId, {
     method: 'PATCH',
     headers: {
       "X-CSRF-Token": getCSRFToken(),
@@ -64,6 +64,27 @@ export async function ajaxUpdate(data, error) {
   //     }
   //   },
   // });
+}
+
+export async function takeEvent(objectId) {
+  fetch('/games/' + window.gameBoardId + '/ownership/' + objectId, {
+    method: 'POST',
+    headers: {
+      "X-CSRF-Token": getCSRFToken(),
+      'Content-Type': 'application/json'
+    }
+  })
+}
+
+export async function postEvent(objectId, data) {
+  fetch('/games/' + window.gameBoardId + '/ownership/' + objectId, {
+    method: 'PATCH',
+    headers: {
+      "X-CSRF-Token": getCSRFToken(),
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data),
+  })
 }
 
 export async function cardUpdate(data) {

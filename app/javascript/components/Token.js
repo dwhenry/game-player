@@ -1,6 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
-import { ajaxUpdate } from "./utils"
+import { ajaxUpdate } from "../modules/utils"
 
 class Token extends React.Component {
   constructor(props) {

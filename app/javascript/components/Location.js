@@ -14,7 +14,15 @@ const Location = (props) => {
     <div className={"location location-" + props.deck}>
       <div className="location__title">{props.name}</div>
       <div className="row">
-        {props.stacks.map(([name, stack]) => <CardStack key={props.id + '-' + stack} locationId={props.id} name={name} cards={props.cards} size="small" stack={stack} {...props.params[stack]} />)}
+        {props.stacks.map(([name, stack]) => {
+          return <CardStack key={props.id + '-' + stack}
+                            locationId={props.id} 
+                            name={name} 
+                            cards={props.cards} 
+                            size="small"
+                            stack={stack} 
+                            {...props.params[stack]} />
+        })}
       </div>
     </div>
   );

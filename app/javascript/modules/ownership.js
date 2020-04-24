@@ -1,4 +1,4 @@
-
+import { takeEvent } from "./utils"
 
 // takeOwnership
 // addPhantomEvent
@@ -22,8 +22,7 @@ b: fail early: get ownership... fail http ownership request.. release card.. ens
 c: fail late: get ownership... log move events... fail http ownership request.. release card..  revert move events.. ensuring actual owner has ownership in UI
 */
 const revertPhantomEvents = (objectId) => {
-  let returnEvent, events;
-  let [returnEvent, ...events] = ownershipEvents[event.objectId];
+  let [returnEvent, ...events] = ownershipEvents[objectId];
   if(returnEvent === undefined) {
     // the shit has hit the fan, how did we get here????
     return;
@@ -33,12 +32,21 @@ const revertPhantomEvents = (objectId) => {
 
 }
 
+export function addEvent(objectId, event) {
+  let events = ownershipEvents[event.objectId];
+  if(events === undefined) {
+    return false
+  }
+  events.push(event);
+  return true
+}
+
 export function takeOwnership(event) {
   // make card locally as owned
   // start or maintain an event stream for the object
   // have the ability to revert the change..
 
-  if(ownershipEvents.key(event.objectId)) {
+  if(ownershipEvents.hasOwnProperty(event.objectId)) {
     if(ownershipEvents[event.objectId] !== 'unowned') {
       ownershipEvents[event.objectId].push(event);
     } else {
@@ -46,14 +54,9 @@ export function takeOwnership(event) {
     }
   } else {
     ownershipEvents[event.objectId] = [event];
-    fetch('/games/' + gameBoardId + '/objects/' + event.objectId + '/take', {
-      method: 'POST',
-      headers: {
-        "X-CSRF-Token": getCSRFToken(),
-        'Content-Type': 'application/json'
-      }
-    }).success((response) => {
-      if(response.json().success !== true) {
+    takeEvent(event.objectId).then(async  (response) => {
+      let json = await response.json();
+      if(json.success !== true) {
         revertPhantomEvents(event.objectId)
       }
     })

@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import Decks from './Decks'
 import CardEditor from './CardEditor'
-import { cardUpdate, sortedInsert } from "./utils";
+import { cardUpdate, sortedInsert } from "../modules/utils";
 
 const ConfigEditor = ({ id, card :selectedCard, cards :initialCards }) => {
   window.gameId = id;

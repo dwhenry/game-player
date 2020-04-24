@@ -3,6 +3,7 @@ import fetchMock from 'fetch-mock';
 import { render, cleanup, waitForElement, waitFor, act, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import GameBoard from '../../app/javascript/components/GameBoard'
+import { ResolvePlugin } from 'webpack';
 
 describe('Playing the game', () => {
   let elem;
@@ -30,27 +31,42 @@ describe('Playing the game', () => {
   });
 
   xit("Can edit your player name", () => {});
-  xit("Can move cards around", async () => {
+  it("Can move cards around", async () => {
     const cardId = initialGameState.cards[0].id;
     const player1Id = initialGameState.players[0].id;
+    const taskId = initialGameState.locations[0].id;
     let startingNode = document.querySelector(".card-" + cardId);
     let endingNode = elem.getByTestId(player1Id + '-hand');
 
-    let data = {
-      task: 'cardMove', 
-      action_id: initialGameState.next_action, 
-      card: {id: cardId, location: player1Id, stack: 'hand'}
-    };
-  
-    fetchMock.patch({url: '/games/' + initialGameState.id, body: data}, {}, {
-      delay: 10, // fake a slow network
-    });
+    // mock getting the object ownership
+    let ownershipPromiseResolver;
+    let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
+    let objectId = "location:" + taskId + ":pile";
 
+    fetchMock.post({url: '/games/' + initialGameState.id + '/ownership/' + objectId}, ownershipPromise.then(() => ({success: true})));
+    
     let mockDataTransfer = MockDataTransfer();
 
     startingNode.dispatchEvent(
       createBubbledEvent("dragstart", { dataTransfer: mockDataTransfer, clientX: 0, clientY: 0 })
     );
+
+    // we resolve the promise immediately in this test case
+    ownershipPromiseResolver();
+
+    let data = {
+      event: 'cardMove', 
+      data: {
+        // timestamp: new Date().getTime(), // as we can't get the same value that will be set in the code for this wwe will instead use partial matching
+        object_id: objectId,
+        from: taskId + '-pile',
+        to: player1Id + '-hand'
+      }
+    };
+    fetchMock.patch({url: '/games/' + initialGameState.id + '/ownership/' + objectId, matchPartialBody: true, body: data}, {}, {
+      delay: 10, // fake a slow network
+    });
+
     endingNode.dispatchEvent(
       createBubbledEvent("drop", { dataTransfer: mockDataTransfer, clientX: 0, clientY: 1 })
     );

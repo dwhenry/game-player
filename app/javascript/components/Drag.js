@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 // import * as dropEffects from "./dropEffects";
+import {takeOwnership} from "../modules/ownership"
 
 const draggingStyle = {
     opacity: 0.25,
@@ -20,6 +21,7 @@ const Drag = props => {
 
     const startDrag = ev => {
         setIsDragging(true);
+        takeOwnership({objectId: props.dataItem})
         ev.dataTransfer.setData("drag-item", props.dataItem);
         ev.dataTransfer.effectAllowed = props.dropEffect;
         if (image.current) {

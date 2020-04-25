@@ -47,9 +47,9 @@ export async function ajaxUpdate(data, error) {
 }
 
 export async function getUpdates() {
-  let lastUpdateTimestamp = new Date().getTime();
+  let lastUpdateTimestamp = 0; //new Date().getTime();
 
-  const response = await fetch('/games/' + window.gameId, {
+  const response = await fetch('/games/' + window.gameBoardId + '/events', {
     method: 'GET',
     headers: {
       "X-CSRF-Token": getCSRFToken(),

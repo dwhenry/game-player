@@ -4,6 +4,7 @@ import { render, cleanup, waitForElement, waitFor, act, fireEvent, screen } from
 import userEvent from '@testing-library/user-event';
 import GameBoard from '../../app/javascript/components/GameBoard'
 import { ResolvePlugin } from 'webpack';
+import { events } from '../../app/javascript/modules/ownership'
 
 jest.useFakeTimers();
 
@@ -56,7 +57,7 @@ describe('Playing the game', () => {
     // we resolve the promise immediately in this test case
     ownershipPromiseResolver();
 
-    let data = {
+    let event = {
       event: 'cardMove', 
       data: {
         // timestamp: new Date().getTime(), // as we can't get the same value that will be set in the code for this wwe will instead use partial matching
@@ -67,7 +68,7 @@ describe('Playing the game', () => {
     };
 
     // mock the event move call to the backend
-    fetchMock.patch({url: '/games/' + initialGameState.id + '/ownership/' + objectId, matchPartialBody: true, body: data}, {}, {
+    fetchMock.patch({url: '/games/' + initialGameState.id + '/ownership/' + objectId, matchPartialBody: true, body: event}, {}, {
       delay: 10, // fake a slow network
     });
 
@@ -85,12 +86,35 @@ describe('Playing the game', () => {
     // this is just a check of the location as no card are currently visible
     expect(actual).toEqual(expected)
 
-    // do the polling event
+    let lastUpdate = 0;
+    let eventWithCard = {
+      events: [
+        { ...events(objectId)[0], card: {
+          ...(initialGameState.cards[0]), 
+          visible: 'face', 
+          locationID: player1Id + '-hand', 
+          objectId: 'card:' + 
+          cardId + ':' ,
+          name: 'Test Card'
+        } }
+      ]
+    }
 
+    fetchMock.get({url: '/games/' + initialGameState.id + '/events', body: { since: lastUpdate }}, eventWithCard);
+
+    // do the polling event
+    jest.runOnlyPendingTimers();
 
     // check the page is fully updated
+    let actual2 = [...document.querySelectorAll('.player__title,.location__title,.stack__name,.card__type')].map(e => e.textContent);
+    let expected2 = [
+      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
+      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card",
+      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ];
 
+    expect(actual2).toEqual(expected2)
   }); 
+
   xit("Can process other player card move events", () => {});
   xit("Can regect your card move if it has a conflict on the server", () => {});
   xit("Alerts when the game has lagged to much", () => {});

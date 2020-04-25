@@ -1,5 +1,6 @@
+import React, { useRef } from 'react'
 import { takeEvent, getUpdates } from "./utils"
-import { object } from "prop-types";
+import { applyEvents } from '../state/CardState'
 
 // takeOwnership
 // addPhantomEvent
@@ -62,26 +63,35 @@ export function takeOwnership(event) {
   }
 };
 
-export const pollEvents = () => {
-  return setInterval(async () => {
-    let events = await getUpdates();
-    for(event in events) {
-      let eventsForObject = ownershipEvents[event.objectId];
-      if(eventsForObject === undefined) {
-        // event came from a different user so just apply them
+// this is exposed for testing only
+export const events = (objectId) => {
+  return ownershipEvents[objectId];
+}
+
+export const pollEvents = async (globalsRef) => {
+  let events = (await getUpdates()).events;
+  let lastEvent = events[events.length - 1];
+
+  events.forEach((event) => {
+    let eventsForObject = ownershipEvents[event.objectId];
+    if(eventsForObject === undefined) {
+      // event came from a different user so just apply them
+      // applyEvents(events)
+    } else {
+      let nextEvent = eventsForObject.shift();
+      if(nextEvent.timestamp !== event.timestamp) {
+        // well this is bad.. our events are wrong or out of sequence... so we need to revert them to some extent and apply these new ones...
+        // revertPhantomEvents(event.objectId);
         // applyEvents(events)
       } else {
-        let nextEvent = eventsForObject.shift();
-        if(nextEvent.timestamp !== event.timestamp) {
-          // well this is bad.. out events are wrong... so we need to revert them to some extent and apply these new ones...
-          // revertPhantomEvents(event.objectId);
-          // applyEvents(events)
-        } else {
-          // just realise the events locally
-          
-          // ...hmmm.... this is teh issue with have events different to state... I blame matt
+        // just realise the events locally
+        if(event === lastEvent) {
+          console.log('best')
+          // set the state to not be pending and update the card object
+          applyEvents(globalsRef.current, [event])
         }
+        // else ignore the event as we still have pending
       }
     }
-  }, 1000 * 5)
+  })
 }

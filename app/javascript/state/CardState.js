@@ -11,12 +11,12 @@ const actions = {
     let toLocation = store.state[toLocationId] || [];
 
     // remove it from the old location
-    fromLocation = fromLocation.filter(l => l === card.objectId)
+    fromLocation = fromLocation.filter(l => l.objectId === card.objectId)
 
     // add it to the new location
-    toLocation.push(card.objectId)
+    toLocation.push(card)
 
-    store.setState({[card.objectId]: card, [fromLocationId]: fromLocation, [toLocationId]: toLocation})
+    // store.setState({[fromLocationId]: fromLocation, [toLocationId]: toLocation})
 
     console.log("updated")
   },
@@ -25,8 +25,8 @@ const actions = {
     let state = { order: {} }
     cards.forEach((c) => {
       if(state[c.locationId] == undefined) state[c.locationId] = [];
-      state[c.locationId].push(c.objectId);
-      state[c.objectId] = c;;
+      state[c.locationId].push(c);
+      // state[c.objectId] = c;;
     })
     store.setState(state)
   }

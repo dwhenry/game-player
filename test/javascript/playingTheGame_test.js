@@ -41,7 +41,7 @@ describe('Playing the game', () => {
     // mock getting the object ownership
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
-    let objectId = initialGameState.cards[0].object_id;
+    let objectId = initialGameState.cards[0].objectId;
 
     fetchMock.post({url: '/games/' + initialGameState.id + '/ownership/' + objectId}, ownershipPromise.then(() => ({success: true})));
     
@@ -58,11 +58,13 @@ describe('Playing the game', () => {
       event: 'cardMove', 
       data: {
         // timestamp: new Date().getTime(), // as we can't get the same value that will be set in the code for this wwe will instead use partial matching
-        object_id: objectId,
+        objectId: objectId,
         from: { locationId: taskId, stack: 'pile' },
         to: { locationId: player1Id, stack: 'hand' },
       }
     };
+
+    // mock the event move call to the backend
     fetchMock.patch({url: '/games/' + initialGameState.id + '/ownership/' + objectId, matchPartialBody: true, body: data}, {}, {
       delay: 10, // fake a slow network
     });
@@ -72,6 +74,14 @@ describe('Playing the game', () => {
     );
 
     // check the local view is up to date
+    let actual = [...document.querySelectorAll('.player__title,.location__title,.stack__name,.card__type')].map(e => e.textContent);
+    let expected = [
+      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
+      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Pending - task",
+      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ];
+
+    // this is just a check of the location as no card are currently visible
+    await expect(actual).toEqual(expected)
 
     // do the polling event
 
@@ -108,7 +118,7 @@ describe('Playing the game', () => {
       name: "Test 123",
       game_config_id: 'Config-111',
       cards: [
-        { id: nextUuid(), deck: 'tasks', visible: 'back', location_id: taskLocationId + '-pile', object_id: 'location:tasks:pile' }
+        { id: nextUuid(), deck: 'tasks', visible: 'back', locationId: taskLocationId + '-pile', objectId: 'location:tasks:pile' }
       ],
       locations: [
         {

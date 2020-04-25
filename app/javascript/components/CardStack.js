@@ -13,21 +13,26 @@ const CardStack = (props) => {
     let [objectId, fromLocationId, fromStack] = eventId.split("/");
 
     let data = {
-      object_id: objectId,
+      objectId: objectId,
       from: { locationId: fromLocationId, stack: fromStack },
       to: { locationId: props.locationId, stack: props.stack },
       timestamp: new Date().getTime()
     }
+    console.log("Drop")
     if(addEvent(objectId, data)) {
       postEvent(objectId, data);
       // move the card in the stack
-      cardsActions.moveCard({ ...allCards[objectId], location_id: props.locationId })
+      cardsActions.updateCard({ ...allCards[objectId], locationId: (props.locationId + '-' + props.stack) }, data)
     }
   };
 
   let id = 0;
 
-  let cards = allCards.cards.filter((card) => card.location_id === (props.locationId + '-' + props.stack));
+  // console.log(props.locationId + '-' + props.stack)
+  // console.log(allCards)
+  let cardsIds = allCards[props.locationId + '-' + props.stack] || [];
+  let cards = cardsIds.map(id => allCards[id])
+  
   while(cards.length < props.min_cards) {
     cards.push({id: props.locationId + ':' + props.stack + ':' + id++, visible: 'slot'});
   } 
@@ -37,9 +42,9 @@ const CardStack = (props) => {
     {cards.map((card) => {
       switch(card.visible) {
         case 'face':
-          return <CardFace key={card.id} card={card} size={props.size} count={props.count} eventId={card.object_id + "/" + props.locationId + "/" + props.stack} />
+          return <CardFace key={card.id} card={card} size={props.size} count={props.count} eventId={card.objectId + "/" + props.locationId + "/" + props.stack} />
         case 'back':
-          return <CardBack key={card.id} card={card} size={props.size} count={props.count} eventId={card.object_id + "/" + props.locationId + "/" + props.stack} />
+          return <CardBack key={card.id} card={card} size={props.size} count={props.count} eventId={card.objectId + "/" + props.locationId + "/" + props.stack} />
         default:
           return <CardSpot key={card.id} size={props.size} />
       }0.

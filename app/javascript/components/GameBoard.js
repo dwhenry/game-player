@@ -4,7 +4,9 @@ import Location from "./Location";
 import Player from "./Player";
 import CardActions from "./CardActions";
 import Dices from "./Dices";
-import CardState from '../state/CardState';
+import {setCards} from '../state/CardState';
+
+
 
 const GameBoard = (props) =>  {
   window.gameBoardId = props.id;
@@ -12,10 +14,9 @@ const GameBoard = (props) =>  {
   const [displayCard, setDisplayCard] = useState(false);
   const [card, setCard] = useState();
   const [playerTokens, setPlayerTokens] = useState(props.player_tokens); 
-  const [cards, cardsActions] = CardState();
   const [locationParams, setlocationParams] = useState(props.location_params); 
   
-  cardsActions.setCards(props.cards);
+  setCards(props.cards);
 
   // TODO: stop these being window functions and final a better way to pass state
   window.setCard = (newCard) => {

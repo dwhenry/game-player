@@ -1,37 +1,34 @@
-import React from "react";
-import useGlobalHook from "./globalHook";
+import React from 'react';
+import { setGlobal, useGlobal } from 'reactn';
 
-const initialState = {};
+export const updateCard = (globals, event) => {
+  let fromLocationId = event.from.locationId + '-' + event.from.stack;
+  let toLocationId = event.to.locationId + '-' + event.to.stack;
 
-const actions = {
-  updateCard: (store, card, event) => {
-    let fromLocationId = event.from.locationId + '-' + event.from.stack;
-    let toLocationId = event.to.locationId + '-' + event.to.stack;
-    let fromLocation = store.state[fromLocationId];
-    let toLocation = store.state[toLocationId] || [];
+  // let [global, setGlobal] = useGlobal()
 
-    // remove it from the old location
-    fromLocation = fromLocation.filter(l => l.objectId === card.objectId)
+  let fromLocation = globals[fromLocationId];
+  let toLocation = globals[toLocationId] || [];
 
-    // add it to the new location
-    toLocation.push(card)
+  // remove it from the old location
+  let card = fromLocation.find(l => l.objectId === event.objectId)
+  fromLocation = fromLocation.filter(l => l.objectId !== event.objectId)
 
-    // store.setState({[fromLocationId]: fromLocation, [toLocationId]: toLocation})
+  // add it to the new location
+  toLocation.push(card)
 
-    console.log("updated")
-  },
+  setGlobal({[fromLocationId]: fromLocation, [toLocationId]: toLocation})
 
-  setCards: (store, cards) => {
-    let state = { order: {} }
-    cards.forEach((c) => {
-      if(state[c.locationId] == undefined) state[c.locationId] = [];
-      state[c.locationId].push(c);
-      // state[c.objectId] = c;;
-    })
-    store.setState(state)
-  }
+  console.log("updated")
 }
 
-const CardState = useGlobalHook(React, initialState, actions);
+export const setCards = (cards) => {
+  let state = { order: {} }
+  cards.forEach((c) => {
+    if(state[c.locationId] == undefined) state[c.locationId] = [];
+    state[c.locationId].push(c);
+    // state[c.objectId] = c;;
+  })
+  setGlobal(state);
+}
 
-export default CardState

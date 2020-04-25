@@ -5,6 +5,8 @@ import userEvent from '@testing-library/user-event';
 import GameBoard from '../../app/javascript/components/GameBoard'
 import { ResolvePlugin } from 'webpack';
 
+jest.useFakeTimers();
+
 describe('Playing the game', () => {
   let elem;
   let initialGameState;
@@ -77,13 +79,14 @@ describe('Playing the game', () => {
     let actual = [...document.querySelectorAll('.player__title,.location__title,.stack__name,.card__type')].map(e => e.textContent);
     let expected = [
       "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Pending - task",
+      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
       "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ];
 
     // this is just a check of the location as no card are currently visible
-    await expect(actual).toEqual(expected)
+    expect(actual).toEqual(expected)
 
     // do the polling event
+
 
     // check the page is fully updated
 
@@ -118,7 +121,7 @@ describe('Playing the game', () => {
       name: "Test 123",
       game_config_id: 'Config-111',
       cards: [
-        { id: nextUuid(), deck: 'tasks', visible: 'back', locationId: taskLocationId + '-pile', objectId: 'location:tasks:pile' }
+        { id: nextUuid(), deck: 'tasks', visible: 'back', locationId: taskLocationId + '-pile', objectId: 'location:tasks:pile', count: 10 }
       ],
       locations: [
         {
@@ -130,7 +133,6 @@ describe('Playing the game', () => {
       location_stacks: [['Backlog', 'pile'], ['Discard', 'discard'], ['Face up', 'fu_cards']],
       location_params: {
         [taskLocationId]: {
-          pile: { count: 10 },
           fu_cards: { min_cards: 2 },
         },
       },
@@ -151,55 +153,6 @@ describe('Playing the game', () => {
         [player1Id]: {cash: 0, energy: 0, sp: 0},
         [player2Id]: {cash: 0, energy: 0, sp: 0},
       }
-    }
-    
-    return {
-      id: nextUuid(),
-      name: "Test 123",
-      game_config_id: 'Config-111',
-      locations: [
-        {
-          id: nextUuid(),
-          name: 'Tasks',
-          deck: 'tasks',
-          pile: {
-            key: "deck-task-pile",
-            cards: [{id: nextUuid(), deck: 'tasks', visible: 'back'}],
-            count: 10
-          },
-          discard: {
-            key: "deck-tasks-discard", cards: [{id: nextUuid(), visible: 'slot'}], count: 0
-          },
-          fu_cards: {
-            key: "deck-tasks-fu", cards: [{id: nextUuid(), visible: 'slot'}, {id: nextUuid(), visible: 'slot'}] },
-        }
-      ],
-      players: [
-        {
-          status: "starting",
-          id: nextUuid(),
-          name: "Make me editable",
-          tokens: {cash: 0, energy: 0, sp: 0},
-          employees: [{id: nextUuid(), visible: 'slot'}],
-          backlog: [{id: nextUuid(), visible: 'slot'}],
-          hand: [{id: nextUuid(), visible: 'slot'}],
-          fu_cards: [{id: nextUuid(), visible: 'slot'}],
-          board: [{id: nextUuid(), visible: 'slot'}],
-        },
-        {
-          status: "starting",
-          id: nextUuid(),
-          name: "Player 2",
-          tokens: {cash: 0, energy: 0, sp: 0},
-          employees: [{id: nextUuid(), visible: 'slot'}],
-          backlog: [{id: nextUuid(), visible: 'slot'}],
-          hand: [{id: nextUuid(), visible: 'slot'}],
-          fu_cards: [{id: nextUuid(), visible: 'slot'}],
-          board: [{id: nextUuid(), visible: 'slot'}],
-        },
-      ],
-      log: ['......', '.......'],
-      next_action: 'debs'
     }
   }
 

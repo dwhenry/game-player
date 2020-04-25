@@ -38,20 +38,29 @@ const CardStack = (props) => {
     return result
   }
 
-  // let cards = allCards[props.locationId + '-' + props.stack] || [];
-  // console.log(cards)
-  return <DropTarget onItemDropped={itemDropped} className={"stack stack-" + props.stack} >
-    <div className="stack__name" data-testid={props.locationId + '-' + props.stack}>{props.name}</div>
-    {cards && cards.map((card) => {
-      switch(card.visible) {
-        case 'face':
-          return <CardFace key={card.id} card={card} size={props.size} count={props.count} eventId={card.objectId + "/" + props.locationId + "/" + props.stack} />
-        case 'back':
-          return <CardBack key={card.id} card={card} size={props.size} count={props.count} eventId={card.objectId + "/" + props.locationId + "/" + props.stack} />
-      }    
-    })}
-    {renderSpots(cards)}
-  </DropTarget>
+  if(cards && cards.find(card => card.visible === 'face') === undefined) {
+    let card = cards[cards.length-1];
+    // all cards are face down so group them an d just show a number
+    return <DropTarget onItemDropped={itemDropped} className={"stack stack-" + props.stack} >
+      <div className="stack__name" data-testid={props.locationId + '-' + props.stack}>{props.name}</div>
+      <CardBack key={card.id} card={card} size={props.size} count={cards.length} eventId={card.objectId + "/" + props.locationId + "/" + props.stack} />                  
+    </DropTarget>
+
+  } else {
+    return <DropTarget onItemDropped={itemDropped} className={"stack stack-" + props.stack} >
+      <div className="stack__name" data-testid={props.locationId + '-' + props.stack}>{props.name}</div>
+      {cards && cards.map((card) => {
+        switch(card.visible) {
+          case 'face':
+            return <CardFace key={card.id} card={card} size={props.size} eventId={card.objectId + "/" + props.locationId + "/" + props.stack} />
+          case 'back':
+            // TODO: work out how to render this cards on top of each other..        
+            return <CardBack key={card.id} card={card} size={props.size} eventId={card.objectId + "/" + props.locationId + "/" + props.stack} />
+        }    
+      })}
+      {renderSpots(cards)}
+    </DropTarget>
+  }
 };
 
 CardStack.propTypes = {
@@ -60,7 +69,6 @@ CardStack.propTypes = {
   cards: PropTypes.array,
   size: PropTypes.string,
   stack: PropTypes.string,
-  count: PropTypes.number,
   min_cards: PropTypes.number,
 };
 

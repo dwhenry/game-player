@@ -1,7 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
 import Token from "./Token";
-import Card from "./Card";
 import CardStack from "./CardStack";
 import { ajaxUpdate } from "../modules/utils"
 

@@ -24,7 +24,7 @@ export const CardFace = (props) => {
 
   return (
     <Drag className={"card card-" + props.card.id} onClick={handleClick} dataItem={props.eventId} >
-      <div style={{display: 'none'}} className="card__type">Visible: {props.card.name}</div>
+      <div style={{display: 'none'}} className="card__type">Visible: {props.card.name} {props.card.pending ? 'pending' : ''}</div>
       <div className={"card__element card__" + props.card.deck + "-deck card--size-" + props.size}>
         <div className="card__title">{props.card.name}</div>
         <div className="card__cost">{props.card.cost}</div>
@@ -48,7 +48,7 @@ export const CardBack = (props) => {
 
   return (
     <Drag className={"card card-" + props.card.id} onClick={handleClick} dataItem={props.eventId} >
-      <div style={{display: 'none'}} className="card__type">Hidden: {props.count}</div>
+      <div style={{display: 'none'}} className="card__type">Hidden: {props.card.pending ? 'pending' : props.count}</div>
       <div className={"card__element card__" + props.card.deck + "-deck card--face-down card--size-" + props.size}>
         <div className="card__cost">{props.count}</div>
       </div>

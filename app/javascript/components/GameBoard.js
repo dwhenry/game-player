@@ -1,11 +1,11 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import PropTypes from "prop-types"
 import Location from "./Location";
 import Player from "./Player";
 import CardActions from "./CardActions";
 import Dices from "./Dices";
 import {setCards} from '../state/CardState';
-
+import {pollEvents} from '../modules/ownership'
 
 
 const GameBoard = (props) =>  {
@@ -16,6 +16,13 @@ const GameBoard = (props) =>  {
   const [playerTokens, setPlayerTokens] = useState(props.player_tokens); 
   const [locationParams, setlocationParams] = useState(props.location_params); 
   
+  useEffect(() => {
+    const interval = setInterval(() => {
+      pollEvents();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   setCards(props.cards);
 
   // TODO: stop these being window functions and final a better way to pass state

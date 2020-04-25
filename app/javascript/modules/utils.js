@@ -44,26 +44,20 @@ export async function ajaxUpdate(data, error) {
     let json = response.json();
     window.update_board(json.locations, json.players, json.next_action);
   } 
-  // Rails.ajax({
-  //   url: '/games/' + window.game_id + '.json',
-  //   type: 'put',
-  //   beforeSend(xhr, options) {
-  //     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-  //     options.data = data;
-  //     return true
-  //   },
-  //   success: function (response, t, x) {
-  //     if (response.locations) {
-        
-  //     }
-  //   },
-  //   error: function (response) {
-  //     if (response.error) {
-  //       alert(error + response.error);
-  //       window.action_id = response.next_action;
-  //     }
-  //   },
-  // });
+}
+
+export async function getUpdates() {
+  let lastUpdateTimestamp = new Date().getTime();
+
+  const response = await fetch('/games/' + window.gameId, {
+    method: 'GET',
+    headers: {
+      "X-CSRF-Token": getCSRFToken(),
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({since: lastUpdateTimestamp}),
+  });
+  return response.json();
 }
 
 export async function takeEvent(objectId) {

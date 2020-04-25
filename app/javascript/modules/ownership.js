@@ -1,4 +1,5 @@
-import { takeEvent } from "./utils"
+import { takeEvent, getUpdates } from "./utils"
+import { object } from "prop-types";
 
 // takeOwnership
 // addPhantomEvent
@@ -27,6 +28,10 @@ const revertPhantomEvents = (objectId) => {
     // the shit has hit the fan, how did we get here????
     return;
   }
+  // revert to the first event in some way???
+
+
+
   // update the world state for the card to the initial event...
   console.log(returnEvent);
 
@@ -46,14 +51,8 @@ export function takeOwnership(event) {
   // start or maintain an event stream for the object
   // have the ability to revert the change..
 
-  if(ownershipEvents.hasOwnProperty(event.objectId)) {
-    if(ownershipEvents[event.objectId] !== 'unowned') {
-      ownershipEvents[event.objectId].push(event);
-    } else {
-      revertPhantomEvents(event.objectId)
-    }
-  } else {
-    ownershipEvents[event.objectId] = [event];
+  if(!ownershipEvents.hasOwnProperty(event.objectId)) {
+    ownershipEvents[event.objectId] = [];
     takeEvent(event.objectId).then(async (response) => {
       let json = await response.json();
       if(json.success !== true) {
@@ -62,3 +61,27 @@ export function takeOwnership(event) {
     })
   }
 };
+
+export const pollEvents = () => {
+  return setInterval(async () => {
+    let events = await getUpdates();
+    for(event in events) {
+      let eventsForObject = ownershipEvents[event.objectId];
+      if(eventsForObject === undefined) {
+        // event came from a different user so just apply them
+        // applyEvents(events)
+      } else {
+        let nextEvent = eventsForObject.shift();
+        if(nextEvent.timestamp !== event.timestamp) {
+          // well this is bad.. out events are wrong... so we need to revert them to some extent and apply these new ones...
+          // revertPhantomEvents(event.objectId);
+          // applyEvents(events)
+        } else {
+          // just realise the events locally
+          
+          // ...hmmm.... this is teh issue with have events different to state... I blame matt
+        }
+      }
+    }
+  }, 1000 * 5)
+}

@@ -12,23 +12,26 @@ export const updateCard = (globals, event) => {
 
   // remove it from the old location
   let card = fromLocation.find(l => l.objectId === event.objectId)
-  fromLocation = fromLocation.filter(l => l.objectId !== event.objectId)
+  fromLocation = fromLocation.filter(l => !(l.objectId === event.objectId && l.pos === card.pos))
 
   // add it to the new location
-  toLocation.push(card)
+  toLocation.push({...card, pending: true})
 
   setGlobal({[fromLocationId]: fromLocation, [toLocationId]: toLocation})
-
-  console.log("updated")
 }
 
 export const setCards = (cards) => {
   let state = { order: {} }
   cards.forEach((c) => {
     if(state[c.locationId] == undefined) state[c.locationId] = [];
-    state[c.locationId].push(c);
+    if(c.count) {
+      for(let i=0; i < c.count; i++) {
+        state[c.locationId].push({...c, pos: i});
+      }
+    } else {
+      state[c.locationId].push(c);
+    }
     // state[c.objectId] = c;;
   })
   setGlobal(state);
 }
-

@@ -4,6 +4,7 @@ import Location from "./Location";
 import Player from "./Player";
 import CardActions from "./CardActions";
 import Dices from "./Dices";
+import CardState from '../state/CardState';
 
 const GameBoard = (props) =>  {
   window.gameBoardId = props.id;
@@ -11,9 +12,11 @@ const GameBoard = (props) =>  {
   const [displayCard, setDisplayCard] = useState(false);
   const [card, setCard] = useState();
   const [playerTokens, setPlayerTokens] = useState(props.player_tokens); 
-  const [cards, setCards] = useState(props.cards);
+  const [cards, cardsActions] = CardState();
   const [locationParams, setlocationParams] = useState(props.location_params); 
   
+  cardsActions.setCards(props.cards);
+
   // TODO: stop these being window functions and final a better way to pass state
   window.setCard = (newCard) => {
     setCard(newCard);
@@ -40,17 +43,17 @@ const GameBoard = (props) =>  {
       <div className="row">
         <div className="four columns">
           {props.locations.map((location) => (
-            <Location key={location.id} {...location} stacks={props.location_stacks} params={locationParams[location.id]} cards={cards} />
+            <Location key={location.id} {...location} stacks={props.location_stacks} params={locationParams[location.id]} />
           ))}
         </div>
         <div className="eight columns">
           {props.players.map((player) => (
-            <Player key={player.id} {...player} stacks={props.player_stacks} tokens={playerTokens[player.id]}  cards={cards} />
+            <Player key={player.id} {...player} stacks={props.player_stacks} tokens={playerTokens[player.id]} />
           ))}
         </div>
       </div>
       <div className="fixed__top-right" style={{display: card ? 'block' : 'none'}} onClick={removeCard}>
-        <CardActions card={card}/>
+        <CardActions card={card} />
       </div>
     </div>
   );
@@ -68,6 +71,5 @@ GameBoard.propTypes = {
   players: PropTypes.array,
   player_stacks: PropTypes.array,
   player_tokens: PropTypes.object,
-
 };
 export default GameBoard

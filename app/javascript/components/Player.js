@@ -22,7 +22,7 @@ const Player = (props) => {
           <Token key="energy" playerId={props.id} name="energy" quantity={props.tokens.energy || 0}/>
           <Token key="achievement" playerId={props.id} name="sp" quantity={props.tokens.sp || 0}/>
         </div>
-        {props.stacks.map(([name, stack]) => <CardStack key={props.id + '-' + stack} stack={stack} locationId={props.id} name={name} cards={props.cards} size="small" />) }
+        {props.stacks.map(([name, stack]) => <CardStack key={props.id + '-' + stack} stack={stack} locationId={props.id} name={name} size="small" />) }
       </div>
     </div>
   );
@@ -31,7 +31,6 @@ const Player = (props) => {
 Player.propTypes = {
   id: PropTypes.string,
   name: PropTypes.string,
-  cards: PropTypes.array,
   stacks: PropTypes.array,
   tokens: PropTypes.object
 };

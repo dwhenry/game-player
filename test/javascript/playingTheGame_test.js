@@ -41,7 +41,7 @@ describe('Playing the game', () => {
     // mock getting the object ownership
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
-    let objectId = "location:" + taskId + ":pile";
+    let objectId = initialGameState.cards[0].object_id;
 
     fetchMock.post({url: '/games/' + initialGameState.id + '/ownership/' + objectId}, ownershipPromise.then(() => ({success: true})));
     
@@ -59,8 +59,8 @@ describe('Playing the game', () => {
       data: {
         // timestamp: new Date().getTime(), // as we can't get the same value that will be set in the code for this wwe will instead use partial matching
         object_id: objectId,
-        from: taskId + '-pile',
-        to: player1Id + '-hand'
+        from: { locationId: taskId, stack: 'pile' },
+        to: { locationId: player1Id, stack: 'hand' },
       }
     };
     fetchMock.patch({url: '/games/' + initialGameState.id + '/ownership/' + objectId, matchPartialBody: true, body: data}, {}, {
@@ -71,6 +71,11 @@ describe('Playing the game', () => {
       createBubbledEvent("drop", { dataTransfer: mockDataTransfer, clientX: 0, clientY: 1 })
     );
 
+    // check the local view is up to date
+
+    // do the polling event
+
+    // check the page is fully updated
 
   }); 
   xit("Can process other player card move events", () => {});
@@ -103,7 +108,7 @@ describe('Playing the game', () => {
       name: "Test 123",
       game_config_id: 'Config-111',
       cards: [
-        { id: nextUuid(), deck: 'tasks', visible: 'back', location_id: taskLocationId + '-pile' }
+        { id: nextUuid(), deck: 'tasks', visible: 'back', location_id: taskLocationId + '-pile', object_id: 'location:tasks:pile' }
       ],
       locations: [
         {

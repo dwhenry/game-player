@@ -54,7 +54,8 @@ export function takeOwnership(event) {
     }
   } else {
     ownershipEvents[event.objectId] = [event];
-    takeEvent(event.objectId).then(async  (response) => {
+    takeEvent(event.objectId).then(async (response) => {
+      console.log(response)
       let json = await response.json();
       if(json.success !== true) {
         revertPhantomEvents(event.objectId)

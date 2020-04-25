@@ -18,7 +18,6 @@ const Location = (props) => {
           return <CardStack key={props.id + '-' + stack}
                             locationId={props.id} 
                             name={name} 
-                            cards={props.cards} 
                             size="small"
                             stack={stack} 
                             {...props.params[stack]} />
@@ -31,7 +30,6 @@ const Location = (props) => {
 Location.propTypes = {
   id: PropTypes.string,
   name: PropTypes.string,
-  cards: PropTypes.array,
   deck: PropTypes.string,
   stacks: PropTypes.array,
   params: PropTypes.object,

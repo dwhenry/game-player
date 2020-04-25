@@ -67,7 +67,7 @@ export async function ajaxUpdate(data, error) {
 }
 
 export async function takeEvent(objectId) {
-  fetch('/games/' + window.gameBoardId + '/ownership/' + objectId, {
+  return fetch('/games/' + window.gameBoardId + '/ownership/' + objectId, {
     method: 'POST',
     headers: {
       "X-CSRF-Token": getCSRFToken(),
@@ -83,7 +83,7 @@ export async function postEvent(objectId, data) {
       "X-CSRF-Token": getCSRFToken(),
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify({event: 'cardMove', data: data}),
   })
 }
 

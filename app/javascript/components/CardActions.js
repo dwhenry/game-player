@@ -32,6 +32,5 @@ class CardActions extends React.Component {
 
 CardActions.propTypes = {
   card: PropTypes.object,
-  game_id: PropTypes.string,
 };
 export default CardActions

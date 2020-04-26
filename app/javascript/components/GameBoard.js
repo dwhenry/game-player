@@ -1,17 +1,22 @@
-import React, { useState } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import PropTypes from "prop-types"
 import Location from "./Location";
 import Player from "./Player";
 import CardActions from "./CardActions";
 import Dices from "./Dices";
+import { setCards, pollEvents } from '../state/CardState';
+
+setInterval(pollEvents, 5000);
 
 const GameBoard = (props) =>  {
+  window.gameBoardId = props.id;
 
   const [displayCard, setDisplayCard] = useState(false);
   const [card, setCard] = useState();
-  const [players, setPlayers] = useState(props.players);
-  const [locations, setLocations] = useState(props.locations);
-  const [nextAction, setNextAction] = useState(props.next_action);
+  const [playerTokens, setPlayerTokens] = useState(props.player_tokens); 
+  const [locationParams, setlocationParams] = useState(props.location_params); 
+  
+  setCards(props.cards);
 
   // TODO: stop these being window functions and final a better way to pass state
   window.setCard = (newCard) => {
@@ -22,7 +27,7 @@ const GameBoard = (props) =>  {
   window.update_board = (locations, players, next_action) => {
     setLocations(locations);
     setPlayers(players);
-    window.action_id = nextAction;
+    window.actionId = nextAction;
   };
 
   function removeCard(event) {
@@ -31,37 +36,41 @@ const GameBoard = (props) =>  {
   }
 
   return (
-    <div data-testid={nextAction}>
+    <div>
       <div className="game__title">{props.name}</div>
       <div className="row">
           <Dices />
       </div>
       <div className="row">
         <div className="four columns">
-          {locations.map((location) => (
-            <Location key={location.id} {...location} location={location.id} />
+          {props.locations.map((location) => (
+            <Location key={location.id} {...location} stacks={props.location_stacks} params={locationParams[location.id]} />
           ))}
         </div>
         <div className="eight columns">
-          {players.map((player) => (
-            <Player key={player.id} {...player} />
+          {props.players.map((player) => (
+            <Player key={player.id} {...player} stacks={props.player_stacks} tokens={playerTokens[player.id]} />
           ))}
         </div>
       </div>
       <div className="fixed__top-right" style={{display: card ? 'block' : 'none'}} onClick={removeCard}>
-        <CardActions card={card} game_id={props.id} />
+        <CardActions card={card} />
       </div>
     </div>
   );
 }
 
 GameBoard.propTypes = {
+  id: PropTypes.string,
   key: PropTypes.string,
   name: PropTypes.string,
-  game_id: PropTypes.string,
+  gameId: PropTypes.string,
+  cards: PropTypes.array,
   locations: PropTypes.array,
+  location_stacks: PropTypes.array,
+  location_params: PropTypes.object,
   players: PropTypes.array,
-  log: PropTypes.array,
-  next_action: PropTypes.string
+  player_stacks: PropTypes.array,
+  player_tokens: PropTypes.object,
 };
 export default GameBoard

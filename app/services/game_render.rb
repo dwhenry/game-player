@@ -16,7 +16,75 @@ class GameRender
       log: ['......', '.......'],
       next_action: game.next_action
     }
-
+    #
+    # game.cards.flat_map do |stack|
+    #
+    #   cards = stack.slice('pile', 'discard', 'fu', 'employees', 'backlog', 'hand','board')
+    #   cards.map do |id = nil, card_id = nil, round = nil|
+    #     card = card_id && lookup_card(card_id)
+    #     next unless card
+    #
+    #     if display_card
+    #       card.merge(
+    #         'id' => id,
+    #         'visible' => 'face',
+    #         round: round,
+    #         type: stack[:type],
+    #         owner: stack[:id]
+    #       )
+    #     else
+    #       {
+    #         id: id,
+    #         deck: card['deck'],
+    #         visible: 'back'
+    #       }
+    #     end
+    #   end
+    # end
+    #
+    # {
+    #   id: game.id,
+    #   name: "Test #{game.id.split('-').first}",
+    #   game_config_id: game.game_config_id,
+    #   next_action: game.next_action,
+    #   cards: [],
+    #   config: {
+    #     deck: ['pile', 'discard', 'fu'],
+    #     player: ['employees', 'backlog', 'hand', 'fu', 'board'],
+    #   },
+    #   owners: [
+    #     {
+    #       col_size: 4,
+    #       list: [
+    #         {
+    #           id: 'task',
+    #           name: 'tasks',
+    #           type: 'deck'
+    #         },
+    #         {
+    #           id: 'employee',
+    #           name: 'employees',
+    #           type: 'deck'
+    #         },
+    #         {
+    #           id: 'achievement',
+    #           name: 'achievements',
+    #           type: 'deck'
+    #         },
+    #       ]
+    #     },
+    #     {
+    #       col_size: 8,
+    #       list: [
+    #         {
+    #           id: '<player_id>',
+    #           name: '<player_id>',
+    #           type: 'player'
+    #         },
+    #       ]
+    #     },
+    #   ]
+    # }
   end
 
   def locations

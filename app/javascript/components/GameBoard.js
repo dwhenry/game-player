@@ -4,9 +4,9 @@ import Location from "./Location";
 import Player from "./Player";
 import CardActions from "./CardActions";
 import Dices from "./Dices";
-import { setCards } from '../state/CardState';
-import { useGlobal } from 'reactn'
-import { pollEvents } from '../modules/ownership'
+import { setCards, pollEvents } from '../state/CardState';
+
+setInterval(pollEvents, 5000);
 
 const GameBoard = (props) =>  {
   window.gameBoardId = props.id;
@@ -17,17 +17,6 @@ const GameBoard = (props) =>  {
   const [locationParams, setlocationParams] = useState(props.location_params); 
   
   setCards(props.cards);
-
-  const [globals, setGlobals] = useGlobal();
-  let globalsRef = useRef(globals);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log(globalsRef.current)
-      pollEvents(globalsRef);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
 
   // TODO: stop these being window functions and final a better way to pass state
   window.setCard = (newCard) => {

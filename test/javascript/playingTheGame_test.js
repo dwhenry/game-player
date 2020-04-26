@@ -4,7 +4,7 @@ import { render, cleanup, waitForElement, waitFor, act, fireEvent, screen } from
 import userEvent from '@testing-library/user-event';
 import GameBoard from '../../app/javascript/components/GameBoard'
 import { ResolvePlugin } from 'webpack';
-import { events } from '../../app/javascript/modules/ownership'
+import { events } from '../../app/javascript/state/CardState'
 
 jest.useFakeTimers();
 
@@ -57,7 +57,7 @@ describe('Playing the game', () => {
     // we resolve the promise immediately in this test case
     ownershipPromiseResolver();
 
-    let event = {
+    let mockDropEvent = {
       event: 'cardMove', 
       data: {
         // timestamp: new Date().getTime(), // as we can't get the same value that will be set in the code for this wwe will instead use partial matching
@@ -68,7 +68,7 @@ describe('Playing the game', () => {
     };
 
     // mock the event move call to the backend
-    fetchMock.patch({url: '/games/' + initialGameState.id + '/ownership/' + objectId, matchPartialBody: true, body: event}, {}, {
+    fetchMock.patch({url: '/games/' + initialGameState.id + '/ownership/' + objectId, matchPartialBody: true, body: mockDropEvent}, {}, {
       delay: 10, // fake a slow network
     });
 
@@ -87,23 +87,23 @@ describe('Playing the game', () => {
     expect(actual).toEqual(expected)
 
     let lastUpdate = 0;
-    let eventWithCard = {
+    let mockEventsResponse = {
       events: [
         { ...events(objectId)[0], card: {
           ...(initialGameState.cards[0]), 
           visible: 'face', 
           locationID: player1Id + '-hand', 
-          objectId: 'card:' + 
-          cardId + ':' ,
+          objectId: 'card:' + cardId + ':' ,
           name: 'Test Card'
         } }
       ]
     }
 
-    fetchMock.get({url: '/games/' + initialGameState.id + '/events', body: { since: lastUpdate }}, eventWithCard);
+    fetchMock.get({url: '/games/' + initialGameState.id + '/events', body: { since: lastUpdate }}, mockEventsResponse);
 
     // do the polling event
-    jest.runOnlyPendingTimers();
+    // jest.runOnlyPen
+    dingTimers();
 
     // check the page is fully updated
     let actual2 = [...document.querySelectorAll('.player__title,.location__title,.stack__name,.card__type')].map(e => e.textContent);

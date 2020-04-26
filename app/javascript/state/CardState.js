@@ -1,46 +1,133 @@
 import React from 'react';
-import { setGlobal, useGlobal } from 'reactn';
+import { takeEvent, getUpdates } from '../modules/utils'
 
-export const updateCard = (globals, event) => {
+let cardsByStack = {};
+
+export const getCards = (stackId) => cardsByStack[stackId]
+
+export const updateCard = (event) => {
   let fromLocationId = event.from.locationId + '-' + event.from.stack;
   let toLocationId = event.to.locationId + '-' + event.to.stack;
 
-  // let [global, setGlobal] = useGlobal()
+  let fromLocation = cardsByStack[fromLocationId];
+  let toLocation = cardsByStack[toLocationId] || [];
 
-  let fromLocation = globals[fromLocationId];
-  let toLocation = globals[toLocationId] || [];
-
-  console.log(event)
-  console.log(globals)
  // remove it from the old location
   let card = fromLocation.find(l => l.objectId === event.objectId)
   fromLocation = fromLocation.filter(l => !(l.objectId === event.objectId && l.pos === card.pos))
 
-  // toLocation = toLocation.filter(l => !(l.objectId === event.objectId && l.pos === card.pos))
   // add it to the new location
-  toLocation.push(event.card || {...card, pending: pending})
+  toLocation = toLocation.filter(l => !(l.objectId === event.objectId && l.pos === card.pos))
+  toLocation.push(event.card || {...card, pending: !!event.pending})
 
-  setGlobal({[fromLocationId]: fromLocation, [toLocationId]: toLocation})
+  cardsByStack[fromLocationId] = fromLocation;
+  cardsByStack[toLocationId] = toLocation;
 }
 
 export const setCards = (cards) => {
-  let state = {};
   cards.forEach((c) => {
-    if(state[c.locationId] == undefined) state[c.locationId] = [];
+    if(cardsByStack[c.locationId] == undefined) cardsByStack[c.locationId] = [];
     if(c.count) {
       for(let i=0; i < c.count; i++) {
-        state[c.locationId].push({...c, pos: i});
+        cardsByStack[c.locationId].push({...c, pos: i});
       }
     } else {
-      state[c.locationId].push(c);
+      cardsByStack[c.locationId].push(c);
     }
-    // state[c.objectId] = c;;
   })
-  setGlobal(state);
 }
 
-export const applyEvents = (globals, events) => {
+
+// takeOwnership
+// addPhantomEvent
+// revertPhantomEvents
+// pollEventLog 
+let ownershipEvents = {}
+
+
+/**
+ * dragStart on card 
+ *   send http request to take ownership and mark as owned in local state
+ * http request returns with success or fail
+ *   if fail
+ *     
+ */
+
+/*
+Lifecycles:
+a: simple ownershiip: get ownership... log move events... realise move events
+b: fail early: get ownership... fail http ownership request.. release card.. ensuring actual owner has ownership in UI
+c: fail late: get ownership... log move events... fail http ownership request.. release card..  revert move events.. ensuring actual owner has ownership in UI
+*/
+const revertPhantomEvents = (objectId) => {
+  let [returnEvent, ...events] = ownershipEvents[objectId];
+  if(returnEvent === undefined) {
+    // the shit has hit the fan, how did we get here????
+    return;
+  }
+  // revert to the first event in some way???
+
+
+
+  // update the world state for the card to the initial event...
+  console.log(returnEvent);
+
+}
+
+export function addEvent(objectId, event) {
+  let events = ownershipEvents[objectId];
+  if(events === undefined) {
+    return false
+  }
+  events.push(event);
+  return true
+}
+
+export function takeOwnership(event) {
+  // make card locally as owned
+  // start or maintain an event stream for the object
+  // have the ability to revert the change..
+
+  if(!ownershipEvents.hasOwnProperty(event.objectId)) {
+    ownershipEvents[event.objectId] = [];
+    takeEvent(event.objectId).then(async (response) => {
+      let json = await response.json();
+      if(json.success !== true) {
+        revertPhantomEvents(event.objectId)
+      }
+    })
+  }
+};
+
+// this is exposed for testing only
+export const events = (objectId) => {
+  return ownershipEvents[objectId];
+}
+
+export const pollEvents = async () => {
+  let events = (await getUpdates()).events;
+  let lastEvent = events[events.length - 1];
+
   events.forEach((event) => {
-    updateCard(globals, event)
+    let eventsForObject = ownershipEvents[event.objectId];
+    if(eventsForObject === undefined) {
+      // event came from a different user so just apply them
+      // applyEvents(events)
+    } else {
+      let nextEvent = eventsForObject.shift();
+      if(nextEvent.timestamp !== event.timestamp) {
+        // well this is bad.. our events are wrong or out of sequence... so we need to revert them to some extent and apply these new ones...
+        // revertPhantomEvents(event.objectId);
+        // applyEvents(events)
+      } else {
+        // just realise the events locally
+        if(event === lastEvent) {
+          console.log('best')
+          // set the state to not be pending and update the card object
+          updateCard(event)
+        }
+        // else ignore the event as we still have pending
+      }
+    }
   })
 }

@@ -3,14 +3,9 @@ import PropTypes from "prop-types"
 import {CardFace, CardBack, CardSpot} from './Card'
 import DropTarget from "./DropTarget";
 import { postEvent } from "../modules/utils"
-import { hasEvent, addEvent } from "../modules/ownership"
-import {updateCard} from '../state/CardState';
-import {useGlobal} from 'reactn'
+import {addEvent, updateCard, getCards} from '../state/CardState';
 
 const CardStack = (props) => {
-  // const [allCards, cardsActions] = CardState();
-  let [cards, setCards] = useGlobal(props.locationId + '-' + props.stack);
-  let [globals, setGlobals] = useGlobal();
   // const [cards, setCards] = useState()
   // const [cardIds, setCardIds] = useState({ids: 'pending'})
   const itemDropped = (eventId) => {
@@ -25,7 +20,7 @@ const CardStack = (props) => {
     if(addEvent(objectId, event)) {
       postEvent(objectId, event);
       // move the card in the stack
-      updateCard(globals, event)
+      updateCard({...event, pending: true})
     }
   };
 
@@ -37,6 +32,8 @@ const CardStack = (props) => {
     }
     return result
   }
+
+  let cards = getCards(props.locationId + '-' + props.stack)
 
   if(cards && cards.find(card => card.visible === 'face') === undefined) {
     let card = cards[cards.length-1];

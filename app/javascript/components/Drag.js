@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 // import * as dropEffects from "./dropEffects";
-import {takeOwnership} from "../modules/ownership"
+import {takeOwnership} from "../state/CardState"
 
 const draggingStyle = {
     opacity: 0.25,

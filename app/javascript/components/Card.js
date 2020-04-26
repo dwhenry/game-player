@@ -10,8 +10,8 @@ export const CardFace = (props) => {
   };
 
   function renderOverlay() {
-    if(this.props.overlay !== undefined) {
-      return <div className="card__overlay">{this.props.overlay}</div>
+    if(props.overlay !== undefined) {
+      return <div className="card__overlay">{props.overlay}</div>
     }
   }
 

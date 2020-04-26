@@ -37,11 +37,11 @@ const CardStack = (props) => {
 
   useEffect(() => {
     let watchCallback = (cardsByStack) => {
-      setCards(cardsByStack[props.locationId + '-' + props.stack])
+      setCards(cards)
     }
     
-    watch(watchCallback)
-    return () => { unWatch(watchCallback) }
+    watch(props.locationId + '-' + props.stack, watchCallback)
+    return () => { unWatch(props.locationId + '-' + props.stack, watchCallback) }
   });
 
   if(cards && cards.find(card => card.visible === 'face') === undefined) {

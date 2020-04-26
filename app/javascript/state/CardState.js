@@ -2,16 +2,17 @@ import React from 'react';
 import { takeEvent, getUpdates } from '../modules/utils'
 
 let cardsByStack = {};
-let watchers = [];
+let watchers = {};
 
 export const getCards = (stackId) => cardsByStack[stackId]
 
-export const watch = (w) => {
-  watchers.push(w);
-  w(cardsByStack);
+export const watch = (stackId, w) => {
+  watcher[stackId] = watcher[stackId] || [];
+  watchers[stackId].push(w);
+  w(cardsByStack[stackId]);
 }
 
-export const unWatch = (w) => watchers = watchers.filter(watcher => watcher != w);
+export const unWatch = (stackId, w) => watchers[stackId] = watchers[stackId].filter(watcher => watcher != w);
 
 export const updateCard = (event) => {
   let fromLocationId = event.from.locationId + '-' + event.from.stack;
@@ -31,7 +32,8 @@ export const updateCard = (event) => {
   cardsByStack[fromLocationId] = fromLocation;
   cardsByStack[toLocationId] = toLocation;
 
-  watchers.forEach((watcher) => watcher(cardsByStack))
+  watchers[fromLocationId].forEach((watcher) => watcher(cardsByStack[fromLocationId]))
+  watchers[toLocationId].forEach((watcher) => watcher(cardsByStack[toLocationId]))
 }
 
 export const setCards = (cards) => {

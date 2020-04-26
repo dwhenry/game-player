@@ -1,9 +1,9 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import PropTypes from "prop-types"
 import {CardFace, CardBack, CardSpot} from './Card'
 import DropTarget from "./DropTarget";
 import { postEvent } from "../modules/utils"
-import {addEvent, updateCard, getCards} from '../state/CardState';
+import {addEvent, updateCard, getCards, watch, unWatch} from '../state/CardState';
 
 const CardStack = (props) => {
   // const [cards, setCards] = useState()
@@ -33,7 +33,16 @@ const CardStack = (props) => {
     return result
   }
 
-  let cards = getCards(props.locationId + '-' + props.stack)
+  const [cards, setCards] = useState();
+
+  useEffect(() => {
+    let watchCallback = (cardsByStack) => {
+      setCards(cardsByStack[props.locationId + '-' + props.stack])
+    }
+    
+    watch(watchCallback)
+    return () => { unWatch(watchCallback) }
+  });
 
   if(cards && cards.find(card => card.visible === 'face') === undefined) {
     let card = cards[cards.length-1];

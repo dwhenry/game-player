@@ -2,8 +2,16 @@ import React from 'react';
 import { takeEvent, getUpdates } from '../modules/utils'
 
 let cardsByStack = {};
+let watchers = [];
 
 export const getCards = (stackId) => cardsByStack[stackId]
+
+export const watch = (w) => {
+  watchers.push(w);
+  w(cardsByStack);
+}
+
+export const unWatch = (w) => watchers = watchers.filter(watcher => watcher != w);
 
 export const updateCard = (event) => {
   let fromLocationId = event.from.locationId + '-' + event.from.stack;
@@ -12,16 +20,18 @@ export const updateCard = (event) => {
   let fromLocation = cardsByStack[fromLocationId];
   let toLocation = cardsByStack[toLocationId] || [];
 
- // remove it from the old location
+  // remove it from the old location
   let card = fromLocation.find(l => l.objectId === event.objectId)
-  fromLocation = fromLocation.filter(l => !(l.objectId === event.objectId && l.pos === card.pos))
+  fromLocation = fromLocation.filter(l => l.objectId !== event.objectId)
 
   // add it to the new location
-  toLocation = toLocation.filter(l => !(l.objectId === event.objectId && l.pos === card.pos))
+  toLocation = toLocation.filter(l => l.objectId !== event.objectId)
   toLocation.push(event.card || {...card, pending: !!event.pending})
 
   cardsByStack[fromLocationId] = fromLocation;
   cardsByStack[toLocationId] = toLocation;
+
+  watchers.forEach((watcher) => watcher(cardsByStack))
 }
 
 export const setCards = (cards) => {
@@ -29,7 +39,7 @@ export const setCards = (cards) => {
     if(cardsByStack[c.locationId] == undefined) cardsByStack[c.locationId] = [];
     if(c.count) {
       for(let i=0; i < c.count; i++) {
-        cardsByStack[c.locationId].push({...c, pos: i});
+        cardsByStack[c.locationId].push({...c, objectId: c.objectId + "-" + i});
       }
     } else {
       cardsByStack[c.locationId].push(c);
@@ -69,8 +79,7 @@ const revertPhantomEvents = (objectId) => {
 
 
 
-  // update the world state for the card to the initial event...
-  console.log(returnEvent);
+  // update the world state for the card to the initial event..
 
 }
 

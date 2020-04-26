@@ -4,7 +4,7 @@ import { render, cleanup, waitForElement, waitFor, act, fireEvent, screen } from
 import userEvent from '@testing-library/user-event';
 import GameBoard from '../../app/javascript/components/GameBoard'
 import { ResolvePlugin } from 'webpack';
-import { events } from '../../app/javascript/state/CardState'
+import { events, pollEvents } from '../../app/javascript/state/CardState'
 
 jest.useFakeTimers();
 
@@ -44,7 +44,7 @@ describe('Playing the game', () => {
     // mock getting the object ownership
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
-    let objectId = initialGameState.cards[0].objectId;
+    let objectId = initialGameState.cards[0].objectId + '-9';
 
     fetchMock.post({url: '/games/' + initialGameState.id + '/ownership/' + objectId}, ownershipPromise.then(() => ({success: true})));
     
@@ -102,8 +102,9 @@ describe('Playing the game', () => {
     fetchMock.get({url: '/games/' + initialGameState.id + '/events', body: { since: lastUpdate }}, mockEventsResponse);
 
     // do the polling event
-    // jest.runOnlyPen
-    dingTimers();
+    jest.runOnlyPendingTimers();
+    
+    await act(pollEvents)
 
     // check the page is fully updated
     let actual2 = [...document.querySelectorAll('.player__title,.location__title,.stack__name,.card__type')].map(e => e.textContent);

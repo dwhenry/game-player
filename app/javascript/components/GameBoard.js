@@ -13,8 +13,7 @@ const GameBoard = (props) =>  {
 
   const [displayCard, setDisplayCard] = useState(false);
   const [card, setCard] = useState();
-  const [playerTokens, setPlayerTokens] = useState(props.player_tokens); 
-  const [locationParams, setlocationParams] = useState(props.location_params); 
+  const [params, setParams] = useState(props.params); 
   
   setCards(props.cards);
 
@@ -43,13 +42,13 @@ const GameBoard = (props) =>  {
       </div>
       <div className="row">
         <div className="four columns">
-          {props.locations.map((location) => (
-            <Location key={location.id} {...location} stacks={props.location_stacks} params={locationParams[location.id]} />
+          {props.locations.filter(l => l.type == 'deck').map((location) => (
+            <Location key={location.id} {...location} stacks={props.stacks['deck']} params={params[location.id]} />
           ))}
         </div>
         <div className="eight columns">
-          {props.players.map((player) => (
-            <Player key={player.id} {...player} stacks={props.player_stacks} tokens={playerTokens[player.id]} />
+          {props.locations.filter(l => l.type === 'player').map((player) => (
+            <Player key={player.id} {...player} stacks={props.stacks['player']} tokens={params[player.id]} />
           ))}
         </div>
       </div>
@@ -67,10 +66,7 @@ GameBoard.propTypes = {
   gameId: PropTypes.string,
   cards: PropTypes.array,
   locations: PropTypes.array,
-  location_stacks: PropTypes.array,
-  location_params: PropTypes.object,
-  players: PropTypes.array,
-  player_stacks: PropTypes.array,
-  player_tokens: PropTypes.object,
+  stacks: PropTypes.object,
+  params: PropTypes.object,
 };
 export default GameBoard

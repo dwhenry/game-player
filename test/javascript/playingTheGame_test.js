@@ -36,7 +36,7 @@ describe('Playing the game', () => {
   xit("Can edit your player name", () => {});
   it("Can move cards around", async () => {
     const cardId = initialGameState.cards[0].id;
-    const player1Id = initialGameState.players[0].id;
+    const player1Id = initialGameState.locations[1].id;
     const taskId = initialGameState.locations[0].id;
     let startingNode = document.querySelector(".card-" + cardId);
     let endingNode = elem.getByTestId(player1Id + '-hand');
@@ -146,35 +146,41 @@ describe('Playing the game', () => {
       name: "Test 123",
       game_config_id: 'Config-111',
       cards: [
-        { id: nextUuid(), deck: 'tasks', visible: 'back', stackId: taskLocationId + '-pile', objectId: 'location:tasks:pile', count: 10 }
+        { 
+          id: nextUuid(),
+          deck: 'tasks',
+          visible: 'back',
+          stackId: taskLocationId + '-pile',
+          objectId: 'location:tasks:pile',
+          count: 10
+        }
       ],
       locations: [
         {
           id: taskLocationId,
           name: 'Tasks',
           deck: 'tasks',
-        }
-      ],
-      location_stacks: [['Backlog', 'pile'], ['Discard', 'discard'], ['Face up', 'fu_cards']],
-      location_params: {
-        [taskLocationId]: {
-          fu_cards: { min_cards: 2 },
+          type: 'deck',
         },
-      },
-      players: [
         {
           status: "starting",
           id: player1Id,
           name: "Make me editable",
+          type: 'player',
         },
         {
           status: "starting",
           id: player2Id,
           name: "Player 2",
+          type: 'player',
         },
       ],
-      player_stacks: [['Backlog', 'pile'], ['Board', 'board'], ['Face up', 'fu_cards'], ['Staff', 'employees'], ['Hand', 'hand']],
-      player_tokens: {
+      stacks: {
+        deck: [['Backlog', 'pile'], ['Discard', 'discard'], ['Face up', 'fu_cards']],
+        player: [['Backlog', 'pile'], ['Board', 'board'], ['Face up', 'fu_cards'], ['Staff', 'employees'], ['Hand', 'hand']],
+      },
+      params: {
+        [taskLocationId]: { fu_cards: { min_cards: 2 } },
         [player1Id]: {cash: 0, energy: 0, sp: 0},
         [player2Id]: {cash: 0, energy: 0, sp: 0},
       }

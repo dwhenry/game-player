@@ -21,7 +21,7 @@ const Drag = props => {
 
     const startDrag = ev => {
         setIsDragging(true);
-        let [objectId, locationId, stack] = props.dataItem.split("/");
+        let [objectId, locationId, stack] = props.dataItem;
         takeOwnership({objectId: objectId})
         ev.dataTransfer.setData("drag-item", props.dataItem);
         ev.dataTransfer.effectAllowed = props.dropEffect;
@@ -33,14 +33,19 @@ const Drag = props => {
     const dragEnd = () => setIsDragging(false);
 
     return (
-        <div className={props.className} onClick={props.onClick} style={isDragging ? draggingStyle : {}} draggable onDragStart={startDrag} onDragEnd={dragEnd}>
+        <div className={props.className}
+             onClick={props.onClick}
+             style={isDragging ? draggingStyle : {}}
+             draggable
+             onDragStart={startDrag}
+             onDragEnd={dragEnd}>
             {props.children}
         </div>
     );
 };
 
 Drag.propTypes = {
-    dataItem: PropTypes.string.isRequired,
+    dataItem: PropTypes.array.isRequired,
     dragImage: PropTypes.string,
     dropEffect: PropTypes.string,
     className: PropTypes.string,

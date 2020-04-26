@@ -8,9 +8,7 @@ import {addEvent, updateCard, getCards, watch, unWatch} from '../state/CardState
 const CardStack = (props) => {
   // const [cards, setCards] = useState()
   // const [cardIds, setCardIds] = useState({ids: 'pending'})
-  const itemDropped = (eventId) => {
-    let [objectId, fromLocationId, fromStack] = eventId.split("/");
-
+  const itemDropped = ([objectId, fromLocationId, fromStack]) => {
     let event = {
       objectId: objectId,
       from: { locationId: fromLocationId, stack: fromStack },
@@ -49,7 +47,7 @@ const CardStack = (props) => {
     // all cards are face down so group them an d just show a number
     return <DropTarget onItemDropped={itemDropped} className={"stack stack-" + props.stack} >
       <div className="stack__name" data-testid={props.locationId + '-' + props.stack}>{props.name}</div>
-      <CardBack key={card.id} card={card} size={props.size} count={cards.length} eventId={card.objectId + "/" + props.locationId + "/" + props.stack} />                  
+      <CardBack key={card.id} card={card} size={props.size} count={cards.length} dragEventId={[card.objectId, props.locationId, props.stack]} />
     </DropTarget>
 
   } else {
@@ -58,10 +56,10 @@ const CardStack = (props) => {
       {cards && cards.map((card) => {
         switch(card.visible) {
           case 'face':
-            return <CardFace key={card.id} card={card} size={props.size} eventId={card.objectId + "/" + props.locationId + "/" + props.stack} />
+            return <CardFace key={card.id} card={card} size={props.size} dragEventId={[card.objectId, props.locationId, props.stack]} />
           case 'back':
             // TODO: work out how to render this cards on top of each other..        
-            return <CardBack key={card.id} card={card} size={props.size} eventId={card.objectId + "/" + props.locationId + "/" + props.stack} />
+            return <CardBack key={card.id} card={card} size={props.size} dragEventId={[card.objectId, props.locationId, props.stack]} />
         }    
       })}
       {renderSpots(cards)}

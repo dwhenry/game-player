@@ -36,7 +36,7 @@ const CardStack = (props) => {
   const [cards, setCards] = useState();
 
   useEffect(() => {
-    let watchCallback = (cardsByStack) => {
+    let watchCallback = (cards) => {
       setCards(cards)
     }
     

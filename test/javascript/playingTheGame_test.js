@@ -146,7 +146,7 @@ describe('Playing the game', () => {
       name: "Test 123",
       game_config_id: 'Config-111',
       cards: [
-        { id: nextUuid(), deck: 'tasks', visible: 'back', locationId: taskLocationId + '-pile', objectId: 'location:tasks:pile', count: 10 }
+        { id: nextUuid(), deck: 'tasks', visible: 'back', stackId: taskLocationId + '-pile', objectId: 'location:tasks:pile', count: 10 }
       ],
       locations: [
         {

@@ -7,44 +7,45 @@ let watchers = {};
 export const getCards = (stackId) => cardsByStack[stackId]
 
 export const watch = (stackId, w) => {
-  watcher[stackId] = watcher[stackId] || [];
+  watchers[stackId] = watchers[stackId] || [];
   watchers[stackId].push(w);
+
   w(cardsByStack[stackId]);
 }
 
 export const unWatch = (stackId, w) => watchers[stackId] = watchers[stackId].filter(watcher => watcher != w);
 
 export const updateCard = (event) => {
-  let fromLocationId = event.from.locationId + '-' + event.from.stack;
-  let toLocationId = event.to.locationId + '-' + event.to.stack;
+  let fromStackId = event.from.locationId + '-' + event.from.stack;
+  let toStackId = event.to.locationId + '-' + event.to.stack;
 
-  let fromLocation = cardsByStack[fromLocationId];
-  let toLocation = cardsByStack[toLocationId] || [];
+  let fromStack = cardsByStack[fromStackId];
+  let toStack = cardsByStack[toStackId] || [];
 
   // remove it from the old location
-  let card = fromLocation.find(l => l.objectId === event.objectId)
-  fromLocation = fromLocation.filter(l => l.objectId !== event.objectId)
+  let card = fromStack.find(l => l.objectId === event.objectId)
+  fromStack = fromStack.filter(l => l.objectId !== event.objectId)
 
   // add it to the new location
-  toLocation = toLocation.filter(l => l.objectId !== event.objectId)
-  toLocation.push(event.card || {...card, pending: !!event.pending})
+  toStack = toStack.filter(l => l.objectId !== event.objectId)
+  toStack.push(event.card || {...card, pending: !!event.pending})
 
-  cardsByStack[fromLocationId] = fromLocation;
-  cardsByStack[toLocationId] = toLocation;
+  cardsByStack[fromStackId] = fromStack;
+  cardsByStack[toStackId] = toStack;
 
-  watchers[fromLocationId].forEach((watcher) => watcher(cardsByStack[fromLocationId]))
-  watchers[toLocationId].forEach((watcher) => watcher(cardsByStack[toLocationId]))
+  watchers[fromStackId].forEach((watcher) => watcher(cardsByStack[fromStackId]))
+  watchers[toStackId].forEach((watcher) => watcher(cardsByStack[toStackId]))
 }
 
 export const setCards = (cards) => {
   cards.forEach((c) => {
-    if(cardsByStack[c.locationId] == undefined) cardsByStack[c.locationId] = [];
+    if(cardsByStack[c.stackId] == undefined) cardsByStack[c.stackId] = [];
     if(c.count) {
       for(let i=0; i < c.count; i++) {
-        cardsByStack[c.locationId].push({...c, objectId: c.objectId + "-" + i});
+        cardsByStack[c.stackId].push({...c, objectId: c.objectId + "-" + i});
       }
     } else {
-      cardsByStack[c.locationId].push(c);
+      cardsByStack[c.stackId].push(c);
     }
   })
 }

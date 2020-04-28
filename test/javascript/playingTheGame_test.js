@@ -4,7 +4,7 @@ import { render, cleanup, waitForElement, waitFor, act, fireEvent, screen } from
 import userEvent from '@testing-library/user-event';
 import GameBoard from '../../app/javascript/components/GameBoard'
 import { ResolvePlugin } from 'webpack';
-import { events, pollEvents } from '../../app/javascript/state/CardState'
+import { events, pollEvents, getCards } from '../../app/javascript/state/CardState'
 
 jest.useFakeTimers();
 
@@ -31,16 +31,14 @@ describe('Playing the game', () => {
       "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
   });
 
-  xit("Can edit your player name", () => {});
   it("Can move cards around", async () => {
-    // mock getting the object ownership
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
 
     let objectId = pickupCard(0, ownershipPromise)
 
     // we resolve the promise immediately in this test case
-    ownershipPromiseResolver({success: true});
+    ownershipPromiseResolver({success: true, objectId: objectId});
 
     dropCard(
       objectId, 
@@ -66,7 +64,7 @@ describe('Playing the game', () => {
     let card = initialGameState.cards[0]
     let mockedEventResponse = {
       events: [{
-        objectId: card.objectId + '-9',
+        objectId: getCards(card.stackId).find(c => c.id === card.id).objectId,
         from: { locationId: initialGameState.locations[0].id, stack: 'pile' },
         to: { locationId: initialGameState.locations[2].id, stack: 'hand' },
         timestamp: new Date().getTime(),
@@ -91,8 +89,34 @@ describe('Playing the game', () => {
       "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card", ]);
   });
 
-  xit("Can reject your card move if it has a conflict on the server", () => {});
+  it("Rejecting ownership before you drop the card should just ignore the card drop", async () => {
+    let ownershipPromiseResolver;
+    let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
+
+    let objectId = pickupCard(0, ownershipPromise)
+
+    // we did get ownership this time around
+    ownershipPromiseResolver({success: false, objectId: objectId});
+
+    // we need to wait for all pormises to be resolved
+    await new Promise(setImmediate)
+
+    dropCard(
+      objectId, 
+      { locationId: initialGameState.locations[0].id, stack: 'pile' }, 
+      { locationId: initialGameState.locations[1].id, stack: 'hand' });
+
+    // check the local view is up to date
+    matchPageState([
+      "Tasks",                    "Backlog", "Hidden: 10", "Discard", "None", "Face up", "None", "None",
+      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
+      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+
+    // it should have a log somewhere.....
+  });
+
   xit("Alerts when the game has lagged to much", () => {});
+  xit("Can edit your player name", () => {});
 
   const matchPageState = (expectedState) => {
     let actual = [...document.querySelectorAll('.player__title,.location__title,.stack__name,.card__type')].map(e => e.textContent);
@@ -107,7 +131,7 @@ describe('Playing the game', () => {
     if(response) {
       mockEventsResponse = response;
     } else {
-      let realObjectId = objectId.replace(/-\d+/, ''); // drop position element for face down card stacks
+      let realObjectId = objectId.replace(/-[^-]+$/, ''); // drop position element for face down card stacks
       let card = initialGameState.cards.find(c => c.objectId === realObjectId)
   
       mockEventsResponse = {
@@ -134,9 +158,10 @@ describe('Playing the game', () => {
   }
 
   const pickupCard = (cardPos, ownershipPromise) => {
-    const cardId = initialGameState.cards[cardPos].id;
-    let startingNode = document.querySelector(".card-" + cardId);
-    let objectId = initialGameState.cards[0].objectId + '-9';
+    const card = initialGameState.cards[cardPos];
+    let startingNode = document.querySelector(".card-" + card.id);
+    let cards = getCards(card.stackId)
+    let objectId = cards[cards.length - 1].objectId;
 
     fetchMock.post({url: '/games/' + initialGameState.id + '/ownership/' + objectId}, ownershipPromise);
     

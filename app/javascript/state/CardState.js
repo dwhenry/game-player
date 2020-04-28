@@ -42,7 +42,7 @@ export const setCards = (cards) => {
     if(cardsByStack[c.stackId] == undefined) cardsByStack[c.stackId] = [];
     if(c.count) {
       for(let i=0; i < c.count; i++) {
-        cardsByStack[c.stackId].push({...c, objectId: c.objectId + "-" + i});
+        cardsByStack[c.stackId].push({...c, objectId: c.objectId + "-" + Math.random().toString(36).substr(2, 9)});
       }
     } else {
       cardsByStack[c.stackId].push(c);
@@ -74,6 +74,8 @@ c: fail late: get ownership... log move events... fail http ownership request.. 
 */
 const revertPhantomEvents = (objectId) => {
   let [returnEvent, ...events] = ownershipEvents[objectId];
+  ownershipEvents[objectId] = undefined;
+
   if(returnEvent === undefined) {
     // the shit has hit the fan, how did we get here????
     return;
@@ -83,7 +85,6 @@ const revertPhantomEvents = (objectId) => {
 
 
   // update the world state for the card to the initial event..
-
 }
 
 export function addEvent(objectId, event) {
@@ -104,7 +105,7 @@ export function takeOwnership(event) {
     ownershipEvents[event.objectId] = [];
     takeEvent(event.objectId).then(async (response) => {
       let json = await response.json();
-      if(json.success !== true) {
+      if(json.success !== true) {        
         revertPhantomEvents(event.objectId)
       }
     })

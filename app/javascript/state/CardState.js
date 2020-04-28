@@ -122,9 +122,9 @@ export const pollEvents = async () => {
 
   events.forEach((event) => {
     let eventsForObject = ownershipEvents[event.objectId];
-    if(eventsForObject === undefined) {
+    if(eventsForObject === undefined || eventsForObject.length === 0) {
       // event came from a different user so just apply them
-      // applyEvents(events)
+      updateCard(event)
     } else {
       let nextEvent = eventsForObject.shift();
       if(nextEvent.timestamp !== event.timestamp) {
@@ -134,7 +134,6 @@ export const pollEvents = async () => {
       } else {
         // just realise the events locally
         if(event === lastEvent) {
-          console.log('best')
           // set the state to not be pending and update the card object
           updateCard(event)
         }

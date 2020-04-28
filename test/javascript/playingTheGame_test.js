@@ -62,8 +62,36 @@ describe('Playing the game', () => {
       "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
   }); 
 
-  xit("Can process other player card move events", () => {});
-  xit("Can regect your card move if it has a conflict on the server", () => {});
+  it("Can process other player card move events", async () => {
+    let card = initialGameState.cards[0]
+    let mockedEventResponse = {
+      events: [{
+        objectId: card.objectId + '-9',
+        from: { locationId: initialGameState.locations[0].id, stack: 'pile' },
+        to: { locationId: initialGameState.locations[2].id, stack: 'hand' },
+        timestamp: new Date().getTime(),
+        card: {
+          id: card.id,
+          deck: 'tasks',
+          visible: 'face',
+          stackId: initialGameState.locations[2].id + '-hand',
+          objectId: 'card:' + nextUuid() + ':',
+          count: null,
+          name: 'Test Card'
+        }
+      }]
+    }
+
+    await pollServerForUpdates(null, mockedEventResponse);
+
+    // check the page is fully updated
+    matchPageState([
+      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
+      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
+      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card", ]);
+  });
+
+  xit("Can reject your card move if it has a conflict on the server", () => {});
   xit("Alerts when the game has lagged to much", () => {});
 
   const matchPageState = (expectedState) => {
@@ -72,28 +100,33 @@ describe('Playing the game', () => {
     expect(actual).toEqual(expectedState)
   }
 
-  const pollServerForUpdates = async (objectId) => {
+  const pollServerForUpdates = async (objectId, response) => {
     let lastUpdate = 0;
-    let realObjectId = objectId.replace(/-\d+/, ''); // drop position element for face down card stacks
-    let card = initialGameState.cards.find(c => c.objectId === realObjectId)
+    let mockEventsResponse;
 
-    let mockEventsResponse = {
-      events: events(objectId).map((event) => {
-        let deck = initialGameState.locations.find(l => l.id === event.to.locationId).deck;
-        return {
-          ...event, 
-          card: {
-            ...card, 
-            deck: deck,
-            visible: 'face', 
-            stackId: event.to.locationId + '-' + event.to.stack, 
-            objectId: 'card:' + card.id + ':' ,
-            name: 'Test Card',
-            count: null
+    if(response) {
+      mockEventsResponse = response;
+    } else {
+      let realObjectId = objectId.replace(/-\d+/, ''); // drop position element for face down card stacks
+      let card = initialGameState.cards.find(c => c.objectId === realObjectId)
+  
+      mockEventsResponse = {
+        events: events(objectId).map((event) => {
+          return {
+            ...event, 
+            card: {
+              ...card, 
+              visible: 'face', 
+              stackId: event.to.locationId + '-' + event.to.stack, 
+              objectId: 'card:' + card.id + ':' ,
+              name: 'Test Card',
+              count: null
+            }
           }
-        }
-      })
+        })
+      }  
     }
+
 
     fetchMock.get({url: '/games/' + initialGameState.id + '/events', body: { since: lastUpdate }}, mockEventsResponse);
 

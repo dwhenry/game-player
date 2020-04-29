@@ -190,7 +190,8 @@ describe('Playing the game', () => {
       "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card", ]);
     
     // This is now a NO-OP but we should still resolve events..
-    // ownershipPromiseResolver({success: false});
+    // enabling this actually causes in with unwatching which I don't understand...
+    // await ownershipPromiseResolver({success: false});
 
     // we need to wait for all pormises to be resolved
     // await new Promise(setImmediate)

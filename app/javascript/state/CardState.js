@@ -14,7 +14,9 @@ export const watch = (stackId, w) => {
   w(cardsByStack[stackId]);
 }
 
-export const unWatch = (stackId, w) => watchers[stackId] = watchers[stackId].filter(watcher => watcher != w);
+export const unWatch = (stackId, w) => {
+  watchers[stackId] = watchers[stackId].filter(watcher => watcher !== w);
+}
 
 export const updateCard = (event) => {
   let fromStackId = event.from.locationId + '-' + event.from.stack;

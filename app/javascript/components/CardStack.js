@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import {CardFace, CardBack, CardSpot} from './Card'
 import DropTarget from "./DropTarget";
 import { postEvent } from "../modules/utils"
-import {addEvent, updateCard, getCards, watch, unWatch} from '../state/CardState';
+import {addEvent, updateCard, watch, unWatch} from '../state/CardState';
 
 const CardStack = (props) => {
   // const [cards, setCards] = useState()
@@ -34,9 +34,7 @@ const CardStack = (props) => {
   const [cards, setCards] = useState();
 
   useEffect(() => {
-    let watchCallback = (cards) => {
-      setCards(cards)
-    }
+    let watchCallback = (cards) => { setCards(cards) }
     
     watch(props.locationId + '-' + props.stack, watchCallback)
     return () => { unWatch(props.locationId + '-' + props.stack, watchCallback) }

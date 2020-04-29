@@ -1,9 +1,7 @@
 import React from 'react';
 import fetchMock from 'fetch-mock';
-import { render, cleanup, waitForElement, waitFor, act, fireEvent, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, act } from '@testing-library/react';
 import GameBoard from '../../app/javascript/components/GameBoard'
-import { ResolvePlugin } from 'webpack';
 import { events, pollEvents, getCards } from '../../app/javascript/state/CardState'
 
 jest.useFakeTimers();
@@ -201,7 +199,10 @@ describe('Playing the game', () => {
 
   });
 
+  // lets ignore this for now and assume it won't happen...
   xit("Alerts when the game has lagged to much", () => {});
+
+  // lets do this later...
   xit("Can edit your player name", () => {});
 
   const matchPageState = (expectedState) => {

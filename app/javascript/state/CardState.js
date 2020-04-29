@@ -1,6 +1,7 @@
 import React from 'react';
 import { takeEvent, getUpdates } from '../modules/utils'
 
+let ownershipEvents = {}
 let cardsByStack = {};
 let watchers = {};
 
@@ -23,18 +24,19 @@ export const updateCard = (event) => {
   let toStack = cardsByStack[toStackId] || [];
 
   // remove it from the old location
-  let card = fromStack.find(l => l.objectId === event.objectId)
-  fromStack = fromStack.filter(l => l.objectId !== event.objectId)
+  let card = fromStack.find(l => l.objectId === event.objectId);
+  fromStack = fromStack.filter(l => l.objectId !== event.objectId);
+  if(fromStack.length === 0) fromStack = undefined;
 
   // add it to the new location
-  toStack = toStack.filter(l => l.objectId !== event.objectId)
-  toStack.push(event.card || {...card, pending: !!event.pending})
+  toStack = toStack.filter(l => l.objectId !== event.objectId);
+  toStack.push(event.card || {...card, pending: !!event.pending});
 
   cardsByStack[fromStackId] = fromStack;
   cardsByStack[toStackId] = toStack;
 
-  watchers[fromStackId].forEach((watcher) => watcher(cardsByStack[fromStackId]))
-  watchers[toStackId].forEach((watcher) => watcher(cardsByStack[toStackId]))
+  watchers[fromStackId].forEach((watcher) => watcher(cardsByStack[fromStackId]));
+  watchers[toStackId].forEach((watcher) => watcher(cardsByStack[toStackId]));
 }
 
 export const setCards = (cards) => {
@@ -50,22 +52,6 @@ export const setCards = (cards) => {
   })
 }
 
-
-// takeOwnership
-// addPhantomEvent
-// revertPhantomEvents
-// pollEventLog 
-let ownershipEvents = {}
-
-
-/**
- * dragStart on card 
- *   send http request to take ownership and mark as owned in local state
- * http request returns with success or fail
- *   if fail
- *     
- */
-
 /*
 Lifecycles:
 a: simple ownershiip: get ownership... log move events... realise move events
@@ -76,15 +62,21 @@ const revertPhantomEvents = (objectId) => {
   let [returnEvent, ...events] = ownershipEvents[objectId];
   ownershipEvents[objectId] = undefined;
 
+  let lastEvent = (events && events[events.length - 1]) || returnEvent
   if(returnEvent === undefined) {
-    // the shit has hit the fan, how did we get here????
+    // process has already been reverted... 
+    // maybe we received the update from an actaul card owner while we waited
     return;
   }
-  // revert to the first event in some way???
+  // revert to the initial state on teh first event in the stack....
+  let revertEvent = {
+    objectId: objectId,
+    from: { locationId: lastEvent.to.locationId, stack: lastEvent.to.stack },
+    to: { locationId: returnEvent.from.locationId, stack: returnEvent.from.stack },
+    timestamp: new Date().getTime()
+  }
 
-
-
-  // update the world state for the card to the initial event..
+  updateCard(revertEvent)
 }
 
 export function addEvent(objectId, event) {
@@ -97,10 +89,6 @@ export function addEvent(objectId, event) {
 }
 
 export function takeOwnership(event) {
-  // make card locally as owned
-  // start or maintain an event stream for the object
-  // have the ability to revert the change..
-
   if(!ownershipEvents.hasOwnProperty(event.objectId)) {
     ownershipEvents[event.objectId] = [];
     takeEvent(event.objectId).then(async (response) => {
@@ -119,26 +107,26 @@ export const events = (objectId) => {
 
 export const pollEvents = async () => {
   let events = (await getUpdates()).events;
-  let lastEvent = events[events.length - 1];
 
   events.forEach((event) => {
     let eventsForObject = ownershipEvents[event.objectId];
     if(eventsForObject === undefined || eventsForObject.length === 0) {
+      // if events arrive but we are waiting on ownership, just fail it
+      ownershipEvents[event.objectId] = undefined;
       // event came from a different user so just apply them
       updateCard(event)
     } else {
-      let nextEvent = eventsForObject.shift();
-      if(nextEvent.timestamp !== event.timestamp) {
-        // well this is bad.. our events are wrong or out of sequence... so we need to revert them to some extent and apply these new ones...
-        // revertPhantomEvents(event.objectId);
-        // applyEvents(events)
+      if(eventsForObject[0].timestamp !== event.timestamp) {
+        // well this is bad.. We must be waiting for ownership so lets just revert now and apply the new events...
+        revertPhantomEvents(event.objectId);
+        updateCard(event)
       } else {
+        eventsForObject.shift();
         // just realise the events locally
-        if(event === lastEvent) {
+        if(eventsForObject.length === 0) {
           // set the state to not be pending and update the card object
           updateCard(event)
         }
-        // else ignore the event as we still have pending
       }
     }
   })

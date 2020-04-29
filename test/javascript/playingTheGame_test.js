@@ -8,6 +8,11 @@ import { events, pollEvents, getCards } from '../../app/javascript/state/CardSta
 
 jest.useFakeTimers();
 
+const initialBoardState = [
+  "Tasks",                    "Backlog", "Hidden: 10", "Discard", "None", "Face up", "None", "None",
+  "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
+  "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]
+
 describe('Playing the game', () => {
   let elem;
   let initialGameState;
@@ -25,10 +30,7 @@ describe('Playing the game', () => {
   });
 
   it("Can load the game with cards in decks", async () => {
-    matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 10", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
-      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+    matchPageState(initialBoardState);
   });
 
   it("Can move cards around", async () => {
@@ -38,7 +40,7 @@ describe('Playing the game', () => {
     let objectId = pickupCard(0, ownershipPromise)
 
     // we resolve the promise immediately in this test case
-    ownershipPromiseResolver({success: true, objectId: objectId});
+    ownershipPromiseResolver({success: true});
 
     dropCard(
       objectId, 
@@ -58,6 +60,10 @@ describe('Playing the game', () => {
       "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
       "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card",
       "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+
+    // check it updated the objectId on the card
+    let playerCards = getCards(initialGameState.locations[1].id + '-hand')
+    expect(playerCards[0].objectId).toMatch(/^card:/);
   }); 
 
   it("Can process other player card move events", async () => {
@@ -96,7 +102,7 @@ describe('Playing the game', () => {
     let objectId = pickupCard(0, ownershipPromise)
 
     // we did get ownership this time around
-    ownershipPromiseResolver({success: false, objectId: objectId});
+    ownershipPromiseResolver({success: false});
 
     // we need to wait for all pormises to be resolved
     await new Promise(setImmediate)
@@ -107,12 +113,91 @@ describe('Playing the game', () => {
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
     // check the local view is up to date
-    matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 10", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
-      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+    matchPageState(initialBoardState);
 
     // it should have a log somewhere.....
+  });
+
+  it("Rejecting ownership after you drop the card should revert any moves your have made", async () => {
+    let ownershipPromiseResolver;
+    let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
+
+    let objectId = pickupCard(0, ownershipPromise)
+
+    dropCard(
+      objectId, 
+      { locationId: initialGameState.locations[0].id, stack: 'pile' }, 
+      { locationId: initialGameState.locations[1].id, stack: 'hand' });
+
+    matchPageState([
+      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
+      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
+      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+
+    // we did NOT get ownership this time around
+    act(() => ownershipPromiseResolver({success: false}));
+
+    // we need to wait for all pormises to be resolved
+    await act(() => new Promise(setImmediate));
+  
+    // check the local view is up to date
+    matchPageState(initialBoardState);
+
+    // we should have a log of this somewhere....
+  });
+
+  it("Received an update from the polling from a different user while we have pending events on the same object invalidates our events", async () => {
+    let ownershipPromiseResolver;
+    let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
+
+    let objectId = pickupCard(0, ownershipPromise)
+
+    dropCard(
+      objectId, 
+      { locationId: initialGameState.locations[0].id, stack: 'pile' }, 
+      { locationId: initialGameState.locations[1].id, stack: 'hand' });
+
+    matchPageState([
+      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
+      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
+      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+
+    let card = initialGameState.cards[0];
+    let mockedEventResponse = {
+      events: [{
+        objectId: objectId,
+        from: { locationId: initialGameState.locations[0].id, stack: 'pile' },
+        to: { locationId: initialGameState.locations[2].id, stack: 'hand' },
+        timestamp: new Date().getTime(),
+        card: {
+          id: card.id,
+          deck: 'tasks',
+          visible: 'face',
+          stackId: initialGameState.locations[2].id + '-hand',
+          objectId: 'card:' + nextUuid() + ':',
+          count: null,
+          name: 'Test Card'
+        }
+      }]
+    }
+
+    await pollServerForUpdates(null, mockedEventResponse);
+
+    // check the page is fully updated
+    matchPageState([
+      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
+      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
+      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card", ]);
+    
+    // This is now a NO-OP but we should still resolve events..
+    // ownershipPromiseResolver({success: false});
+
+    // we need to wait for all pormises to be resolved
+    // await new Promise(setImmediate)
+
+    // we should have a log of this somewhere....
+
+
   });
 
   xit("Alerts when the game has lagged to much", () => {});
@@ -157,11 +242,14 @@ describe('Playing the game', () => {
     await act(pollEvents)
   }
 
-  const pickupCard = (cardPos, ownershipPromise) => {
+  const pickupCard = (cardPos, ownershipPromise, objectId) => {
     const card = initialGameState.cards[cardPos];
+    if(!objectId) {
+      let cards = getCards(card.stackId)
+      objectId = cards[cards.length - 1].objectId;
+    }
+  
     let startingNode = document.querySelector(".card-" + card.id);
-    let cards = getCards(card.stackId)
-    let objectId = cards[cards.length - 1].objectId;
 
     fetchMock.post({url: '/games/' + initialGameState.id + '/ownership/' + objectId}, ownershipPromise);
     

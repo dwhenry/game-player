@@ -1,4 +1,6 @@
 class Game < ApplicationRecord
+  PENDING_PLAYER = '__FUCK YOU_PHILE__'
+  
   belongs_to :game_config
 
   def player_stacks(status: 'all')

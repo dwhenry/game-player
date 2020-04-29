@@ -23,6 +23,8 @@ This allows us to play an online card game in 'real time'.
   - [x] Allow async moving of cards
   - [x] Replace GIL with cards based locking
 - [ ] Make backend work with current state
+- [ ] Get a proper auth strategy in place
+- [ ] Remove the min-cards param for locations - fix in config??
 - [ ] Better session security
   - [ ] Player Naming
   - [ ] Game Naming

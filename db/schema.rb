@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_25_003130) do
+ActiveRecord::Schema.define(version: 2020_04_30_210957) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -29,9 +29,12 @@ ActiveRecord::Schema.define(version: 2020_02_25_003130) do
     t.uuid "game_config_id", null: false
     t.jsonb "cards"
     t.integer "sprint", default: 0
-    t.uuid "next_action"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.jsonb "params"
+    t.jsonb "players"
+    t.string "name"
+    t.string "state"
     t.index ["game_config_id"], name: "index_games_on_game_config_id"
   end
 

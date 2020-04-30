@@ -1,11 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe 'Playing the game', type: :request do
-  let(:game) { Game.create } 
+  let(:config) { FactoryBot.create(:game_config, :single_task) }
+  let(:game) { GameInitializer.new(config).call }
   let(:card) { game.cards.first }
+  let(:fred_id) { game.players.keys[0] }
 
   it 'can request ownership of a card by ID' do
-    post "/games/#{game.id}/ownership/#{card.objectId}", {}, {username: 'fred'}
+    post "/games/#{game.id}/ownership/card:#{card['id']}:", params: {}
     expect(redis.get(:ownerships)).to eq({card.objectId => 'fred'})
   end
 

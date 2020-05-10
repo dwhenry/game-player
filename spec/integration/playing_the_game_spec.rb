@@ -7,18 +7,19 @@ RSpec.describe 'Playing the game', type: :request do
   let(:fred_id) { game.players.keys[0] }
 
   it 'can request ownership of a card by ID' do
-    cookies[:user_id] = fred_id
+    cookies[:username] = fred_id
 
-    post "/games/#{game.id}/ownership/card:#{card['id']}:"
+    post "/games/#{game.id}/ownership/card:#{card['id']}"
     expect(Ownership.new(game.id).list).to eq("#{game.id}:card:#{card['id']}:" => fred_id)
 
     expect(parsed_response).to eq(success: true)
   end
 
   it 'can request ownership of a card by location' do
-    cookies[:user_id] = fred_id
+    cookies[:username] = fred_id
 
-    post "/games/#{game.id}/ownership/location:tasks:pile-9"
+    post "/games/#{game.id}/ownership/location:tasks:pile:ABCD"
+
     list = Ownership.new(game.id).list
     owner_id = list["#{game.id}:location:tasks:pile-9"]
     expect(Ownership.new(game.id).list).to eq("#{game.id}:location:tasks:pile" => [owner_id])

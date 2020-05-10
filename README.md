@@ -18,6 +18,7 @@ This allows us to play an online card game in 'real time'.
 
 ## TODO:
 
+- [ ] replace card.id with card.identity in the JS
 - [x] write some JS tests
   - [x] Improve data model in the UI
   - [x] Allow async moving of cards

@@ -1,24 +1,47 @@
 class Game < ApplicationRecord
-  PENDING_PLAYER = '__FUCK YOU_PHILE__'
-  
-  belongs_to :game_config
+  PENDING_PLAYER = "__FUCK YOU_PHILE__#{ENV['PENDING_PLAYER_SECRET']}"
 
-  def player_stacks(status: 'all')
-    cards.select do |stack|
-      stack['type'] == 'player' && ['all', 'active', stack['status']].include?(status) && (status != 'active' || stack['status'] != 'pending')
+  belongs_to :game_config
+  has_many :card_objects, class_name: 'Card'
+
+  def ready?
+    players.detect { |_, v| v == PENDING_PLAYER }.nil?
+  end
+
+  def play
+    with_lock('FOR UPDATE NOWAIT') do
+      cards.each_with_index do |card, i|
+        card_objects.create(
+          card.merge(last_move_id: i)
+        )
+      end
+      update(state: 'playing')
     end
   end
 
-  def deck_stacks
-    cards.select { |stack| stack['type'] == 'deck' }
+  def archive
+    with_lock('FOR UPDATE NOWAIT') do
+      self.cards = keyframe
+      self.state = 'archived'
+      save!
+      card_objects.destroy_all
+    end
+  end
+
+  def keyframe
+    card_objects.map do |card|
+      card.attributes.except("last_move_id", "created_at", "updated_at")
+    end
   end
 
   def join(username)
-    return if player_stacks.any? { |stack| stack['id'] == username }
+    return if players.any? { |_, v| v == username }
 
-    stack = player_stacks(status: 'pending').first
-    stack['status'] = 'starting'
-    stack['id'] = username
+    key, _ = players.detect { |_, v| v == PENDING_PLAYER }
+    players[key] = username
+
+    self.state = 'ready-to-play' if ready?
+
     save!
   end
 end

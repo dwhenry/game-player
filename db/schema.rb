@@ -20,10 +20,11 @@ ActiveRecord::Schema.define(version: 2020_05_09_231323) do
     t.string "identity"
     t.uuid "game_id", null: false
     t.string "card_id"
-    t.string "location_id"
-    t.string "stack"
+    t.string "location_id", null: false
+    t.string "stack", null: false
     t.integer "stage"
-    t.integer "last_move_id"
+    t.integer "last_move_id", null: false
+    t.string "owner_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["card_id"], name: "index_cards_on_card_id"

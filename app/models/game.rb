@@ -9,22 +9,30 @@ class Game < ApplicationRecord
   end
 
   def play
-    with_lock('FOR UPDATE NOWAIT') do
-      cards.each_with_index do |card, i|
-        card_objects.create(
-          card.merge(last_move_id: i)
-        )
+    return if state == 'playing'
+
+    transaction do
+      with_lock('FOR UPDATE NOWAIT') do
+        cards.each_with_index do |card, i|
+          card_objects.create!(
+            card.merge(last_move_id: i)
+          )
+        end
+        update(state: 'playing')
       end
-      update(state: 'playing')
     end
   end
 
   def archive
-    with_lock('FOR UPDATE NOWAIT') do
-      self.cards = keyframe
-      self.state = 'archived'
-      save!
-      card_objects.destroy_all
+    return if state == 'archived'
+
+    transaction do
+      with_lock('FOR UPDATE NOWAIT') do
+        self.cards = keyframe
+        self.state = 'archived'
+        save!
+        card_objects.destroy_all
+      end
     end
   end
 
@@ -35,13 +43,15 @@ class Game < ApplicationRecord
   end
 
   def join(username)
-    return if players.any? { |_, v| v == username }
+    with_lock('FOR UPDATE') do
+      return if players.any? { |_, v| v == username }
 
-    key, _ = players.detect { |_, v| v == PENDING_PLAYER }
-    players[key] = username
+      key, _ = players.detect { |_, v| v == PENDING_PLAYER }
+      players[key] = username
 
-    self.state = 'ready-to-play' if ready?
+      self.state = 'ready-to-play' if ready?
 
-    save!
+      save!
+    end
   end
 end

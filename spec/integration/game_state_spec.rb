@@ -120,7 +120,13 @@ RSpec.describe 'Playing the game', type: :request do
       end
 
       xit 'will allow games moves to be taken'
+      xit 'gives a sensibkle response if two people try and start the game'
 
+      it 'can not be started a second time' do
+        travel_to(5.minutes.from_now) do
+          expect { post "/games/#{game.id}/start" }.not_to change { cards.reload.pluck(:updated_at) }
+        end
+      end
     end
   end
 
@@ -198,12 +204,51 @@ RSpec.describe 'Playing the game', type: :request do
   end
 
   context 'when the game state is archived' do
-    it 'will not allow games moves to be taken'
+    let(:game) do
+      GameInitializer.new(config).call(players: 2).tap do |game|
+        game.join(SecureRandom.uuid)
+        game.join(player_id)
+
+        game.play
+        game.archive
+      end
+    end
+
+    xit 'will not allow games moves to be taken'
 
     context 'restarting the game' do
-      it 'will populate the cards table from the game object representation'
-      it 'will move the game state to playing'
-      it 'will allow games moves to be taken'
+      let(:cards) { game.card_objects }
+
+      before do
+        post "/games/#{game.id}/start"
+      end
+
+      it 'will populate the cards table from the game object representation' do
+        expect(cards.reload.map(&:attributes)).to match([
+          hash_including(
+            "game_id" => game.id,
+            "card_id" => card_id,
+            "location_id" => "tasks",
+            "stack" => "pile",
+            "stage" => 0,
+            "last_move_id" => 0
+          ),
+          hash_including(
+            "game_id" => game.id,
+            "card_id" => card_id,
+            "location_id" => "tasks",
+            "stack" => "pile",
+            "stage" => 0,
+            "last_move_id" => 1
+          )
+        ])
+      end
+
+      it 'will move the game state to playing' do
+        expect(game.reload).to have_attributes(state: 'playing')
+      end
+
+      xit 'will allow games moves to be taken'
     end
   end
 end

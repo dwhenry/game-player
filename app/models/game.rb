@@ -11,28 +11,24 @@ class Game < ApplicationRecord
   def play
     return if state == 'playing'
 
-    transaction do
-      with_lock('FOR UPDATE NOWAIT') do
-        cards.each_with_index do |card, i|
-          card_objects.create!(
-            card.merge(last_move_id: i)
-          )
-        end
-        update(state: 'playing')
+    with_lock('FOR UPDATE NOWAIT') do
+      cards.each_with_index do |card, i|
+        card_objects.create!(
+          card.merge(last_move_id: i)
+        )
       end
+      update(state: 'playing')
     end
   end
 
   def archive
     return if state == 'archived'
 
-    transaction do
-      with_lock('FOR UPDATE NOWAIT') do
-        self.cards = keyframe
-        self.state = 'archived'
-        save!
-        card_objects.destroy_all
-      end
+    with_lock('FOR UPDATE NOWAIT') do
+      self.cards = keyframe
+      self.state = 'archived'
+      save!
+      card_objects.destroy_all
     end
   end
 

@@ -6,8 +6,8 @@ Rails.application.routes.draw do
       post :start
     }
 
-    resources :ownership, only: [] do
-      collection { post ':object_id', action: :take }
+    resources :cards, only: [] do
+      member { post 'take' }
     end
   end
 

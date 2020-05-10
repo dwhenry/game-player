@@ -7,19 +7,22 @@ class CardOwnership
   end
 
   def take(object_id)
+    # release any other cards you currently own...
+    game.card_objects.where(owner_id: user).update_all(owner_id: nil)
+
     actions_for(object_id).take
   rescue ActiveRecord::LockWaitTimeout
     false
   end
 
   def actions_for(object_id)
-    type, id_or_location, stack, _id = object_id.split(":")
+    type, id_or_location_id, stack, _unqiue_id = object_id.split(":")
 
     case type
     when "card"
-      CardActions.new(game: game, user: user, card_id: id_or_location)
+      CardActions.new(game: game, user: user, card_id: id_or_location_id)
     when "location"
-      LocationActions.new(game: game, user: user, location: id_or_location, stack: stack)
+      LocationActions.new(game: game, user: user, location_id: id_or_location_id, stack: stack)
     else
       raise "Invalid object type"
     end
@@ -36,23 +39,33 @@ class CardOwnership
 
     def take
       game.transaction do
-        # binding.pry
-        # release any other cards you currently own...
-        game.card_objects.where(owner_id: user).where.not(identity: card_id).update_all(owner_id: nil)
-
-        Rails.logger.info 'wait for lock'
         card = game.card_objects.lock("FOR UPDATE NOWAIT").find_by(identity: card_id, owner_id: nil)
-        Rails.logger.info 'has lock'
 
         return false unless card
-        Rails.logger.info 'doig  update'
 
         card.update!(owner_id: user)
       end
     end
   end
 
-  class Locationactions
+  class LocationActions
+    attr_reader :game, :user, :location_id, :stack
 
+    def initialize(game:, user:, location_id:, stack:)
+      @game = game
+      @user = user
+      @location_id = location_id
+      @stack = stack
+    end
+
+    def take
+      game.transaction do
+        card = game.card_objects.order(last_move_id: :desc).lock("FOR UPDATE SKIP LOCKED").find_by(location_id: location_id, stack: stack, owner_id: nil)
+
+        return false unless card
+
+        card.update!(owner_id: user)
+      end
+    end
   end
 end

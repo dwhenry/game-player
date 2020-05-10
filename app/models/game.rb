@@ -40,7 +40,7 @@ class Game < ApplicationRecord
 
   def join(username)
     with_lock('FOR UPDATE') do
-      return if players.any? { |_, v| v == username }
+      return false if players.any? { |_, v| v == username }
 
       key, _ = players.detect { |_, v| v == PENDING_PLAYER }
       players[key] = username
@@ -48,6 +48,8 @@ class Game < ApplicationRecord
       self.state = 'ready-to-play' if ready?
 
       save!
+
+      key
     end
   end
 end

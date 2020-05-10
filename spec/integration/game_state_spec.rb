@@ -63,6 +63,12 @@ RSpec.describe 'Playing the game', type: :request do
 
       expect(game.reload.players.values).to eq([player_id, Game::PENDING_PLAYER])
     end
+
+    it 'sets the game_player_id cookie' do
+      post "/games/#{game.id}/join"
+
+      expect(cookies["game_player_id_#{game.id}"]).to eq(game.reload.players.keys[0])
+    end
   end
 
   context 'once all player slots have been taken' do

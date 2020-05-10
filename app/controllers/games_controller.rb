@@ -51,7 +51,8 @@ class GamesController < ApplicationController
 
   def join
     game = Game.find_by(id: params[:id])
-    if game&.join(current_user)
+    if (game_player_id = game&.join(current_user))
+      cookies["game_player_id_#{game.id}"] = game_player_id
       redirect_to game_path(game)
     else
       redirect_to root_path

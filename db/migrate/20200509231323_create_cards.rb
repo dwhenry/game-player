@@ -1,7 +1,6 @@
 class CreateCards < ActiveRecord::Migration[6.0]
   def change
     create_table :cards, id: :uuid do |t|
-      t.string :identity, index: true
       t.references :game, null: false, foreign_key: true, type: :uuid
       t.string :card_id, index: true
       t.string :location_id, null: false

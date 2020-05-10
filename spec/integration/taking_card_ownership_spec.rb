@@ -21,7 +21,7 @@ RSpec.describe 'Playing the game', type: :request do
 
   context 'requestion ownership by card ID' do
     it 'makes me the card owner' do
-      post "/games/#{game.id}/cards/card:#{card.identity}/take"
+      post "/games/#{game.id}/cards/card:#{card.id}/take"
 
       expect(parsed_response).to eq(success: true)
       expect(card.reload).to have_attributes(owner_id: player1_id)
@@ -33,13 +33,13 @@ RSpec.describe 'Playing the game', type: :request do
       end
 
       it 'returns an unsuccessful status' do
-        post "/games/#{game.id}/cards/card:#{card.identity}/take"
+        post "/games/#{game.id}/cards/card:#{card.id}/take"
 
         expect(parsed_response).to eq(success: false)
       end
 
       it 'does not make me the owner of the card - still owned by the other player' do
-        post "/games/#{game.id}/cards/card:#{card.identity}/take"
+        post "/games/#{game.id}/cards/card:#{card.id}/take"
 
         expect(card.reload).to have_attributes(owner_id: player2_id)
       end
@@ -64,13 +64,13 @@ RSpec.describe 'Playing the game', type: :request do
       end
 
       it 'returns an unsuccessful status' do
-        post "/games/#{game.id}/cards/card:#{card.identity}/take"
+        post "/games/#{game.id}/cards/card:#{card.id}/take"
 
         expect(parsed_response).to eq(success: false)
       end
 
       it 'does not make me the owner of the card - still pending ownership' do
-        post "/games/#{game.id}/cards/card:#{card.identity}/take"
+        post "/games/#{game.id}/cards/card:#{card.id}/take"
 
         expect(card.reload).to have_attributes(owner_id: nil)
       end
@@ -82,13 +82,13 @@ RSpec.describe 'Playing the game', type: :request do
       end
 
       it 'release any other cards I own' do
-        post "/games/#{game.id}/cards/card:#{card.identity}/take"
+        post "/games/#{game.id}/cards/card:#{card.id}/take"
 
         expect(parsed_response).to eq(success: true)
         expect(top_card.reload).to have_attributes(owner_id: nil)
       end
       it 'makes me the card owner' do
-        post "/games/#{game.id}/cards/card:#{card.identity}/take"
+        post "/games/#{game.id}/cards/card:#{card.id}/take"
 
         expect(parsed_response).to eq(success: true)
         expect(card.reload).to have_attributes(owner_id: player1_id)
@@ -140,26 +140,26 @@ RSpec.describe 'Playing the game', type: :request do
     end
 
     it 'I can not take the card' do
-      post "/games/#{game.id}/cards/card:#{card.identity}/take"
+      post "/games/#{game.id}/cards/card:#{card.id}/take"
 
       expect(card.reload).to have_attributes(owner_id: nil)
     end
 
     it 'I get an appropriate error and message' do
-      post "/games/#{game.id}/cards/card:#{card.identity}/take"
+      post "/games/#{game.id}/cards/card:#{card.id}/take"
 
       expect(parsed_response).to eq(status: false, error: "NOT A PLAYER", code: "NAP")
     end
   end
 
   context 'if the game state is not in playing' do
-    let(:card_identity) { game.cards.first['identity'] }
+    let(:card_id) { game.cards.first['id'] }
     before do
       game.archive
     end
 
     it 'I get an appropriate error and message' do
-      post "/games/#{game.id}/cards/card:#{card_identity}/take"
+      post "/games/#{game.id}/cards/card:#{card_id}/take"
 
       expect(parsed_response).to eq(status: false, error: "Please restart game to make a mode", code: "GRR")
     end

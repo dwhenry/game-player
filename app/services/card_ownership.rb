@@ -39,7 +39,7 @@ class CardOwnership
 
     def take
       game.transaction do
-        card = game.card_objects.lock("FOR UPDATE NOWAIT").find_by(identity: card_id, owner_id: nil)
+        card = game.card_objects.lock("FOR UPDATE NOWAIT").find_by(id: card_id, owner_id: nil)
 
         return false unless card
 

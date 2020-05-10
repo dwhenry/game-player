@@ -18,16 +18,16 @@ This allows us to play an online card game in 'real time'.
 
 ## TODO:
 
-- [ ] replace card.id with card.identity in the JS
 - [x] write some JS tests
   - [x] Improve data model in the UI
   - [x] Allow async moving of cards
   - [x] Replace GIL with cards based locking
 - [ ] Make backend work with current state
-- [ ] Add user move ID to take/move request... this is required to ensure valid 
-      card ownership (could just be timestamp??) when multiple moves are queued
-- [ ] Ownership expiry - this is currently set to 10 seconds in redis so we need 
-      to ping when we have a card to keep it alive 
+- [x] ~Add user move ID to take/move request... this is required to ensure valid~ 
+      ~card ownership (could just be timestamp??) when multiple moves are queued~
+      Not required as moves will now be atomic
+- [ ] Ownership expiry - ~this is currently set to 10 seconds in redis so we need~ 
+      ~to ping when we have a card to keep it alive~ 
 - [ ] Get a proper auth strategy in place
 - [ ] Remove the min-cards param for locations - fix in config??
 - [ ] Better session security
@@ -42,6 +42,7 @@ This allows us to play an online card game in 'real time'.
 
 ### Technical
 
+- [x] ~replace card.id with card.identity in the JS~ reverted to using ID
 - [ ] Move to Puma
-- [ ] Excrypt cookies sop they can't be modified
+- [ ] Encrypt cookies sop they can't be modified
 - [ ] Write some integration tests (~cucumber?~)

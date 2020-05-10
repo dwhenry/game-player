@@ -36,6 +36,6 @@ class GameInitializer
     cards = config.decks[type].flat_map do |id, card|
       Array.new(card['number'].to_i) { id }
     end
-    cards.shuffle.map { |card_id| args.merge(identity: SecureRandom.uuid, card_id: card_id, stage: 0) }
+    cards.shuffle.map { |card_id| args.merge(id: SecureRandom.uuid, card_id: card_id, stage: 0) }
   end
 end

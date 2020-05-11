@@ -5,49 +5,37 @@ class GameInitializer
     @config = config
   end
 
-  def call
+  def call(players: 6)
+    params = {}
+    players_config = players.times.each_with_object({}) do |_, hash|
+      uuid = SecureRandom.uuid
+      hash[uuid] = Game::PENDING_PLAYER
+      params[uuid] = { cash: 10, energy: 0, sp: 0 }
+    end
+
     Game.create!(
       game_config: config,
-      cards: locations + players,
+      cards: locations,
+      players: players_config,
+      params: params,
+      name: "Game: #{SecureRandom.base64(8)}",
+      state: 'waiting-for-players',
       sprint: 0,
-      next_action: SecureRandom.uuid
     )
   end
 
   private
 
   def locations
-    %w[tasks achievements employees].map do |type|
-      {
-        id: type,
-        type: 'deck',
-        pile: shuffled_deck(type),
-        discard: [],
-        fu: []
-      }
+    %w[tasks achievements employees].flat_map do |type|
+      shuffled_deck(type, location_id: type, stack: 'pile')
     end
   end
 
-  def players
-    6.times.map do |i|
-      {
-        status: 'pending',
-        id: "Player #{i}",
-        type: 'player',
-        backlog: [],
-        hand: [],
-        fu: [],
-        board: [],
-        employees: [],
-        tokens: { cash: 10, energy: 0, sp: 0 },
-      }
-    end
-  end
-
-  def shuffled_deck(type)
+  def shuffled_deck(type, args)
     cards = config.decks[type].flat_map do |id, card|
       Array.new(card['number'].to_i) { id }
     end
-    cards.shuffle.map { |card_id| [SecureRandom.uuid, card_id, 0] }
+    cards.shuffle.map { |card_id| args.merge(id: SecureRandom.uuid, card_id: card_id, stage: 0) }
   end
 end

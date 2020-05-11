@@ -3,7 +3,7 @@ class GamesController < ApplicationController
     config = GameConfig.find(params[:game_config_id])
 
     config.update(locked: true)
-    game = GameInitializer.new(config).call
+    game = GameInitializer.new(config).call(players: params.fetch(:players).to_i)
 
     redirect_to game_path(game.id)
   end
@@ -51,8 +51,17 @@ class GamesController < ApplicationController
 
   def join
     game = Game.find_by(id: params[:id])
-    if game
-      game.join(current_user)
+    if (game_player_id = game&.join(current_user))
+      cookies["game_player_id_#{game.id}"] = game_player_id
+      redirect_to game_path(game)
+    else
+      redirect_to root_path
+    end
+  end
+
+  def start
+    game = Game.find_by(id: params[:id])
+    if game.ready? && game.play
       redirect_to game_path(game)
     else
       redirect_to root_path

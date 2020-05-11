@@ -13,5 +13,7 @@ class CreateCards < ActiveRecord::Migration[6.0]
     end
 
     add_index :cards, [:location_id, :stack, :last_move_id]
+    add_index :cards, [:game_id, :last_move_id], unique: true # these are also AR validations
+    add_index :cards, [:game_id, :owner_id], unique: true # these are also AR validations
   end
 end

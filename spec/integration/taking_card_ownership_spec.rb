@@ -19,7 +19,10 @@ RSpec.describe 'Playing the game', type: :request do
     cookies["game_player_id_#{game.id}"] = player1_id
   end
 
-  context 'requestion ownership by card ID' do
+  # TODO: due to syncing issues it would be possible to grab the card from an old position
+  # after another player had dropped it.... is this a concern?
+
+  context 'request ownership by card ID' do
     it 'makes me the card owner' do
       post "/games/#{game.id}/cards/card:#{card.id}/take"
 
@@ -35,7 +38,7 @@ RSpec.describe 'Playing the game', type: :request do
       it 'returns an unsuccessful status' do
         post "/games/#{game.id}/cards/card:#{card.id}/take"
 
-        expect(parsed_response).to eq(success: false)
+        expect(parsed_response).to eq(success: false, code: ErrorCodes::FAILED_TO_TAKE_CARD, message: "Failed to take ownership of card")
       end
 
       it 'does not make me the owner of the card - still owned by the other player' do
@@ -66,7 +69,7 @@ RSpec.describe 'Playing the game', type: :request do
       it 'returns an unsuccessful status' do
         post "/games/#{game.id}/cards/card:#{card.id}/take"
 
-        expect(parsed_response).to eq(success: false)
+        expect(parsed_response).to eq(success: false, code: ErrorCodes::FAILED_TO_TAKE_CARD, message: "Failed to take ownership of card")
       end
 
       it 'does not make me the owner of the card - still pending ownership' do
@@ -127,7 +130,7 @@ RSpec.describe 'Playing the game', type: :request do
       it 'fails to take a card from the stack' do
         post "/games/#{game.id}/cards/location:tasks:pile:ABCD/take"
 
-        expect(parsed_response).to eq(success: false)
+        expect(parsed_response).to eq(success: false, code: ErrorCodes::FAILED_TO_TAKE_CARD, message: "Failed to take ownership of card")
         expect(card.reload).to have_attributes(owner_id: player2_id)
         expect(top_card.reload).to have_attributes(owner_id: player2_id)
       end

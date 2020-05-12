@@ -4,8 +4,8 @@ RSpec.describe 'moving cards around' do
   let(:config) { FactoryBot.create(:game_config, :single_task) }
   let(:game) do
     GameInitializer.new(config).call(players: 2).tap do |game|
-      game.join("Bob")
       game.join("Jim")
+      game.join("Bob")
 
       game.play
     end
@@ -46,7 +46,11 @@ RSpec.describe 'moving cards around' do
         {
           "user_id" => player1_id,
           "timestamp" => an_instance_of(Integer),
-          "message" => "failed to move #{card_name} to #{player1_name}(hand), he didn't own the card"
+          "card_name" => card_name,
+          "details" => {
+            "type" => "failed_move",
+            "destination" => "#{player1_name}(hand)"
+          }
         }
       ])
     end

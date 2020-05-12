@@ -3,9 +3,10 @@ require 'rails_helper'
 RSpec.describe 'Playing the game', type: :request do
   let(:config) { FactoryBot.create(:game_config, :single_task) }
   let(:game) do
-    GameInitializer.new(config).call(players: 2).tap do |game|
-      game.join(SecureRandom.uuid)
-      game.join(SecureRandom.uuid)
+    GameInitializer.new(config).call(players: 3).tap do |game|
+      game.join("Jim")
+      game.join("Bob")
+      game.join("Jones")
 
       game.play
     end
@@ -14,6 +15,7 @@ RSpec.describe 'Playing the game', type: :request do
   let(:top_card) { game.card_objects.order(:last_move_id).last }
   let(:player1_id) { game.players.keys[0] }
   let(:player2_id) { game.players.keys[1] }
+  let(:player3_id) { game.players.keys[2] }
 
   before do
     cookies["game_player_id_#{game.id}"] = player1_id
@@ -28,6 +30,24 @@ RSpec.describe 'Playing the game', type: :request do
 
       expect(parsed_response).to eq(success: true)
       expect(card.reload).to have_attributes(owner_id: player1_id)
+    end
+
+    it 'logs the successfully picking up of the card' do
+      card_name = config.decks.dig('tasks', card.card_id, 'name')
+
+      post "/games/#{game.id}/cards/card:#{card.id}/take"
+
+      expect(game.reload.logs).to match([
+        {
+          "user_id" => player1_id,
+          "timestamp" => an_instance_of(Integer),
+          "card_name" => card_name,
+          "details" => {
+            "type" => "card_pickup",
+            "source" => "tasks(pile)"
+          }
+        }
+      ])
     end
 
     context 'if someone else already owns this card' do
@@ -45,6 +65,24 @@ RSpec.describe 'Playing the game', type: :request do
         post "/games/#{game.id}/cards/card:#{card.id}/take"
 
         expect(card.reload).to have_attributes(owner_id: player2_id)
+      end
+
+      it 'Logs the failure to pick up teh card' do
+        card_name = config.decks.dig('tasks', card.card_id, 'name')
+
+        post "/games/#{game.id}/cards/card:#{card.id}/take"
+
+        expect(game.reload.logs).to match([
+          {
+            "user_id" => player1_id,
+            "timestamp" => an_instance_of(Integer),
+            "card_name" => card_name,
+            "details" => {
+              "type" => "failed_pickup",
+              "source" => "tasks(pile)"
+            }
+          }
+        ])
       end
     end
 
@@ -77,6 +115,24 @@ RSpec.describe 'Playing the game', type: :request do
 
         expect(card.reload).to have_attributes(owner_id: nil)
       end
+
+      it 'Logs the failure to pick up teh card' do
+        card_name = config.decks.dig('tasks', card.card_id, 'name')
+
+        post "/games/#{game.id}/cards/card:#{card.id}/take"
+
+        expect(game.reload.logs).to match([
+          {
+            "user_id" => player1_id,
+            "timestamp" => an_instance_of(Integer),
+            "card_name" => card_name,
+            "details" => {
+              "type" => "failed_pickup",
+              "source" => "tasks(pile)"
+            }
+          }
+        ])
+      end
     end
 
     context 'if I already own a different card' do
@@ -90,11 +146,44 @@ RSpec.describe 'Playing the game', type: :request do
         expect(parsed_response).to eq(success: true)
         expect(top_card.reload).to have_attributes(owner_id: nil)
       end
+
       it 'makes me the card owner' do
         post "/games/#{game.id}/cards/card:#{card.id}/take"
 
         expect(parsed_response).to eq(success: true)
         expect(card.reload).to have_attributes(owner_id: player1_id)
+      end
+
+      it 'Logs dropping the previous card' do
+        card_name = config.decks.dig('tasks', top_card.card_id, 'name')
+
+        post "/games/#{game.id}/cards/card:#{card.id}/take"
+
+        expect(game.reload.logs).to include(
+          "user_id" => player1_id,
+          "timestamp" => an_instance_of(Integer),
+          "card_name" => card_name,
+          "details" => {
+            "type" => "returned_card",
+            "source" => "tasks(pile)"
+          }
+        )
+      end
+
+      it 'Logs the successful pickup of the card' do
+        card_name = config.decks.dig('tasks', card.card_id, 'name')
+
+        post "/games/#{game.id}/cards/card:#{card.id}/take"
+
+        expect(game.reload.logs).to include(
+          "user_id" => player1_id,
+          "timestamp" => an_instance_of(Integer),
+          "card_name" => card_name,
+          "details" => {
+            "type" => "card_pickup",
+            "source" => "tasks(pile)"
+          }
+        )
       end
     end
   end
@@ -106,6 +195,23 @@ RSpec.describe 'Playing the game', type: :request do
       expect(parsed_response).to eq(success: true)
       expect(top_card.reload).to have_attributes(owner_id: player1_id)
     end
+
+    it 'Logs the successful pickup of the card' do
+      post "/games/#{game.id}/cards/location:tasks:pile:ABCD/take"
+
+      expect(game.reload.logs).to match([
+        {
+          "user_id" => player1_id,
+          "timestamp" => an_instance_of(Integer),
+          "card_name" => "tasks(pile)",
+          "details" => {
+            "type" => "location_pickup",
+            "source" => "tasks(pile)"
+          }
+        }
+      ])
+    end
+
 
     context 'when someone already owns the top card' do
       before do
@@ -124,14 +230,14 @@ RSpec.describe 'Playing the game', type: :request do
     context 'when all cards are taken' do
       before do
         top_card.update(owner_id: player2_id)
-        card.update(owner_id: player2_id)
+        card.update(owner_id: player3_id)
       end
 
       it 'fails to take a card from the stack' do
         post "/games/#{game.id}/cards/location:tasks:pile:ABCD/take"
 
         expect(parsed_response).to eq(success: false, code: ErrorCodes::FAILED_TO_TAKE_CARD, message: "Failed to take ownership of card")
-        expect(card.reload).to have_attributes(owner_id: player2_id)
+        expect(card.reload).to have_attributes(owner_id: player3_id)
         expect(top_card.reload).to have_attributes(owner_id: player2_id)
       end
     end

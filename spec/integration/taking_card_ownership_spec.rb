@@ -40,7 +40,7 @@ RSpec.describe 'Playing the game', type: :request do
       expect(game.reload.events).to match_array([
         have_attributes(
           "user" => player1_id,
-          "object_id" => "card:::#{card.id}",
+          "object_ref" => "card:::#{card.id}",
           "event_type" => Event::PICKUP_CARD,
           "data" => {
             "card_name" => card_name,
@@ -76,7 +76,7 @@ RSpec.describe 'Playing the game', type: :request do
         expect(game.reload.events).to match_array([
           have_attributes(
             "user" => player1_id,
-            "object_id" => "card:::#{card.id}",
+            "object_ref" => "card:::#{card.id}",
             "event_type" => Event::FAILED_PICKUP,
             "data" => {
               "card_name" => card_name,
@@ -126,7 +126,7 @@ RSpec.describe 'Playing the game', type: :request do
         expect(game.reload.events).to match_array([
           have_attributes(
             "user" => player1_id,
-            "object_id" => "card:::#{card.id}",
+            "object_ref" => "card:::#{card.id}",
             "event_type" => Event::FAILED_PICKUP,
             "data" => {
               "card_name" => card_name,
@@ -165,7 +165,7 @@ RSpec.describe 'Playing the game', type: :request do
         expect(game.reload.events).to match_array([
           have_attributes(
             "user" => player1_id,
-            "object_id" => "card:::#{card.id}",
+            "object_ref" => "card:::#{card.id}",
             "event_type" => Event::RETURNED_CARD,
             "data" => {
               "card_name" => card_name,
@@ -175,7 +175,7 @@ RSpec.describe 'Playing the game', type: :request do
           ),
           have_attributes(
             "user" => player1_id,
-            "object_id" => "card:::#{card.id}",
+            "object_ref" => "card:::#{card.id}",
             "event_type" => Event::PICKUP_CARD,
             "data" => {
               "card_name" => card_name,
@@ -202,7 +202,7 @@ RSpec.describe 'Playing the game', type: :request do
       expect(game.reload.events).to match_array([
         have_attributes(
           "user" => player1_id,
-          "object_id" => "location:tasks:pile:",
+          "object_ref" => "location:tasks:pile:",
           "event_type" => Event::PICKUP_LOCATION,
           "data" => {
             "card_name" => "tasks(pile)",

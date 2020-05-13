@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 2020_05_11_224844) do
     t.bigserial "order", null: false
     t.string "user", null: false
     t.string "event_type", null: false
-    t.string "object_id", null: false
+    t.string "object_ref", null: false
     t.jsonb "data"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

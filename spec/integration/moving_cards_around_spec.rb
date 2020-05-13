@@ -44,7 +44,7 @@ RSpec.describe 'moving cards around' do
       expect(game.reload.events).to match_array([
         have_attributes(
           "user" => player1_id,
-          "object_id" => "card:::#{card.id}",
+          "object_ref" => "card:::#{card.id}",
           "event_type" => Event::FAILED_MOVE,
           "data" => {
             "card_name" => card_name,

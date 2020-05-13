@@ -2,13 +2,13 @@ class GameLogger
   KEYFRAME_FREQUENCY = 20
   KEYFRAME_MEMORY = 5 # this means we keep the last 95 events in the DB
 
-  attr_reader :game, :user, :card_name, :object_id
+  attr_reader :game, :user, :card_name, :object_ref
 
-  def initialize(game:, user:, card_name:, object_id:)
+  def initialize(game:, user:, card_name:, object_ref:)
     @game = game
     @user = user
     @card_name = card_name
-    @object_id = object_id
+    @object_ref = object_ref
   end
 
   def failed_move_to(location_id:, stack:)
@@ -68,7 +68,7 @@ class GameLogger
   def create_event(type, data)
     event = game.events.create!(
       user: user,
-      object_id: object_id,
+      object_ref: object_ref,
       event_type: type,
       data: data.merge(card_name: card_name)
     )
@@ -76,7 +76,7 @@ class GameLogger
     if (event.order % KEYFRAME_FREQUENCY).zero?
       game.events.create!(
         user: Event::KEYFRAME,
-        object_id: Event::KEYFRAME,
+        object_ref: Event::KEYFRAME,
         event_type: Event::KEYFRAME,
         data: game.keyframe
       )

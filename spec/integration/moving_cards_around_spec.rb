@@ -25,33 +25,33 @@ RSpec.describe 'moving cards around' do
     end
 
     it 'I can not move the card' do
-      post "/games/#{game.id}/cards/card:#{card.id}/move", params: { location_id: player1_id, stack: 'hand' }
+      post "/games/#{game.id}/cards/card:::#{card.id}/move", params: { location_id: player1_id, stack: 'hand' }
 
       expect(card.reload).to have_attributes(location_id: 'tasks', stack: 'pile')
     end
 
     it 'I get an appropriate error message' do
-      post "/games/#{game.id}/cards/card:#{card.id}/move", params: { location_id: player1_id, stack: 'hand' }
+      post "/games/#{game.id}/cards/card:::#{card.id}/move", params: { location_id: player1_id, stack: 'hand' }
 
       expect(parsed_response).to eq(success: false, message: "not your card to move", code: "NYC")
     end
 
     it 'Attempted movement gets added to the logs' do
       card_name = config.decks.dig('tasks', card.card_id, 'name')
-      player1_name = game.players[player1_id]
 
-      post "/games/#{game.id}/cards/card:#{card.id}/move", params: { location_id: player1_id, stack: 'hand' }
+      post "/games/#{game.id}/cards/card:::#{card.id}/move", params: { location_id: player1_id, stack: 'hand' }
 
-      expect(game.reload.logs).to match([
-        {
-          "user_id" => player1_id,
-          "timestamp" => an_instance_of(Integer),
-          "card_name" => card_name,
-          "details" => {
-            "type" => "failed_move",
-            "destination" => "#{player1_name}(hand)"
+      expect(game.reload.events).to match_array([
+        have_attributes(
+          "user" => player1_id,
+          "object_id" => "card:::#{card.id}",
+          "event_type" => Event::FAILED_MOVE,
+          "data" => {
+            "card_name" => card_name,
+            "location_id" => player1_id,
+            "stack" => "hand"
           }
-        }
+        )
       ])
     end
   end

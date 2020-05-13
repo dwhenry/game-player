@@ -2,13 +2,13 @@ class CardOwnership
   attr_reader :game, :user, :error_message, :error_code, :logger
 
   def self.build(game:, user:, object_id:)
-    type, id_or_location_id, stack, _unqiue_id = object_id.split(":")
+    type, location_id, stack, id = object_id.split(":")
 
     case type
     when "card"
-      CardActions.new(game: game, user: user, card_id: id_or_location_id)
+      CardActions.new(game: game, user: user, card_id: id)
     when "location"
-      LocationActions.new(game: game, user: user, location_id: id_or_location_id, stack: stack)
+      LocationActions.new(game: game, user: user, location_id: location_id, stack: stack)
     else
       raise "Invalid object type"
     end
@@ -41,7 +41,7 @@ class CardOwnership
       super(game: game, user: user)
       @card_id = card_id
       @card = game.card_objects.find(card_id)
-      @logger = GameLogger.new(game: game, user: user, card_name: card_name(card))
+      @logger = GameLogger.new(game: game, user: user, card_name: card_name(card), object_id: "card:::#{card_id}")
     end
 
     def move(location_id:, stack:)
@@ -92,7 +92,7 @@ class CardOwnership
       super(game: game, user: user)
       @location_id = location_id
       @stack = stack
-      @logger = GameLogger.new(game: game, user: user, card_name: "#{location_id}(#{stack})")
+      @logger = GameLogger.new(game: game, user: user, card_name: "#{location_id}(#{stack})", object_id: "location:#{location_id}:#{stack}:")
     end
 
     def take

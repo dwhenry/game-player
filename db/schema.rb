@@ -33,6 +33,19 @@ ActiveRecord::Schema.define(version: 2020_05_11_224844) do
     t.index ["location_id", "stack", "last_move_id"], name: "index_cards_on_location_id_and_stack_and_last_move_id"
   end
 
+  create_table "events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "game_id", null: false
+    t.bigserial "order", null: false
+    t.string "user", null: false
+    t.string "event_type", null: false
+    t.string "object_id", null: false
+    t.jsonb "data"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["game_id"], name: "index_events_on_game_id"
+    t.index ["order"], name: "index_events_on_order"
+  end
+
   create_table "game_configs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.jsonb "decks"
     t.uuid "parent_id"
@@ -55,17 +68,7 @@ ActiveRecord::Schema.define(version: 2020_05_11_224844) do
     t.index ["game_config_id"], name: "index_games_on_game_config_id"
   end
 
-  create_table "user_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "game_id", null: false
-    t.string "user"
-    t.jsonb "logs"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["game_id", "user"], name: "index_user_logs_on_game_id_and_user", unique: true
-    t.index ["game_id"], name: "index_user_logs_on_game_id"
-  end
-
   add_foreign_key "cards", "games"
+  add_foreign_key "events", "games"
   add_foreign_key "games", "game_configs"
-  add_foreign_key "user_logs", "games"
 end

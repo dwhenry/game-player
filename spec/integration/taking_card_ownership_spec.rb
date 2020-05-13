@@ -26,7 +26,7 @@ RSpec.describe 'Playing the game', type: :request do
 
   context 'request ownership by card ID' do
     it 'makes me the card owner' do
-      post "/games/#{game.id}/cards/card:#{card.id}/take"
+      post "/games/#{game.id}/cards/card:::#{card.id}/take"
 
       expect(parsed_response).to eq(success: true)
       expect(card.reload).to have_attributes(owner_id: player1_id)
@@ -35,18 +35,19 @@ RSpec.describe 'Playing the game', type: :request do
     it 'logs the successfully picking up of the card' do
       card_name = config.decks.dig('tasks', card.card_id, 'name')
 
-      post "/games/#{game.id}/cards/card:#{card.id}/take"
+      post "/games/#{game.id}/cards/card:::#{card.id}/take"
 
-      expect(game.reload.logs).to match([
-        {
-          "user_id" => player1_id,
-          "timestamp" => an_instance_of(Integer),
-          "card_name" => card_name,
-          "details" => {
-            "type" => "card_pickup",
-            "source" => "tasks(pile)"
+      expect(game.reload.events).to match_array([
+        have_attributes(
+          "user" => player1_id,
+          "object_id" => "card:::#{card.id}",
+          "event_type" => Event::PICKUP_CARD,
+          "data" => {
+            "card_name" => card_name,
+            "location_id" => "tasks",
+            "stack" => "pile"
           }
-        }
+        )
       ])
     end
 
@@ -56,32 +57,33 @@ RSpec.describe 'Playing the game', type: :request do
       end
 
       it 'returns an unsuccessful status' do
-        post "/games/#{game.id}/cards/card:#{card.id}/take"
+        post "/games/#{game.id}/cards/card:::#{card.id}/take"
 
         expect(parsed_response).to eq(success: false, code: ErrorCodes::FAILED_TO_TAKE_CARD, message: "Failed to take ownership of card")
       end
 
       it 'does not make me the owner of the card - still owned by the other player' do
-        post "/games/#{game.id}/cards/card:#{card.id}/take"
+        post "/games/#{game.id}/cards/card:::#{card.id}/take"
 
         expect(card.reload).to have_attributes(owner_id: player2_id)
       end
 
-      it 'Logs the failure to pick up teh card' do
+      it 'Logs the failure to pick up the card' do
         card_name = config.decks.dig('tasks', card.card_id, 'name')
 
-        post "/games/#{game.id}/cards/card:#{card.id}/take"
+        post "/games/#{game.id}/cards/card:::#{card.id}/take"
 
-        expect(game.reload.logs).to match([
-          {
-            "user_id" => player1_id,
-            "timestamp" => an_instance_of(Integer),
-            "card_name" => card_name,
-            "details" => {
-              "type" => "failed_pickup",
-              "source" => "tasks(pile)"
+        expect(game.reload.events).to match_array([
+          have_attributes(
+            "user" => player1_id,
+            "object_id" => "card:::#{card.id}",
+            "event_type" => Event::FAILED_PICKUP,
+            "data" => {
+              "card_name" => card_name,
+              "location_id" => "tasks",
+              "stack" => "pile"
             }
-          }
+          )
         ])
       end
     end
@@ -105,32 +107,33 @@ RSpec.describe 'Playing the game', type: :request do
       end
 
       it 'returns an unsuccessful status' do
-        post "/games/#{game.id}/cards/card:#{card.id}/take"
+        post "/games/#{game.id}/cards/card:::#{card.id}/take"
 
         expect(parsed_response).to eq(success: false, code: ErrorCodes::FAILED_TO_TAKE_CARD, message: "Failed to take ownership of card")
       end
 
       it 'does not make me the owner of the card - still pending ownership' do
-        post "/games/#{game.id}/cards/card:#{card.id}/take"
+        post "/games/#{game.id}/cards/card:::#{card.id}/take"
 
         expect(card.reload).to have_attributes(owner_id: nil)
       end
 
-      it 'Logs the failure to pick up teh card' do
+      it 'Logs the failure to pick up the card' do
         card_name = config.decks.dig('tasks', card.card_id, 'name')
 
-        post "/games/#{game.id}/cards/card:#{card.id}/take"
+        post "/games/#{game.id}/cards/card:::#{card.id}/take"
 
-        expect(game.reload.logs).to match([
-          {
-            "user_id" => player1_id,
-            "timestamp" => an_instance_of(Integer),
-            "card_name" => card_name,
-            "details" => {
-              "type" => "failed_pickup",
-              "source" => "tasks(pile)"
+        expect(game.reload.events).to match_array([
+          have_attributes(
+            "user" => player1_id,
+            "object_id" => "card:::#{card.id}",
+            "event_type" => Event::FAILED_PICKUP,
+            "data" => {
+              "card_name" => card_name,
+              "location_id" => "tasks",
+              "stack" => "pile"
             }
-          }
+          )
         ])
       end
     end
@@ -141,49 +144,46 @@ RSpec.describe 'Playing the game', type: :request do
       end
 
       it 'release any other cards I own' do
-        post "/games/#{game.id}/cards/card:#{card.id}/take"
+        post "/games/#{game.id}/cards/card:::#{card.id}/take"
 
         expect(parsed_response).to eq(success: true)
         expect(top_card.reload).to have_attributes(owner_id: nil)
       end
 
       it 'makes me the card owner' do
-        post "/games/#{game.id}/cards/card:#{card.id}/take"
+        post "/games/#{game.id}/cards/card:::#{card.id}/take"
 
         expect(parsed_response).to eq(success: true)
         expect(card.reload).to have_attributes(owner_id: player1_id)
       end
 
-      it 'Logs dropping the previous card' do
+      it 'Logs dropping the previous card and picking up the new one' do
         card_name = config.decks.dig('tasks', top_card.card_id, 'name')
 
-        post "/games/#{game.id}/cards/card:#{card.id}/take"
+        post "/games/#{game.id}/cards/card:::#{card.id}/take"
 
-        expect(game.reload.logs).to include(
-          "user_id" => player1_id,
-          "timestamp" => an_instance_of(Integer),
-          "card_name" => card_name,
-          "details" => {
-            "type" => "returned_card",
-            "source" => "tasks(pile)"
-          }
-        )
-      end
-
-      it 'Logs the successful pickup of the card' do
-        card_name = config.decks.dig('tasks', card.card_id, 'name')
-
-        post "/games/#{game.id}/cards/card:#{card.id}/take"
-
-        expect(game.reload.logs).to include(
-          "user_id" => player1_id,
-          "timestamp" => an_instance_of(Integer),
-          "card_name" => card_name,
-          "details" => {
-            "type" => "card_pickup",
-            "source" => "tasks(pile)"
-          }
-        )
+        expect(game.reload.events).to match_array([
+          have_attributes(
+            "user" => player1_id,
+            "object_id" => "card:::#{card.id}",
+            "event_type" => Event::RETURNED_CARD,
+            "data" => {
+              "card_name" => card_name,
+              "location_id" => "tasks",
+              "stack" => "pile"
+            }
+          ),
+          have_attributes(
+            "user" => player1_id,
+            "object_id" => "card:::#{card.id}",
+            "event_type" => Event::PICKUP_CARD,
+            "data" => {
+              "card_name" => card_name,
+              "location_id" => "tasks",
+              "stack" => "pile"
+            }
+          )
+        ])
       end
     end
   end
@@ -199,16 +199,17 @@ RSpec.describe 'Playing the game', type: :request do
     it 'Logs the successful pickup of the card' do
       post "/games/#{game.id}/cards/location:tasks:pile:ABCD/take"
 
-      expect(game.reload.logs).to match([
-        {
-          "user_id" => player1_id,
-          "timestamp" => an_instance_of(Integer),
-          "card_name" => "tasks(pile)",
-          "details" => {
-            "type" => "location_pickup",
-            "source" => "tasks(pile)"
+      expect(game.reload.events).to match_array([
+        have_attributes(
+          "user" => player1_id,
+          "object_id" => "location:tasks:pile:",
+          "event_type" => Event::PICKUP_LOCATION,
+          "data" => {
+            "card_name" => "tasks(pile)",
+            "location_id" => "tasks",
+            "stack" => "pile"
           }
-        }
+        )
       ])
     end
 

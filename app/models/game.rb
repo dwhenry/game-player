@@ -3,11 +3,7 @@ class Game < ApplicationRecord
 
   belongs_to :game_config
   has_many :card_objects, class_name: 'Card'
-  has_many :user_logs
-
-  def logs
-    user_logs.flat_map(&:logs)
-  end
+  has_many :events
 
   def ready?
     players.detect { |_, v| v == PENDING_PLAYER }.nil?

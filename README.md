@@ -42,6 +42,7 @@ This allows us to play an online card game in 'real time'.
 
 ### Technical
 
+- [ ] Rename object_id to object_ref as object_id is important in rails
 - [x] ~replace card.id with card.identity in the JS~ reverted to using ID
 - [ ] Move to Puma
 - [ ] Encrypt cookies sop they can't be modified

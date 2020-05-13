@@ -1,56 +1,59 @@
 class GameLogger
-  attr_reader :game, :user, :card_name
+  KEYFRAME_FREQUENCY = 20
+  KEYFRAME_MEMORY = 5 # this means we keep the last 95 events in the DB
 
-  def initialize(game:, user:, card_name:)
+  attr_reader :game, :user, :card_name, :object_id
+
+  def initialize(game:, user:, card_name:, object_id:)
     @game = game
     @user = user
     @card_name = card_name
+    @object_id = object_id
   end
 
   def failed_move_to(location_id:, stack:)
     # "#{user} failed to move #{card_name} to #{destination}, he didn't own the card"
-    update_logs(
-      type: "failed_move",
-      destination: "#{location_name(location_id)}(#{stack})"
+    create_event(
+      Event::FAILED_MOVE,
+      location_id: location_id,
+      stack: stack
     )
   end
 
   def pickup_card(location_id:, stack:)
     # "#{user} picked up #{card_name} from #{destination}"
-    update_logs(
-      type: "card_pickup",
-      source: "#{location_name(location_id)}(#{stack})"
+    create_event(
+      Event::PICKUP_CARD,
+      location_id: location_id,
+      stack: stack
     )
   end
 
   def pickup_location(location_id:, stack:)
     # "#{user} picked up a card from #{source}"
-    update_logs(
-      type: "location_pickup",
-      source: "#{location_name(location_id)}(#{stack})"
+    create_event(
+      Event::PICKUP_LOCATION,
+      location_id: location_id,
+      stack: stack
     )
   end
 
   def return_card(location_id:, stack:)
     # "#{user} returned #{card_name} to #{source}"
-    update_logs(
-      type: "returned_card",
-      source: "#{location_name(location_id)}(#{stack})"
+    create_event(
+      Event::RETURNED_CARD,
+      location_id: location_id,
+      stack: stack
     )
   end
 
   def failed_pickup(location_id:, stack:)
     # "#{user} failed to pickup #{card_name} from #{source}"
-    update_logs(
-      type: "failed_pickup",
-      source: "#{location_name(location_id)}(#{stack})"
+    create_event(
+      Event::FAILED_PICKUP,
+      location_id: location_id,
+      stack: stack
     )
-  end
-
-  def location_name(location_id)
-    return location_id if %w[tasks achievements employees].include?(location_id)
-
-    game.players[location_id]
   end
 
   def log_message(details)
@@ -62,11 +65,22 @@ class GameLogger
     }
   end
 
-  def update_logs(details)
-    log = game.user_logs.find_or_initialize_by(user: user)
-    log.logs ||= []
-    log.logs.push(log_message(details))
-    log.logs = log.logs[-100..-1] if log.logs.length > 120
-    log.save
+  def create_event(type, data)
+    event = game.events.create!(
+      user: user,
+      object_id: object_id,
+      event_type: type,
+      data: data.merge(card_name: card_name)
+    )
+    event.reload
+    if (event.order % KEYFRAME_FREQUENCY).zero?
+      game.events.create!(
+        user: Event::KEYFRAME,
+        object_id: Event::KEYFRAME,
+        event_type: Event::KEYFRAME,
+        data: game.keyframe
+      )
+      game.events.order(:order).offset(KEYFRAME_FREQUENCY * KEYFRAME_MEMORY).delete_all
+    end
   end
 end

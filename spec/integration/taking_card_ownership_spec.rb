@@ -26,7 +26,7 @@ RSpec.describe 'Playing the game', type: :request do
 
   context 'request ownership by card ID' do
     it 'makes me the card owner' do
-      post "/games/#{game.id}/cards/card:::#{card.id}/take"
+      post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/take"
 
       expect(parsed_response).to eq(success: true)
       expect(card.reload).to have_attributes(owner_id: player1_id)
@@ -35,7 +35,7 @@ RSpec.describe 'Playing the game', type: :request do
     it 'logs the successfully picking up of the card' do
       card_name = config.decks.dig('tasks', card.card_id, 'name')
 
-      post "/games/#{game.id}/cards/card:::#{card.id}/take"
+      post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/take"
 
       expect(game.reload.events).to match_array([
         have_attributes(
@@ -57,13 +57,13 @@ RSpec.describe 'Playing the game', type: :request do
       end
 
       it 'returns an unsuccessful status' do
-        post "/games/#{game.id}/cards/card:::#{card.id}/take"
+        post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/take"
 
         expect(parsed_response).to eq(success: false, code: ErrorCodes::FAILED_TO_TAKE_CARD, message: "Failed to take ownership of card")
       end
 
       it 'does not make me the owner of the card - still owned by the other player' do
-        post "/games/#{game.id}/cards/card:::#{card.id}/take"
+        post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/take"
 
         expect(card.reload).to have_attributes(owner_id: player2_id)
       end
@@ -71,7 +71,7 @@ RSpec.describe 'Playing the game', type: :request do
       it 'Logs the failure to pick up the card' do
         card_name = config.decks.dig('tasks', card.card_id, 'name')
 
-        post "/games/#{game.id}/cards/card:::#{card.id}/take"
+        post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/take"
 
         expect(game.reload.events).to match_array([
           have_attributes(
@@ -107,13 +107,13 @@ RSpec.describe 'Playing the game', type: :request do
       end
 
       it 'returns an unsuccessful status' do
-        post "/games/#{game.id}/cards/card:::#{card.id}/take"
+        post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/take"
 
         expect(parsed_response).to eq(success: false, code: ErrorCodes::FAILED_TO_TAKE_CARD, message: "Failed to take ownership of card")
       end
 
       it 'does not make me the owner of the card - still pending ownership' do
-        post "/games/#{game.id}/cards/card:::#{card.id}/take"
+        post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/take"
 
         expect(card.reload).to have_attributes(owner_id: nil)
       end
@@ -121,7 +121,7 @@ RSpec.describe 'Playing the game', type: :request do
       it 'Logs the failure to pick up the card' do
         card_name = config.decks.dig('tasks', card.card_id, 'name')
 
-        post "/games/#{game.id}/cards/card:::#{card.id}/take"
+        post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/take"
 
         expect(game.reload.events).to match_array([
           have_attributes(
@@ -144,14 +144,14 @@ RSpec.describe 'Playing the game', type: :request do
       end
 
       it 'release any other cards I own' do
-        post "/games/#{game.id}/cards/card:::#{card.id}/take"
+        post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/take"
 
         expect(parsed_response).to eq(success: true)
         expect(top_card.reload).to have_attributes(owner_id: nil)
       end
 
       it 'makes me the card owner' do
-        post "/games/#{game.id}/cards/card:::#{card.id}/take"
+        post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/take"
 
         expect(parsed_response).to eq(success: true)
         expect(card.reload).to have_attributes(owner_id: player1_id)
@@ -160,7 +160,7 @@ RSpec.describe 'Playing the game', type: :request do
       it 'Logs dropping the previous card and picking up the new one' do
         card_name = config.decks.dig('tasks', top_card.card_id, 'name')
 
-        post "/games/#{game.id}/cards/card:::#{card.id}/take"
+        post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/take"
 
         expect(game.reload.events).to match_array([
           have_attributes(
@@ -184,6 +184,15 @@ RSpec.describe 'Playing the game', type: :request do
             }
           )
         ])
+      end
+    end
+
+    context 'if I dont have the correct card location' do
+      it 'fails to take ownership of the card' do
+        post "/games/#{game.id}/cards/card:achievements:pile:#{card.id}/take"
+
+        expect(parsed_response).to eq(code: "FTC", message: "Failed to take ownership of card", success: false)
+        expect(card.reload).to have_attributes(owner_id: nil)
       end
     end
   end

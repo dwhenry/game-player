@@ -59,6 +59,9 @@ RSpec.describe 'moving cards around' do
   context 'when I do own the card' do
     it 'I can drop it on a new stack'
     it 'I lose ownership of the card as I drop it'
-
+    it 'an event is logged'
+    context 'when the card was picked up from a location' do
+      it 'the event has the card id so that other players can render the card'
+    end
   end
 end

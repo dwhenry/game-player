@@ -1,12 +1,12 @@
 class CardOwnership
-  attr_reader :game, :user, :error_message, :error_code, :logger
+  attr_reader :game, :user, :location_id, :stack, :error_message, :error_code, :logger
 
   def self.build(game:, user:, object_ref:)
     type, location_id, stack, id = object_ref.split(":")
 
     case type
     when "card"
-      CardActions.new(game: game, user: user, card_id: id)
+      CardActions.new(game: game, user: user, location_id: location_id, stack: stack, card_id: id)
     when "location"
       LocationActions.new(game: game, user: user, location_id: location_id, stack: stack)
     else
@@ -14,9 +14,11 @@ class CardOwnership
     end
   end
 
-  def initialize(game:, user:)
+  def initialize(game:, user:, location_id:, stack:)
     @game = game
     @user = user
+    @location_id = location_id
+    @stack = stack
     @error_message = "An error occured"
     @error_code = ErrorCodes::UNKNOWN_ERROR
   end
@@ -37,8 +39,8 @@ class CardOwnership
   class CardActions < CardOwnership
     attr_reader :card_id, :card
 
-    def initialize(game:, user:, card_id:)
-      super(game: game, user: user)
+    def initialize(game:, user:, card_id:, location_id:, stack:)
+      super(game: game, user: user, location_id: location_id, stack: stack)
       @card_id = card_id
       @card = game.card_objects.find(card_id)
       @logger = GameLogger.new(game: game, user: user, card_name: card_name(card), object_ref: "card:::#{card_id}")
@@ -59,7 +61,7 @@ class CardOwnership
         game.transaction do
           card = game.card_objects.lock("FOR UPDATE NOWAIT").find_by(id: card_id, owner_id: nil)
 
-          if card
+          if card && card.location_id == location_id && card.stack == stack
             card.update!(owner_id: user)
             logger.pickup_card(location_id: card.location_id, stack: card.stack)
             return true
@@ -67,7 +69,7 @@ class CardOwnership
         end
       rescue ActiveRecord::LockWaitTimeout
       end
-      # only get here on failure - avoid repeatuing this code
+      # only get here on failure - avoid repeating this lookup??
       card ||= game.card_objects.find(card_id)
       logger.failed_pickup(location_id: card.location_id, stack: card.stack)
       error(ErrorCodes::FAILED_TO_TAKE_CARD, "Failed to take ownership of card")
@@ -89,9 +91,7 @@ class CardOwnership
     attr_reader :game, :user, :location_id, :stack
 
     def initialize(game:, user:, location_id:, stack:)
-      super(game: game, user: user)
-      @location_id = location_id
-      @stack = stack
+      super(game: game, user: user, location_id: location_id, stack: stack)
       @logger = GameLogger.new(game: game, user: user, card_name: "#{location_id}(#{stack})", object_ref: "location:#{location_id}:#{stack}:")
     end
 

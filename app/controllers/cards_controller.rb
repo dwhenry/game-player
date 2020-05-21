@@ -15,8 +15,8 @@ class CardsController < ApplicationController
   def move
     ownership = CardOwnership.build(game: game, user: current_player, object_ref: params[:id])
 
-    if ownership.move(location_id: params[:location_id], stack: params[:stack])
-
+    if ownership.move(to_location_id: params[:location_id], to_stack: params[:stack])
+      render json: { success: true }
     else
       render json: { success: false, message: ownership.error_message, code: ownership.error_code }
     end

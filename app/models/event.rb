@@ -3,6 +3,7 @@ class Event < ApplicationRecord
     FAILED_MOVE = "failed_move",
     FAILED_PICKUP = "failed_pickup",
     KEYFRAME = "keyframe",
+    MOVE = "move",
     PICKUP_CARD = "pickup_card",
     PICKUP_LOCATION = "pickup_location",
     RETURNED_CARD = "returned_card"

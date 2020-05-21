@@ -38,6 +38,16 @@ class GameLogger
     )
   end
 
+  def move(location_id:, stack:, card_id:)
+    create_event(
+      Event::MOVE,
+      card_id: card_id,
+      location_id: location_id,
+      stack: stack
+    )
+
+  end
+
   def return_card(location_id:, stack:)
     # "#{user} returned #{card_name} to #{source}"
     create_event(

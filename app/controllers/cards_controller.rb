@@ -3,12 +3,22 @@ class CardsController < ApplicationController
   before_action :validate_player
 
   def take
-    ownership = CardOwnership.new(game: game, user: current_player)
+    ownership = CardOwnership.build(game: game, user: current_player, object_ref: params[:id])
 
-    if ownership.take(params[:id])
+    if ownership.take
       render json: { success: true }
     else
-      render json: { success: false }
+      render json: { success: false, message: ownership.error_message, code: ownership.error_code }
+    end
+  end
+
+  def move
+    ownership = CardOwnership.build(game: game, user: current_player, object_ref: params[:id])
+
+    if ownership.move(to_location_id: params[:location_id], to_stack: params[:stack])
+      render json: { success: true }
+    else
+      render json: { success: false, message: ownership.error_message, code: ownership.error_code }
     end
   end
 
@@ -20,13 +30,13 @@ class CardsController < ApplicationController
 
   def validate_game_state
     if game.state != 'playing'
-      render json: { status: false, error: "Please restart game to make a mode", code: "GRR" }
+      render json: { status: false, error: "Please restart game to make a mode", code: ErrorCodes::GAME_RESTART_REQUIRED }
     end
   end
 
   def validate_player
     unless game.players.keys.include?(current_player)
-      render json: { status: false, error: "NOT A PLAYER", code: "NAP" }
+      render json: { status: false, error: "NOT A PLAYER", code: ErrorCodes::NOT_A_PLAYER }
     end
   end
 

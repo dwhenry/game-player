@@ -10,14 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_09_231323) do
+ActiveRecord::Schema.define(version: 2020_05_11_224844) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
   create_table "cards", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "identity"
     t.uuid "game_id", null: false
     t.string "card_id"
     t.string "location_id", null: false
@@ -28,9 +27,23 @@ ActiveRecord::Schema.define(version: 2020_05_09_231323) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["card_id"], name: "index_cards_on_card_id"
+    t.index ["game_id", "last_move_id"], name: "index_cards_on_game_id_and_last_move_id", unique: true
+    t.index ["game_id", "owner_id"], name: "index_cards_on_game_id_and_owner_id", unique: true
     t.index ["game_id"], name: "index_cards_on_game_id"
-    t.index ["identity"], name: "index_cards_on_identity"
     t.index ["location_id", "stack", "last_move_id"], name: "index_cards_on_location_id_and_stack_and_last_move_id"
+  end
+
+  create_table "events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "game_id", null: false
+    t.bigserial "order", null: false
+    t.string "user", null: false
+    t.string "event_type", null: false
+    t.string "object_ref", null: false
+    t.jsonb "data"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["game_id"], name: "index_events_on_game_id"
+    t.index ["order"], name: "index_events_on_order"
   end
 
   create_table "game_configs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -56,5 +69,6 @@ ActiveRecord::Schema.define(version: 2020_05_09_231323) do
   end
 
   add_foreign_key "cards", "games"
+  add_foreign_key "events", "games"
   add_foreign_key "games", "game_configs"
 end

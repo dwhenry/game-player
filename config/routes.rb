@@ -7,7 +7,10 @@ Rails.application.routes.draw do
     }
 
     resources :cards, only: [] do
-      member { post 'take' }
+      member {
+        post 'take'
+        post 'move'
+      }
     end
   end
 

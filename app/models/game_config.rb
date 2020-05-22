@@ -1,4 +1,7 @@
 class GameConfig < ApplicationRecord
+  validates :name, presence: true
+  has_many :children, class_name: 'GameConfig', foreign_key: :parent_id
+
   def as_json(*)
     # TODO: Fix data model to avoid needing this...
     hash = super

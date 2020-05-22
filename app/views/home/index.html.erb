@@ -29,36 +29,37 @@
     <table class="u-full-width">
       <thead>
         <tr>
-          <th>Version</th>
+          <th>Name</th>
           <th>Cards</th>
-          <th>Parent</th>
-          <th>Locked</th>
+          <th>Players</th>
           <th></th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        <% GameConfig.order(updated_at: :desc).each do |game_config| %>
-          <tr>
-            <td><%= game_config.id.split('-').first %></td>
-            <td>
-              <% game_config.decks.each do |deckname, cards| %>
-                <div>
-                  <%= "#{deckname}: #{cards.count}" %>
-                </div>
-              <% end %>
-            </td>
-            <td><%= game_config.parent_id&.split('-')&.first || '-' %></td>
-            <td><%= game_config.locked ? 'Yes' : 'No' %></td>
-            <td><%= link_to "Start Game", new_game_path(game_config_id: game_config.id) %></td>
-            <td>
-              <% if game_config.locked %>
-                <%= link_to "Clone", new_game_config_path(parent_id: game_config.id) %>
-              <% else %>
-                <%= link_to "Edit", edit_game_config_path(game_config) %>
-              <% end %>
-            </td>
-          </tr>
+        <% @game_configs.each do |game_config| %>
+          <%= form_for games_path(game_config_id: game_config.id) do |f| %>
+            <tr>
+              <td><%= game_config.name %></td>
+              <td>
+                <% game_config.decks.each do |deckname, cards| %>
+                  <div>
+                    <%= "#{deckname}: #{cards.count}" %>
+                  </div>
+                <% end %>
+              </td>
+              <td><%= f.select :players, options_for_select((2..4).to_a, 4), {}, data: {players: game_config.id} %></td>
+              <td>
+                <%= f.submit "Start Game" %>
+                <br>
+                <% if game_config.locked %>
+                  <%= link_to "Clone", new_game_config_path(parent_id: game_config.id) %>
+                <% else %>
+                  <%= link_to "Edit", edit_game_config_path(game_config) %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
         <% end %>
       </tbody>
     </table>

@@ -7,24 +7,29 @@ RSpec.feature 'Full stack tests', type: :feature, js: true do
     _then.  i_should_be_in_a_running_game
   end
 
-  scenario 'I can move a card around' do
-    _given. a_game_exist(players: [me, opponent])
-    _when.  i_move_card_to_my_hand
-    _then.  i_should_have_the_card_in_my_hand
-  end
+  # scenario 'I can move a card around' do
+  #   _given. a_game_exist(players: [me, opponent])
+  #   _when.  i_move_card_to_my_hand
+  #   _then.  i_should_have_the_card_in_my_hand
+  # end
+  #
+  # scenario 'my oppenent can move a card around' do
+  #   _given. a_game_exist(players: [me, opponent])
+  #   _when.  my_opponent_moves_the_card_to_his_hand
+  #   _then.  i_should_see_the_card_in_my_opponents_hand
+  # end
 
-  scenario 'my oppenent can move a card around' do
-    _given. a_game_exist(players: [me, opponent])
-    _when.  my_opponent_moves_the_card_to_his_hand
-    _then.  i_should_see_the_card_in_my_opponents_hand
-  end
+  let(:me) { 'Jim' }
+  let(:opponent) { 'Bob' }
 
-  let(:me) { SecureRandom.uuid }
-  let(:opponent) { SecureRandom.uuid }
+  let!(:config) { FactoryBot.create(:game_config, :single_task) }
 
   def i_create_a_game(players:)
-    # visit '/'
-    :a
+    visit root_path
+
+    select 4, from: "[data-players=#{config.id}]"
+
+    click_on "Start Game"
   end
 
   def _given; Chain.new(self, __method__); end

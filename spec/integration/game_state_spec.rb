@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Playing the game', type: :request do
   let(:config) { FactoryBot.create(:game_config, :single_task) }
   let(:card_id) { config.decks["tasks"].keys.first }
-  let(:player_id) { SecureRandom.uuid }
+  let(:player_id) { 'Jim Bob' }
 
   before do
     cookies[:username] = player_id
@@ -15,9 +15,9 @@ RSpec.describe 'Playing the game', type: :request do
       post "/games", params: { game_config_id: config.id, players: 3 }
     end
 
-    it 'creates a game with specific number of player slots' do
+    it 'creates a game with specific number of player slots and the created assigned to the game' do
       expect(game.players.size).to eq(3)
-      expect(game.players.values.uniq).to eq(["__FUCK YOU_PHILE__"])
+      expect(game.players.values.uniq).to eq([player_id, "__FUCK YOU_PHILE__"])
     end
 
     it 'locks the config for editing' do
@@ -80,8 +80,8 @@ RSpec.describe 'Playing the game', type: :request do
       post "/games/#{game.id}/join"
     end
 
-    it 'has a state of ready-to-play' do
-      expect(game.reload).to have_attributes(state: 'ready-to-play')
+    it 'has a state of playing' do
+      expect(game.reload).to have_attributes(state: 'playing')
     end
 
     xit 'will not allow games moves to be taken'
@@ -92,47 +92,6 @@ RSpec.describe 'Playing the game', type: :request do
       post "/games/#{game.id}/join"
 
       expect(response).to redirect_to(root_path)
-    end
-
-    context 'starting the game' do
-      let(:cards) { game.card_objects }
-      before do
-        post "/games/#{game.id}/start"
-      end
-
-      it 'will populate the cards table from the game object representation' do
-        expect(cards.map(&:attributes)).to match([
-          hash_including(
-            "game_id" => game.id,
-            "card_id" => card_id,
-            "location_id" => "tasks",
-            "stack" => "pile",
-            "stage" => 0,
-            "last_move_id" => 0
-          ),
-          hash_including(
-            "game_id" => game.id,
-            "card_id" => card_id,
-            "location_id" => "tasks",
-            "stack" => "pile",
-            "stage" => 0,
-            "last_move_id" => 1
-          )
-        ])
-      end
-
-      it 'will move the game state to playing' do
-        expect(game.reload).to have_attributes(state: 'playing')
-      end
-
-      xit 'will allow games moves to be taken'
-      xit 'gives a sensibkle response if two people try and start the game'
-
-      it 'can not be started a second time' do
-        travel_to(5.minutes.from_now) do
-          expect { post "/games/#{game.id}/start" }.not_to change { cards.reload.pluck(:updated_at) }
-        end
-      end
     end
   end
 

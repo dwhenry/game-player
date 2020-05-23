@@ -15,6 +15,9 @@
         <h1 class="inline">
           <%= link_to 'Games Testing Arena', root_path %>
         </h1>
+        <div class="top-right">
+          <%= yield :top_right if content_for? :top_right %>
+        </div>
         <h3 class="inline"><%= yield :title %></h3>
       </div>
       <%= yield %>

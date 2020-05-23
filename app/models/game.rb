@@ -46,9 +46,9 @@ class Game < ApplicationRecord
       key, _ = players.detect { |_, v| v == PENDING_PLAYER }
       players[key] = username
 
-      self.state = 'ready-to-play' if ready?
-
       save!
+
+      play if ready?
 
       key
     end

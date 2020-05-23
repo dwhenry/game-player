@@ -16,5 +16,7 @@ Rails.application.routes.draw do
 
   resources :game_configs
 
+  post '/player_name' => 'home#player', as: :player_name
+
   root 'home#index'
 end

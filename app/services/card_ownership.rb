@@ -56,6 +56,7 @@ class CardOwnership
           )
           logger.move(location_id: to_location_id, stack: to_stack, card_id: card.id)
         end
+        card
       else
         logger.failed_move_to(location_id: to_location_id, stack: to_stack)
         error(ErrorCodes::NOT_YOUR_CARD, "not your card to move")
@@ -113,6 +114,7 @@ class CardOwnership
         )
         logger.move(location_id: to_location_id, stack: to_stack, card_id: card.id)
       end
+      card
     rescue ActiveRecord::LockWaitTimeout, ActiveRecord::RecordNotFound
       logger.failed_move_to(location_id: to_location_id, stack: to_stack)
       error(ErrorCodes::NOT_YOUR_CARD, "not your card to move")

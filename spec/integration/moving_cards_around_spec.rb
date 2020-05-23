@@ -21,7 +21,7 @@ RSpec.describe 'moving cards around' do
 
   context 'when I do not own the card' do
     before do
-      card.update(owner_id: player2_id)
+      card.update!(owner_id: player2_id)
     end
 
     it 'I can not move the card' do

@@ -18,16 +18,7 @@ This allows us to play an online card game in 'real time'.
 
 ## TODO:
 
-- [x] write some JS tests
-  - [x] Improve data model in the UI
-  - [x] Allow async moving of cards
-  - [x] Replace GIL with cards based locking
 - [ ] Make backend work with current state
-- [x] ~Add user move ID to take/move request... this is required to ensure valid~ 
-      ~card ownership (could just be timestamp??) when multiple moves are queued~
-      Not required as moves will now be atomic
-- [x] Ownership expiry - ~this is currently set to 10 seconds in redis so we need~ 
-      ~to ping when we have a card to keep it alive~ 
 - [ ] Get a proper auth strategy in place
 - [ ] Remove the min-cards param for locations - fix in config??
 - [ ] Better session security
@@ -42,10 +33,25 @@ This allows us to play an online card game in 'real time'.
   - [ ] Fiverr a designer.
 - [ ] write a node FE that wraps the ruby FE and uses websockets (I don't think this needs a rewrite)
 
-### Technical
+### Done
+- [x] write some JS tests
+  - [x] Improve data model in the UI
+  - [x] Allow async moving of cards
+  - [x] Replace GIL with cards based locking
+- [x] Ownership expiry - ~this is currently set to 10 seconds in redis so we need~ 
+      ~to ping when we have a card to keep it alive~ 
+- [x] ~Add user move ID to take/move request... this is required to ensure valid~ 
+      ~card ownership (could just be timestamp??) when multiple moves are queued~
+      Not required as moves will now be atomic
 
+
+## Technical TODO
+
+- [ ] Replace decks with flattened card model in teh game config
+- [ ] Move to Puma
+- [ ] Encrypt cookies so they can't be modified
+
+### Done
 - [x] Rename object_id to object_ref as object_id is important in rails
 - [x] ~replace card.id with card.identity in the JS~ reverted to using ID
-- [ ] Move to Puma
-- [ ] Encrypt cookies sop they can't be modified
-- [ ] Write some full integration tests (~cucumber?~)
+- [x] Write some full integration tests (~cucumber?~ rspec + capybara)

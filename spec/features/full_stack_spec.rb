@@ -27,9 +27,19 @@ RSpec.feature 'Full stack tests', type: :feature, js: true do
   def i_create_a_game(players:)
     visit root_path
 
-    select 4, from: "[data-players=#{config.id}]"
+    within(%[tr[data-selector="config-#{config.id}"]]) do
+      select 2
 
-    click_on "Start Game"
+      click_on "Start Game"
+    end
+  end
+
+  def my_opponent_joins_the_game
+
+  end
+
+  def i_should_be_in_a_running_game
+
   end
 
   def _given; Chain.new(self, __method__); end

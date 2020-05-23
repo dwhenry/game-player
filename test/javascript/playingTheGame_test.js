@@ -41,8 +41,8 @@ describe('Playing the game', () => {
     ownershipPromiseResolver({success: true});
 
     dropCard(
-      objectId, 
-      { locationId: initialGameState.locations[0].id, stack: 'pile' }, 
+      objectId,
+      { locationId: initialGameState.locations[0].id, stack: 'pile' },
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
     // check the local view is up to date
@@ -62,7 +62,7 @@ describe('Playing the game', () => {
     // check it updated the objectId on the card
     let playerCards = getCards(initialGameState.locations[1].id + '-hand')
     expect(playerCards[0].objectId).toMatch(/^card:/);
-  }); 
+  });
 
   it("Can process other player card move events", async () => {
     let card = initialGameState.cards[0]
@@ -106,8 +106,8 @@ describe('Playing the game', () => {
     await new Promise(setImmediate)
 
     dropCard(
-      objectId, 
-      { locationId: initialGameState.locations[0].id, stack: 'pile' }, 
+      objectId,
+      { locationId: initialGameState.locations[0].id, stack: 'pile' },
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
     // check the local view is up to date
@@ -123,8 +123,8 @@ describe('Playing the game', () => {
     let objectId = pickupCard(0, ownershipPromise)
 
     dropCard(
-      objectId, 
-      { locationId: initialGameState.locations[0].id, stack: 'pile' }, 
+      objectId,
+      { locationId: initialGameState.locations[0].id, stack: 'pile' },
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
     matchPageState([
@@ -137,7 +137,7 @@ describe('Playing the game', () => {
 
     // we need to wait for all pormises to be resolved
     await act(() => new Promise(setImmediate));
-  
+
     // check the local view is up to date
     matchPageState(initialBoardState);
 
@@ -151,8 +151,8 @@ describe('Playing the game', () => {
     let objectId = pickupCard(0, ownershipPromise)
 
     dropCard(
-      objectId, 
-      { locationId: initialGameState.locations[0].id, stack: 'pile' }, 
+      objectId,
+      { locationId: initialGameState.locations[0].id, stack: 'pile' },
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
     matchPageState([
@@ -186,7 +186,7 @@ describe('Playing the game', () => {
       "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
       "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
       "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card", ]);
-    
+
     // This is now a NO-OP but we should still resolve events..
     // enabling this actually causes in with unwatching which I don't understand...
     // await ownershipPromiseResolver({success: false});
@@ -220,22 +220,22 @@ describe('Playing the game', () => {
     } else {
       let realObjectId = objectId.replace(/-[^-]+$/, ''); // drop position element for face down card stacks
       let card = initialGameState.cards.find(c => c.objectId === realObjectId)
-  
+
       mockEventsResponse = {
         events: events(objectId).map((event) => {
           return {
-            ...event, 
+            ...event,
             card: {
-              ...card, 
-              visible: 'face', 
-              stackId: event.to.locationId + '-' + event.to.stack, 
+              ...card,
+              visible: 'face',
+              stackId: event.to.locationId + '-' + event.to.stack,
               objectId: 'card:' + card.id + ':' ,
               name: 'Test Card',
               count: null
             }
           }
         })
-      }  
+      }
     }
 
 
@@ -250,11 +250,11 @@ describe('Playing the game', () => {
       let cards = getCards(card.stackId)
       objectId = cards[cards.length - 1].objectId;
     }
-  
+
     let startingNode = document.querySelector(".card-" + card.id);
 
     fetchMock.post({url: '/games/' + initialGameState.id + '/ownership/' + objectId}, ownershipPromise);
-    
+
     startingNode.dispatchEvent(
       createBubbledEvent("dragstart", { dataTransfer: mockDataTransfer, clientX: 0, clientY: 0 })
     );
@@ -265,7 +265,7 @@ describe('Playing the game', () => {
     let endingNode = elem.getByTestId(toStack.locationId + '-' + toStack.stack);
 
     let mockDropEvent = {
-      event: 'cardMove', 
+      event: 'cardMove',
       data: {
         // timestamp: new Date().getTime(), // as we can't get the same value that will be set in the code for this wwe will instead use partial matching
         objectId: objectId,
@@ -310,7 +310,7 @@ describe('Playing the game', () => {
       name: "Test 123",
       game_config_id: 'Config-111',
       cards: [
-        { 
+        {
           id: nextUuid(),
           deck: 'tasks',
           visible: 'back',
@@ -323,17 +323,14 @@ describe('Playing the game', () => {
         {
           id: taskLocationId,
           name: 'Tasks',
-          deck: 'tasks',
           type: 'deck',
         },
         {
-          status: "starting",
           id: player1Id,
           name: "Make me editable",
           type: 'player',
         },
         {
-          status: "starting",
           id: player2Id,
           name: "Player 2",
           type: 'player',

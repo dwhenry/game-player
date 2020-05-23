@@ -12,7 +12,7 @@ RSpec.describe 'Playing the game', type: :request do
   context 'initialising a game from a config' do
     let(:game) { Game.last }
     before do
-      get "/games/new", params: { game_config_id: config.id, players: 3 }
+      post "/games", params: { game_config_id: config.id, players: 3 }
     end
 
     it 'creates a game with specific number of player slots' do

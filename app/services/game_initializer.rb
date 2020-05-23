@@ -1,4 +1,6 @@
 class GameInitializer
+  class InvalidNumberOfPlayers < StandardError; end
+  PLAYERS = (2..6)
   attr_reader :config
 
   def initialize(config)
@@ -6,6 +8,7 @@ class GameInitializer
   end
 
   def call(players: 6)
+    raise InvalidNumberOfPlayers unless PLAYERS.cover?(players)
     params = {}
     players_config = players.times.each_with_object({}) do |_, hash|
       uuid = SecureRandom.uuid
@@ -18,7 +21,7 @@ class GameInitializer
       cards: locations,
       players: players_config,
       params: params,
-      name: "Game: #{SecureRandom.base64(8)}",
+      name: "#{config.name}: #{Date.today}",
       state: 'waiting-for-players',
       sprint: 0,
     )

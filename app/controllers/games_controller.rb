@@ -1,5 +1,5 @@
 class GamesController < ApplicationController
-  def new
+  def create
     config = GameConfig.find(params[:game_config_id])
 
     config.update(locked: true)

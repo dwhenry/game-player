@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import CardStack from "./CardStack";
 
 
-const Location = (props) => {  
+const Location = (props) => {
   function sentenceCase (str) {
     return str.replace(/[a-z]/i, function (letter) {
       return letter.toUpperCase();
@@ -11,15 +11,15 @@ const Location = (props) => {
   }
 
   return (
-    <div className={"location location-" + props.deck}>
+    <div className={"location location-" + props.id}>
       <div className="location__title">{props.name}</div>
       <div className="row">
         {props.stacks.map(([name, stack]) => {
           return <CardStack key={props.id + '-' + stack}
-                            locationId={props.id} 
-                            name={name} 
+                            locationId={props.id}
+                            name={name}
                             size="small"
-                            stack={stack} 
+                            stack={stack}
                             {...props.params[stack]} />
         })}
       </div>
@@ -30,7 +30,6 @@ const Location = (props) => {
 Location.propTypes = {
   id: PropTypes.string,
   name: PropTypes.string,
-  deck: PropTypes.string,
   stacks: PropTypes.array,
   params: PropTypes.object,
 };

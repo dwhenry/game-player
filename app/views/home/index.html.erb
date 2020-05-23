@@ -38,8 +38,8 @@
       </thead>
       <tbody>
         <% @game_configs.each do |game_config| %>
-          <%= form_for games_path(game_config_id: game_config.id) do |f| %>
-            <tr>
+          <%= form_tag games_path(game_config_id: game_config.id) do %>
+            <tr data-selector="config-<%= game_config.id %>">
               <td><%= game_config.name %></td>
               <td>
                 <% game_config.decks.each do |deckname, cards| %>
@@ -48,9 +48,9 @@
                   </div>
                 <% end %>
               </td>
-              <td><%= f.select :players, options_for_select((2..4).to_a, 4), {}, data: {players: game_config.id} %></td>
+              <td><%= select_tag :players, options_for_select((2..4).to_a, 4) %></td>
               <td>
-                <%= f.submit "Start Game" %>
+                <%= submit_tag "Start Game" %>
                 <br>
                 <% if game_config.locked %>
                   <%= link_to "Clone", new_game_config_path(parent_id: game_config.id) %>

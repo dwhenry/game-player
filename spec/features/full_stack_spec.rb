@@ -51,8 +51,8 @@ RSpec.feature 'Full stack tests', type: :feature, js: true do
 
   def game_should_have_player(player_name)
     expect(game.reload.players.values).to include(player_name)
-binding.pry
-    expect(page).to have_css('.player__title', text: /#{player_name}/)
+
+    expect(page).to have_css('.player__title', text: player_name)
   end
 
   def my_opponent_joins_the_game

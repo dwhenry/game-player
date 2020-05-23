@@ -12,6 +12,8 @@ Rails.application.routes.draw do
         post 'move'
       }
     end
+
+    resources :events, only: [:index]
   end
 
   resources :game_configs

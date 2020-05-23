@@ -86,7 +86,10 @@ RSpec.describe GameRender do
           },
           params: {
             player_1_id => { 'cash' => 10, 'energy' => 0, 'sp' => 0 },
-            player_2_id => { 'cash' => 10, 'energy' => 0, 'sp' => 0 }
+            player_2_id => { 'cash' => 10, 'energy' => 0, 'sp' => 0 },
+            'tasks' => { 'fu_cards' => { 'min_cards' => 2 } },
+            'achievements' => { 'fu_cards' => { 'min_cards' => 2 } },
+            'employees' => { 'fu_cards' => { 'min_cards' => 2 } },
           }
         )
       )
@@ -198,7 +201,10 @@ RSpec.describe GameRender do
           },
           params: {
             player_1_id => { 'cash' => 10, 'energy' => 0, 'sp' => 0 },
-            player_2_id => { 'cash' => 10, 'energy' => 0, 'sp' => 0 }
+            player_2_id => { 'cash' => 10, 'energy' => 0, 'sp' => 0 },
+            'tasks' => { 'fu_cards' => { 'min_cards' => 2 } },
+            'achievements' => { 'fu_cards' => { 'min_cards' => 2 } },
+            'employees' => { 'fu_cards' => { 'min_cards' => 2 } },
           }
         )
       )
@@ -290,52 +296,4 @@ RSpec.describe GameRender do
       end
     end
   end
-    # context "When"
-    # context "when all the cards are facedo"
-    #   it "Renders "
-
-  # {
-  #   id: nextUuid(),
-  #   name: "Test 123",
-  #   game_config_id: 'Config-111',
-  #   cards: [
-  #     {
-  #       id: nextUuid(),
-  #       deck: 'tasks',
-  #       visible: 'back',
-  #       stackId: taskLocationId + '-pile',
-  #       objectId: 'location:tasks:pile',
-  #       count: 10
-  #     }
-  #   ],
-  #   locations: [
-  #     {
-  #       id: taskLocationId,
-  #       name: 'Tasks',
-  #       deck: 'tasks',
-  #       type: 'deck',
-  #     },
-  #     {
-  #       status: "starting",
-  #       id: player1Id,
-  #       name: "Make me editable",
-  #       type: 'player',
-  #     },
-  #     {
-  #       status: "starting",
-  #       id: player2Id,
-  #       name: "Player 2",
-  #       type: 'player',
-  #     },
-  #   ],
-  #   stacks: {
-  #     deck: [['Backlog', 'pile'], ['Discard', 'discard'], ['Face up', 'fu_cards']],
-  #     player: [['Backlog', 'pile'], ['Board', 'board'], ['Face up', 'fu_cards'], ['Staff', 'employees'], ['Hand', 'hand']],
-  #   },
-  #   params: {
-  #     [taskLocationId]: { fu_cards: { min_cards: 2 } },
-  #   [player1Id]: {cash: 0, energy: 0, sp: 0},
-  #   [player2Id]: {cash: 0, energy: 0, sp: 0},
-  # }
-
 end

@@ -43,19 +43,18 @@ export async function ajaxUpdate(data, error) {
   if(response.success) {
     let json = response.json();
     window.update_board(json.locations, json.players, json.next_action);
-  } 
+  }
 }
 
 export async function getUpdates() {
   let lastUpdateTimestamp = 0; //new Date().getTime();
 
-  const response = await fetch('/games/' + window.gameBoardId + '/events', {
+  const response = await fetch('/games/' + window.gameBoardId + '/events?since=' + lastUpdateTimestamp, {
     method: 'GET',
     headers: {
-      "X-CSRF-Token": getCSRFToken(),
+      // "X-CSRF-Token": getCSRFToken(),
       'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({since: lastUpdateTimestamp}),
+    }
   });
   return response.json();
 }

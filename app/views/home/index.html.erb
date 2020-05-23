@@ -1,7 +1,7 @@
 <%= content_for :top_right do %>
   <div class="player-config" data-selector="player">
     <%= form_tag player_name_path do %>
-      <%= label_tag :name, "Name" %>
+      <%= label_tag :name, "Player name" %>
       <%= text_field_tag :name, player_name %>
       <%= submit_tag "Update" %>
     <% end %>
@@ -14,18 +14,18 @@
   <table class="u-full-width">
     <thead>
     <tr>
-      <th>Game Version</th>
-      <th>Config Version</th>
+      <th>Game</th>
+      <th>State</th>
       <th>Players</th>
       <th>Sprint</th>
     </tr>
     </thead>
     <tbody>
     <% Game.order(updated_at: :desc).each do |game| %>
-      <tr>
-        <td><%= link_to game.id.split('-').first, game_path(game) %></td>
-        <td><%= game.game_config_id.split('-').first %></td>
-        <td><%= game.player_stacks(status: 'active').map { |player| player['id'] }.join(', ') %></td>
+      <tr onclick="window.location='<%= game_path(game) %>';" title="Config: <%= game.game_config.name %>">
+        <td><%= game.name %></td>
+        <td><%= game.state %></td>
+        <td><%= game.players.values.map { |name| name == Game::PENDING_PLAYER ? "-" : name }.join(', ') %></td>
         <td><%= game.sprint %></td>
       </tr>
     <% end %>

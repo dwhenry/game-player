@@ -6,15 +6,18 @@ import CardActions from "./CardActions";
 import Dices from "./Dices";
 import { setCards, pollEvents } from '../state/CardState';
 
-setInterval(pollEvents, 5000);
-
 const GameBoard = (props) =>  {
   window.gameBoardId = props.id;
 
   const [displayCard, setDisplayCard] = useState(false);
   const [card, setCard] = useState();
-  const [params, setParams] = useState(props.params); 
-  
+  const [params, setParams] = useState(props.params);
+
+  useEffect(() => {
+    let interval = setInterval(pollEvents, 5000);
+    return () => { clearInterval(interval) }
+  })
+
   setCards(props.cards);
 
   // TODO: stop these being window functions and final a better way to pass state

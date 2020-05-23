@@ -33,7 +33,7 @@ RSpec.feature 'Full stack tests', type: :feature, js: true do
     visit root_path
 
     within(%{[data-selector="player"]}) do
-      fill_in "Name", with: name
+      fill_in "Player name", with: name
 
       click_on "Update"
     end
@@ -51,8 +51,8 @@ RSpec.feature 'Full stack tests', type: :feature, js: true do
 
   def game_should_have_player(player_name)
     expect(game.reload.players.values).to include(player_name)
-
-    # we should also valida the player is present in the view... :)
+binding.pry
+    expect(page).to have_css('.player__title', text: /#{player_name}/)
   end
 
   def my_opponent_joins_the_game

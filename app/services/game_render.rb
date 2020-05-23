@@ -19,7 +19,11 @@ class GameRender
         deck: [['Backlog', 'pile'], ['Discard', 'discard'], ['Face up', 'fu_cards']],
         player: [['Backlog', 'pile'], ['Board', 'board'], ['Face up', 'fu_cards'], ['Staff', 'employees'], ['Hand', 'hand']],
       },
-      params: game.params
+      params: game.params.merge(
+        'tasks' => { 'fu_cards' => { 'min_cards' => 2 } },
+        'achievements' => { 'fu_cards' => { 'min_cards' => 2 } },
+        'employees' => { 'fu_cards' => { 'min_cards' => 2 } },
+      )
     }
   end
 

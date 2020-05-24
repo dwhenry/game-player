@@ -43,9 +43,10 @@ export const updateCard = (event) => {
 
 export const setCards = (cards) => {
   cards.forEach((c) => {
-    if(cardsByStack[c.stackId] == undefined) cardsByStack[c.stackId] = [];
-    if(c.objectLocator =~ /^location:/) {
-      cardsByStack[c.stackId].push({...c, objectLocator: c.objectLocator + "-" + Math.random().toString(36).substr(2, 9)});
+    if(cardsByStack[c.stackId] === undefined) cardsByStack[c.stackId] = [];
+    if(c.objectLocator.match(/^location:/)) {
+      let locator = c.objectLocator + Math.random().toString(36).substr(2, 9);
+      cardsByStack[c.stackId].push({...c, objectLocator: locator});
     } else {
       cardsByStack[c.stackId].push(c);
     }
@@ -75,10 +76,10 @@ const revertPhantomEvents = (objectLocator) => {
     from: { locationId: lastEvent.to.locationId, stack: lastEvent.to.stack },
     to: { locationId: returnEvent.from.locationId, stack: returnEvent.from.stack },
     timestamp: new Date().getTime()
-  }
+  };
 
   updateCard(revertEvent)
-}
+};
 
 export function addEvent(objectLocator, event) {
   let events = ownershipEvents[objectLocator];

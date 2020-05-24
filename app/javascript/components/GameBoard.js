@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState } from "react"
 import PropTypes from "prop-types"
 import Location from "./Location";
 import Player from "./Player";
 import CardActions from "./CardActions";
 import Dices from "./Dices";
-import { setCards, pollEvents } from '../state/CardState';
+import { pollEvents } from '../state/CardState';
 
 const GameBoard = (props) =>  {
   window.gameBoardId = props.id;
@@ -13,28 +13,17 @@ const GameBoard = (props) =>  {
   const [card, setCard] = useState();
   const [params, setParams] = useState(props.params);
 
-  if(!props.skipPolling) {
-    useEffect(() => {
-      let interval = setInterval(pollEvents, 5000);
-      return () => {
-        clearInterval(interval)
-      }
-    })
-  }
-
-  setCards(props.cards);
-
   // TODO: stop these being window functions and final a better way to pass state
   window.setCard = (newCard) => {
     setCard(newCard);
     setDisplayCard(true)
   };
 
-  window.update_board = (locations, players, next_action) => {
-    setLocations(locations);
-    setPlayers(players);
-    window.actionId = nextAction;
-  };
+  // window.update_board = (locations, players, next_action) => {
+  //   setLocations(locations);
+  //   setPlayers(players);
+  //   window.actionId = nextAction;
+  // };
 
   function removeCard(event) {
     if(event.target === event.currentTarget)
@@ -44,6 +33,7 @@ const GameBoard = (props) =>  {
   return (
     <div>
       <div className="game__title">{props.name}</div>
+      <a href="#" onClick={pollEvents}>Manually Poll</a>
       <div className="row">
           <Dices />
       </div>
@@ -74,7 +64,6 @@ GameBoard.propTypes = {
   cards: PropTypes.array,
   locations: PropTypes.array,
   stacks: PropTypes.object,
-  params: PropTypes.object,
-  skipPolling: PropTypes.bool,
+  params: PropTypes.object
 };
 export default GameBoard

@@ -147,7 +147,7 @@ const processEvents = (events) => {
       case "pickup_location":
         break;
       case "player_join":
-        setters.setLocations(events.players);
+        setters.setLocations(event.data.players);
         break;
       case "returned_card":
         break;

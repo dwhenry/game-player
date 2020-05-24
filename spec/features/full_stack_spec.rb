@@ -7,6 +7,7 @@ RSpec.feature 'Full stack tests', type: :feature, js: true do
     _then.  game_should_have_player(me)
 
     _when.  my_opponent_joins_the_game
+    _and.   i_manually_poll_for_events
     _then.  game_should_have_player(opponent)
     _and.   i_should_be_in_a_running_game
   end
@@ -59,7 +60,12 @@ RSpec.feature 'Full stack tests', type: :feature, js: true do
     game.join(opponent)
   end
 
+  def i_manually_poll_for_events
+    click_on "Manually Poll"
+  end
+
   def i_should_be_in_a_running_game
+    expect(game.reload.state).to eq("playing")
 
   end
 

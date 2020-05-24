@@ -1,7 +1,7 @@
 import React from 'react';
 import fetchMock from 'fetch-mock';
 import { render, act } from '@testing-library/react';
-import GameBoard from '../../app/javascript/components/GameBoard'
+import GameBoardSetter from '../../app/javascript/components/GameBoardSetter'
 import { events, pollEvents, getCards } from '../../app/javascript/state/CardState'
 
 jest.useFakeTimers();
@@ -21,7 +21,7 @@ describe('Playing the game', () => {
     mockDataTransfer = MockDataTransfer();
 
     act(() => {
-      elem = render(<GameBoard {...initialGameState} />);
+      elem = render(<GameBoardSetter {...initialGameState} />);
     });
 
     done()

@@ -55,14 +55,14 @@ RSpec.describe GameRender do
           deck: 'tasks',
           visible: 'back',
           stackId: 'tasks-pile',
-          objectRef: 'location:tasks:pile',
+          objectLocator: 'location:tasks:pile',
         },
         {
           id: an_instance_of(String),
           deck: 'tasks',
           visible: 'back',
           stackId: 'tasks-pile',
-          objectRef: 'location:tasks:pile',
+          objectLocator: 'location:tasks:pile',
         }
       ])
     end
@@ -115,20 +115,20 @@ RSpec.describe GameRender do
           deck: 'tasks',
           visible: 'back',
           stackId: 'tasks-pile',
-          objectRef: 'location:tasks:pile',
+          objectLocator: 'location:tasks:pile',
         },
         {
           id: an_instance_of(String),
             deck: 'tasks',
             visible: 'back',
             stackId: 'tasks-pile',
-            objectRef: 'location:tasks:pile',
+            objectLocator: 'location:tasks:pile',
         }
       ])
     end
 
     context "when cards are in a players hand" do
-      let(:owner) { CardOwnership.build(game: game, user: player_1_id, object_ref: 'location:tasks:pile') }
+      let(:owner) { CardOwnership.build(game: game, user: player_1_id, object_locator: 'location:tasks:pile') }
       let!(:card) do
         owner.take
         owner.move(to_location_id: player_1_id, to_stack: 'hand')
@@ -142,7 +142,7 @@ RSpec.describe GameRender do
               deck: 'tasks',
               visible: 'back',
               stackId: 'tasks-pile',
-              objectRef: 'location:tasks:pile',
+              objectLocator: 'location:tasks:pile',
             },
             {
               id: card.id,
@@ -154,7 +154,7 @@ RSpec.describe GameRender do
               actions: "+1 Employee",
               visible: "face",
               stackId: "#{player_1_id}-hand",
-              objectRef: "card:#{player_1_id}:hand:#{card.id}"
+              objectLocator: "card:#{player_1_id}:hand:#{card.id}"
             }
           )
         )
@@ -168,14 +168,14 @@ RSpec.describe GameRender do
             deck: 'tasks',
             visible: 'back',
             stackId: 'tasks-pile',
-            objectRef: 'location:tasks:pile',
+            objectLocator: 'location:tasks:pile',
           },
           {
             id: card.id,
             deck: "tasks",
             visible: "back",
             stackId: "#{player_1_id}-hand",
-            objectRef: "card:#{player_1_id}:hand:#{card.id}"
+            objectLocator: "card:#{player_1_id}:hand:#{card.id}"
           }
         ])
       end
@@ -230,20 +230,20 @@ RSpec.describe GameRender do
           deck: 'tasks',
           visible: 'back',
           stackId: 'tasks-pile',
-          objectRef: 'location:tasks:pile',
+          objectLocator: 'location:tasks:pile',
         },
         {
           id: an_instance_of(String),
           deck: 'tasks',
           visible: 'back',
           stackId: 'tasks-pile',
-          objectRef: 'location:tasks:pile',
+          objectLocator: 'location:tasks:pile',
         }
       ])
     end
 
     context "when cards are in a players hand" do
-      let(:owner) { CardOwnership.build(game: game, user: player_1_id, object_ref: 'location:tasks:pile') }
+      let(:owner) { CardOwnership.build(game: game, user: player_1_id, object_locator: 'location:tasks:pile') }
       let!(:card) do
         game.play
         owner.take
@@ -260,7 +260,7 @@ RSpec.describe GameRender do
               deck: 'tasks',
               visible: 'back',
               stackId: 'tasks-pile',
-              objectRef: 'location:tasks:pile',
+              objectLocator: 'location:tasks:pile',
             },
             {
               id: card.id,
@@ -272,7 +272,7 @@ RSpec.describe GameRender do
               actions: "+1 Employee",
               visible: "face",
               stackId: "#{player_1_id}-hand",
-              objectRef: "card:#{player_1_id}:hand:#{card.id}"
+              objectLocator: "card:#{player_1_id}:hand:#{card.id}"
             }
           )
         )
@@ -286,14 +286,14 @@ RSpec.describe GameRender do
             deck: 'tasks',
             visible: 'back',
             stackId: 'tasks-pile',
-            objectRef: 'location:tasks:pile',
+            objectLocator: 'location:tasks:pile',
           },
           {
             id: card.id,
             deck: "tasks",
             visible: "back",
             stackId: "#{player_1_id}-hand",
-            objectRef: "card:#{player_1_id}:hand:#{card.id}"
+            objectLocator: "card:#{player_1_id}:hand:#{card.id}"
           }
         ])
       end

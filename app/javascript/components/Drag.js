@@ -21,8 +21,8 @@ const Drag = props => {
 
     const startDrag = ev => {
         setIsDragging(true);
-        let [objectRef, locationId, stack] = props.dataItem;
-        takeOwnership({objectRef: objectRef})
+        let [objectLocator, locationId, stack] = props.dataItem;
+        takeOwnership({objectLocator: objectLocator})
         ev.dataTransfer.setData("drag-item", props.dataItem);
         ev.dataTransfer.effectAllowed = props.dropEffect;
         if (image.current) {

@@ -3,7 +3,7 @@ class CardsController < ApplicationController
   before_action :validate_player
 
   def take
-    ownership = CardOwnership.build(game: game, user: game_player_id(game), object_ref: params[:id])
+    ownership = CardOwnership.build(game: game, user: game_player_id(game), object_locator: params[:id])
 
     if ownership.take
       render json: { success: true }
@@ -13,7 +13,7 @@ class CardsController < ApplicationController
   end
 
   def move
-    ownership = CardOwnership.build(game: game, user: game_player_id(game), object_ref: params[:id])
+    ownership = CardOwnership.build(game: game, user: game_player_id(game), object_locator: params[:id])
 
     if ownership.move(to_location_id: params[:location_id], to_stack: params[:stack])
       render json: { success: true }

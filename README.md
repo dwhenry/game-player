@@ -52,6 +52,6 @@ This allows us to play an online card game in 'real time'.
 - [ ] Encrypt cookies so they can't be modified
 
 ### Done
-- [x] Rename object_id to object_ref as object_id is important in rails
+- [x] Rename object_id to object_locator as object_id is important in rails
 - [x] ~replace card.id with card.identity in the JS~ reverted to using ID
 - [x] Write some full integration tests (~cucumber?~ rspec + capybara)

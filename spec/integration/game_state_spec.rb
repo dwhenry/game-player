@@ -78,7 +78,7 @@ RSpec.describe 'Playing the game', type: :request do
 
       expect(Event.last).to have_attributes(
         "user" => player_id,
-        "object_ref" => "player:#{game_player_id}",
+        "object_locator" => "player:#{game_player_id}",
         "event_type" => Event::PLAYER_JOIN,
         "data" => { "players" => game.reload.players }
       )

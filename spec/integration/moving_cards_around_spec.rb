@@ -45,7 +45,7 @@ RSpec.describe 'moving cards around' do
         array_including(
           have_attributes(
             "user" => player1_id,
-            "object_ref" => "card:tasks:pile:#{card.id}",
+            "object_locator" => "card:tasks:pile:#{card.id}",
             "event_type" => Event::FAILED_MOVE,
             "data" => {
               "card_name" => card_name,
@@ -77,7 +77,7 @@ RSpec.describe 'moving cards around' do
           array_including(
             have_attributes(
               "user" => player1_id,
-              "object_ref" => "location:tasks:pile:AAAA",
+              "object_locator" => "location:tasks:pile:AAAA",
               "event_type" => Event::FAILED_MOVE,
               "data" => {
                 "card_name" => "tasks (pile)",
@@ -117,7 +117,7 @@ RSpec.describe 'moving cards around' do
         array_including(
           have_attributes(
             "user" => player1_id,
-            "object_ref" => "card:tasks:pile:#{card.id}",
+            "object_locator" => "card:tasks:pile:#{card.id}",
             "event_type" => Event::MOVE,
             "data" => {
               "card_id" => card.id,
@@ -143,7 +143,7 @@ RSpec.describe 'moving cards around' do
           array_including(
             have_attributes(
               "user" => player1_id,
-              "object_ref" => "location:tasks:pile:AAAA",
+              "object_locator" => "location:tasks:pile:AAAA",
               "event_type" => Event::MOVE,
               "data" => {
                 "card_id" => card.id,

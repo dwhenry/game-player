@@ -26,12 +26,12 @@ export const updateCard = (event) => {
   let toStack = cardsByStack[toStackId] || [];
 
   // remove it from the old location
-  let card = fromStack.find(l => l.objectRef === event.objectRef);
-  fromStack = fromStack.filter(l => l.objectRef !== event.objectRef);
+  let card = fromStack.find(l => l.objectLocator === event.objectLocator);
+  fromStack = fromStack.filter(l => l.objectLocator !== event.objectLocator);
   if(fromStack.length === 0) fromStack = undefined;
 
   // add it to the new location
-  toStack = toStack.filter(l => l.objectRef !== event.objectRef);
+  toStack = toStack.filter(l => l.objectLocator !== event.objectLocator);
   toStack.push(event.card || {...card, pending: !!event.pending});
 
   cardsByStack[fromStackId] = fromStack;
@@ -44,12 +44,13 @@ export const updateCard = (event) => {
 export const setCards = (cards) => {
   cards.forEach((c) => {
     if(cardsByStack[c.stackId] == undefined) cardsByStack[c.stackId] = [];
-    if(c.objectRef =~ /^location:/) {
-      cardsByStack[c.stackId].push({...c, objectRef: c.objectRef + "-" + Math.random().toString(36).substr(2, 9)});
+    if(c.objectLocator =~ /^location:/) {
+      cardsByStack[c.stackId].push({...c, objectLocator: c.objectLocator + "-" + Math.random().toString(36).substr(2, 9)});
     } else {
       cardsByStack[c.stackId].push(c);
     }
   });
+  console.log(cardsByStack)
 };
 
 /*
@@ -58,9 +59,9 @@ a: simple ownershiip: get ownership... log move events... realise move events
 b: fail early: get ownership... fail http ownership request.. release card.. ensuring actual owner has ownership in UI
 c: fail late: get ownership... log move events... fail http ownership request.. release card..  revert move events.. ensuring actual owner has ownership in UI
 */
-const revertPhantomEvents = (objectRef) => {
-  let [returnEvent, ...events] = ownershipEvents[objectRef];
-  ownershipEvents[objectRef] = undefined;
+const revertPhantomEvents = (objectLocator) => {
+  let [returnEvent, ...events] = ownershipEvents[objectLocator];
+  ownershipEvents[objectLocator] = undefined;
 
   let lastEvent = (events && events[events.length - 1]) || returnEvent
   if(returnEvent === undefined) {
@@ -70,7 +71,7 @@ const revertPhantomEvents = (objectRef) => {
   }
   // revert to the initial state on teh first event in the stack....
   let revertEvent = {
-    objectRef: objectRef,
+    objectLocator: objectLocator,
     from: { locationId: lastEvent.to.locationId, stack: lastEvent.to.stack },
     to: { locationId: returnEvent.from.locationId, stack: returnEvent.from.stack },
     timestamp: new Date().getTime()
@@ -79,8 +80,8 @@ const revertPhantomEvents = (objectRef) => {
   updateCard(revertEvent)
 }
 
-export function addEvent(objectRef, event) {
-  let events = ownershipEvents[objectRef];
+export function addEvent(objectLocator, event) {
+  let events = ownershipEvents[objectLocator];
   if(events === undefined) {
     return false
   }
@@ -89,34 +90,34 @@ export function addEvent(objectRef, event) {
 }
 
 export function takeOwnership(event) {
-  if(!ownershipEvents.hasOwnProperty(event.objectRef)) {
-    ownershipEvents[event.objectRef] = [];
-    takeEvent(event.objectRef).then(async (response) => {
+  if(!ownershipEvents.hasOwnProperty(event.objectLocator)) {
+    ownershipEvents[event.objectLocator] = [];
+    takeEvent(event.objectLocator).then(async (response) => {
       let json = await response.json();
       if(json.success !== true) {
-        revertPhantomEvents(event.objectRef)
+        revertPhantomEvents(event.objectLocator)
       }
     })
   }
 }
 
 // this is exposed for testing only
-export const events = (objectRef) => {
-  return ownershipEvents[objectRef];
+export const events = (objectLocator) => {
+  return ownershipEvents[objectLocator];
 };
 
 const processMoveEvents = (events) => {
   events.filter(ev => ev.eventType === 'move').forEach((event) => {
-    let eventsForObject = ownershipEvents[event.objectRef];
+    let eventsForObject = ownershipEvents[event.objectLocator];
     if(eventsForObject === undefined || eventsForObject.length === 0) {
       // if events arrive but we are waiting on ownership, just fail it
-      ownershipEvents[event.objectRef] = undefined;
+      ownershipEvents[event.objectLocator] = undefined;
       // event came from a different user so just apply them
       updateCard(event)
     } else {
       if(eventsForObject[0].timestamp !== event.timestamp) {
         // well this is bad.. We must be waiting for ownership so lets just revert now and apply the new events...
-        revertPhantomEvents(event.objectRef);
+        revertPhantomEvents(event.objectLocator);
         updateCard(event)
       } else {
         eventsForObject.shift();

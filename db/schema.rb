@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_24_181827) do
+ActiveRecord::Schema.define(version: 2020_05_24_200757) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 2020_05_24_181827) do
     t.bigserial "order", null: false
     t.string "user", null: false
     t.string "event_type", null: false
-    t.string "object_ref", null: false
+    t.string "object_locator", null: false
     t.jsonb "data"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

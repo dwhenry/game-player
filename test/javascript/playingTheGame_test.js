@@ -35,13 +35,13 @@ describe('Playing the game', () => {
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
 
-    let objectRef = pickupCard(0, ownershipPromise)
+    let objectLocator = pickupCard(0, ownershipPromise)
 
     // we resolve the promise immediately in this test case
     ownershipPromiseResolver({success: true});
 
     dropCard(
-      objectRef,
+      objectLocator,
       { locationId: initialGameState.locations[0].id, stack: 'pile' },
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
@@ -51,7 +51,7 @@ describe('Playing the game', () => {
       "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
       "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
 
-    await pollServerForUpdates(objectRef);
+    await pollServerForUpdates(objectLocator);
 
     // check the page is fully updated
     matchPageState([
@@ -59,16 +59,16 @@ describe('Playing the game', () => {
       "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card",
       "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
 
-    // check it updated the objectRef on the card
+    // check it updated the objectLocator on the card
     let playerCards = getCards(initialGameState.locations[1].id + '-hand')
-    expect(playerCards[0].objectRef).toMatch(/^card:/);
+    expect(playerCards[0].objectLocator).toMatch(/^card:/);
   });
 
   it("Can process other player card move events", async () => {
     let card = initialGameState.cards[0]
     let mockedEventResponse = {
       events: [{
-        objectRef: getCards(card.stackId).find(c => c.id === card.id).objectRef,
+        objectLocator: getCards(card.stackId).find(c => c.id === card.id).objectLocator,
         eventType: 'move',
         from: { locationId: initialGameState.locations[0].id, stack: 'pile' },
         to: { locationId: initialGameState.locations[2].id, stack: 'hand' },
@@ -78,7 +78,7 @@ describe('Playing the game', () => {
           deck: 'tasks',
           visible: 'face',
           stackId: initialGameState.locations[2].id + '-hand',
-          objectRef: 'card:' + nextUuid() + ':',
+          objectLocator: 'card:' + nextUuid() + ':',
           count: null,
           name: 'Test Card'
         }
@@ -98,7 +98,7 @@ describe('Playing the game', () => {
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
 
-    let objectRef = pickupCard(0, ownershipPromise)
+    let objectLocator = pickupCard(0, ownershipPromise)
 
     // we did get ownership this time around
     ownershipPromiseResolver({success: false});
@@ -107,7 +107,7 @@ describe('Playing the game', () => {
     await new Promise(setImmediate)
 
     dropCard(
-      objectRef,
+      objectLocator,
       { locationId: initialGameState.locations[0].id, stack: 'pile' },
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
@@ -121,10 +121,10 @@ describe('Playing the game', () => {
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
 
-    let objectRef = pickupCard(0, ownershipPromise)
+    let objectLocator = pickupCard(0, ownershipPromise)
 
     dropCard(
-      objectRef,
+      objectLocator,
       { locationId: initialGameState.locations[0].id, stack: 'pile' },
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
@@ -149,10 +149,10 @@ describe('Playing the game', () => {
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
 
-    let objectRef = pickupCard(0, ownershipPromise)
+    let objectLocator = pickupCard(0, ownershipPromise)
 
     dropCard(
-      objectRef,
+      objectLocator,
       { locationId: initialGameState.locations[0].id, stack: 'pile' },
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
@@ -164,7 +164,7 @@ describe('Playing the game', () => {
     let card = initialGameState.cards[0];
     let mockedEventResponse = {
       events: [{
-        objectRef: objectRef,
+        objectLocator: objectLocator,
         eventType: 'move',
         from: { locationId: initialGameState.locations[0].id, stack: 'pile' },
         to: { locationId: initialGameState.locations[2].id, stack: 'hand' },
@@ -174,7 +174,7 @@ describe('Playing the game', () => {
           deck: 'tasks',
           visible: 'face',
           stackId: initialGameState.locations[2].id + '-hand',
-          objectRef: 'card:' + nextUuid() + ':',
+          objectLocator: 'card:' + nextUuid() + ':',
           count: null,
           name: 'Test Card'
         }
@@ -213,18 +213,18 @@ describe('Playing the game', () => {
     expect(actual).toEqual(expectedState)
   };
 
-  const pollServerForUpdates = async (objectRef, response) => {
+  const pollServerForUpdates = async (objectLocator, response) => {
     let lastUpdate = 0;
     let mockEventsResponse;
 
     if(response) {
       mockEventsResponse = response;
     } else {
-      let realobjectRef = objectRef.replace(/-[^-]+$/, ''); // drop position element for face down card stacks
-      let card = initialGameState.cards.find(c => c.objectRef === realobjectRef)
+      let realobjectLocator = objectLocator.replace(/-[^-]+$/, ''); // drop position element for face down card stacks
+      let card = initialGameState.cards.find(c => c.objectLocator === realobjectLocator)
 
       mockEventsResponse = {
-        events: events(objectRef).map((event) => {
+        events: events(objectLocator).map((event) => {
           return {
             ...event,
             eventType: 'move',
@@ -232,7 +232,7 @@ describe('Playing the game', () => {
               ...card,
               visible: 'face',
               stackId: event.to.locationId + '-' + event.to.stack,
-              objectRef: 'card:' + card.id + ':' ,
+              objectLocator: 'card:' + card.id + ':' ,
               name: 'Test Card',
               count: null
             }
@@ -247,38 +247,38 @@ describe('Playing the game', () => {
     await act(pollEvents)
   };
 
-  const pickupCard = (cardPos, ownershipPromise, objectRef) => {
+  const pickupCard = (cardPos, ownershipPromise, objectLocator) => {
     const card = initialGameState.cards[cardPos];
-    if(!objectRef) {
+    if(!objectLocator) {
       let cards = getCards(card.stackId)
-      objectRef = cards[cards.length - 1].objectRef;
+      objectLocator = cards[cards.length - 1].objectLocator;
     }
 
     let startingNode = document.querySelector(".card-" + card.id);
 
-    fetchMock.post({url: '/games/' + initialGameState.id + '/cards/' + objectRef + '/take'}, ownershipPromise);
+    fetchMock.post({url: '/games/' + initialGameState.id + '/cards/' + objectLocator + '/take'}, ownershipPromise);
 
     startingNode.dispatchEvent(
       createBubbledEvent("dragstart", { dataTransfer: mockDataTransfer, clientX: 0, clientY: 0 })
     );
 
-    return objectRef;
+    return objectLocator;
   };
-  const dropCard = (objectRef, fromStack, toStack) => {
+  const dropCard = (objectLocator, fromStack, toStack) => {
     let endingNode = elem.getByTestId(toStack.locationId + '-' + toStack.stack);
 
     let mockDropEvent = {
       event: 'cardMove',
       data: {
         // timestamp: new Date().getTime(), // as we can't get the same value that will be set in the code for this wwe will instead use partial matching
-        objectRef: objectRef,
+        objectLocator: objectLocator,
         from: fromStack,
         to: toStack,
       }
     };
 
     // mock the event move call to the backend
-    fetchMock.patch({url: '/games/' + initialGameState.id + '/cards/' + objectRef + '/move', matchPartialBody: true, body: mockDropEvent}, {}, {
+    fetchMock.patch({url: '/games/' + initialGameState.id + '/cards/' + objectLocator + '/move', matchPartialBody: true, body: mockDropEvent}, {}, {
       delay: 10, // fake a slow network
     });
 
@@ -319,7 +319,7 @@ describe('Playing the game', () => {
           deck: 'tasks',
           visible: 'back',
           stackId: taskLocationId + '-pile',
-          objectRef: 'location:tasks:pile',
+          objectLocator: 'location:tasks:pile',
           count: 10
         }
       ],

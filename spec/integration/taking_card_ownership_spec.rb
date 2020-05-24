@@ -41,7 +41,7 @@ RSpec.describe 'Playing the game', type: :request do
         array_including(
           have_attributes(
             "user" => player1_id,
-            "object_ref" => "card:tasks:pile:#{card.id}",
+            "object_locator" => "card:tasks:pile:#{card.id}",
             "event_type" => Event::PICKUP_CARD,
             "data" => {
               "card_name" => card_name,
@@ -79,7 +79,7 @@ RSpec.describe 'Playing the game', type: :request do
           array_including(
             have_attributes(
               "user" => player1_id,
-              "object_ref" => "card:tasks:pile:#{card.id}",
+              "object_locator" => "card:tasks:pile:#{card.id}",
               "event_type" => Event::FAILED_PICKUP,
               "data" => {
                 "card_name" => card_name,
@@ -131,7 +131,7 @@ RSpec.describe 'Playing the game', type: :request do
           array_including(
             have_attributes(
               "user" => player1_id,
-              "object_ref" => "card:tasks:pile:#{card.id}",
+              "object_locator" => "card:tasks:pile:#{card.id}",
               "event_type" => Event::FAILED_PICKUP,
               "data" => {
                 "card_name" => card_name,
@@ -172,7 +172,7 @@ RSpec.describe 'Playing the game', type: :request do
           array_including(
             have_attributes(
               "user" => player1_id,
-              "object_ref" => "card:tasks:pile:#{card.id}",
+              "object_locator" => "card:tasks:pile:#{card.id}",
               "event_type" => Event::RETURNED_CARD,
               "data" => {
                 "card_name" => card_name,
@@ -182,7 +182,7 @@ RSpec.describe 'Playing the game', type: :request do
             ),
             have_attributes(
               "user" => player1_id,
-              "object_ref" => "card:tasks:pile:#{card.id}",
+              "object_locator" => "card:tasks:pile:#{card.id}",
               "event_type" => Event::PICKUP_CARD,
               "data" => {
                 "card_name" => card_name,
@@ -220,7 +220,7 @@ RSpec.describe 'Playing the game', type: :request do
         array_including(
           have_attributes(
             "user" => player1_id,
-            "object_ref" => "location:tasks:pile:ABCD",
+            "object_locator" => "location:tasks:pile:ABCD",
             "event_type" => Event::PICKUP_LOCATION,
             "data" => {
               "card_name" => "tasks (pile)",

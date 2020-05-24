@@ -59,8 +59,8 @@ export async function getUpdates() {
   return response.json();
 }
 
-export async function takeEvent(objectId) {
-  return fetch('/games/' + window.gameBoardId + '/cards/' + objectId + '/take', {
+export async function takeEvent(objectRef) {
+  return fetch('/games/' + window.gameBoardId + '/cards/' + objectRef + '/take', {
     method: 'POST',
     headers: {
       "X-CSRF-Token": getCSRFToken(),
@@ -69,8 +69,8 @@ export async function takeEvent(objectId) {
   })
 }
 
-export async function postEvent(objectId, data) {
-  fetch('/games/' + window.gameBoardId + '/cards/' + objectId + '/move', {
+export async function postEvent(objectRef, data) {
+  fetch('/games/' + window.gameBoardId + '/cards/' + objectRef + '/move', {
     method: 'PATCH',
     headers: {
       "X-CSRF-Token": getCSRFToken(),

@@ -14,6 +14,7 @@ class GamesController < ApplicationController
     @game = Game.find_by(id: params[:id])
     if @game
       @game_board = GameRender.new(@game, game_player_id(@game)).call
+      @game_board['skipPolling'] = true if params[:skip_polling]
 
       respond_to do |format|
         format.json do

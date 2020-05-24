@@ -55,14 +55,14 @@ RSpec.describe GameRender do
           deck: 'tasks',
           visible: 'back',
           stackId: 'tasks-pile',
-          objectId: 'location:tasks:pile',
+          objectRef: 'location:tasks:pile',
         },
         {
           id: an_instance_of(String),
           deck: 'tasks',
           visible: 'back',
           stackId: 'tasks-pile',
-          objectId: 'location:tasks:pile',
+          objectRef: 'location:tasks:pile',
         }
       ])
     end
@@ -115,14 +115,14 @@ RSpec.describe GameRender do
           deck: 'tasks',
           visible: 'back',
           stackId: 'tasks-pile',
-          objectId: 'location:tasks:pile',
+          objectRef: 'location:tasks:pile',
         },
         {
           id: an_instance_of(String),
             deck: 'tasks',
             visible: 'back',
             stackId: 'tasks-pile',
-            objectId: 'location:tasks:pile',
+            objectRef: 'location:tasks:pile',
         }
       ])
     end
@@ -142,7 +142,7 @@ RSpec.describe GameRender do
               deck: 'tasks',
               visible: 'back',
               stackId: 'tasks-pile',
-              objectId: 'location:tasks:pile',
+              objectRef: 'location:tasks:pile',
             },
             {
               id: card.id,
@@ -154,7 +154,7 @@ RSpec.describe GameRender do
               actions: "+1 Employee",
               visible: "face",
               stackId: "#{player_1_id}-hand",
-              objectId: "card:#{player_1_id}:hand:#{card.id}"
+              objectRef: "card:#{player_1_id}:hand:#{card.id}"
             }
           )
         )
@@ -168,14 +168,14 @@ RSpec.describe GameRender do
             deck: 'tasks',
             visible: 'back',
             stackId: 'tasks-pile',
-            objectId: 'location:tasks:pile',
+            objectRef: 'location:tasks:pile',
           },
           {
             id: card.id,
             deck: "tasks",
             visible: "back",
             stackId: "#{player_1_id}-hand",
-            objectId: "card:#{player_1_id}:hand:#{card.id}"
+            objectRef: "card:#{player_1_id}:hand:#{card.id}"
           }
         ])
       end
@@ -230,14 +230,14 @@ RSpec.describe GameRender do
           deck: 'tasks',
           visible: 'back',
           stackId: 'tasks-pile',
-          objectId: 'location:tasks:pile',
+          objectRef: 'location:tasks:pile',
         },
         {
           id: an_instance_of(String),
           deck: 'tasks',
           visible: 'back',
           stackId: 'tasks-pile',
-          objectId: 'location:tasks:pile',
+          objectRef: 'location:tasks:pile',
         }
       ])
     end
@@ -260,7 +260,7 @@ RSpec.describe GameRender do
               deck: 'tasks',
               visible: 'back',
               stackId: 'tasks-pile',
-              objectId: 'location:tasks:pile',
+              objectRef: 'location:tasks:pile',
             },
             {
               id: card.id,
@@ -272,7 +272,7 @@ RSpec.describe GameRender do
               actions: "+1 Employee",
               visible: "face",
               stackId: "#{player_1_id}-hand",
-              objectId: "card:#{player_1_id}:hand:#{card.id}"
+              objectRef: "card:#{player_1_id}:hand:#{card.id}"
             }
           )
         )
@@ -286,14 +286,14 @@ RSpec.describe GameRender do
             deck: 'tasks',
             visible: 'back',
             stackId: 'tasks-pile',
-            objectId: 'location:tasks:pile',
+            objectRef: 'location:tasks:pile',
           },
           {
             id: card.id,
             deck: "tasks",
             visible: "back",
             stackId: "#{player_1_id}-hand",
-            objectId: "card:#{player_1_id}:hand:#{card.id}"
+            objectRef: "card:#{player_1_id}:hand:#{card.id}"
           }
         ])
       end

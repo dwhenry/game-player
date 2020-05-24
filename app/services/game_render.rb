@@ -67,7 +67,7 @@ class GameRender
       deck: card_detail.fetch('deck'),
       visible: 'back',
       stackId: stack_id,
-      objectId: object_ref(card, show_object_id: show_object_id)
+      objectRef: object_ref(card, show_object_id: show_object_id)
     }
   end
 
@@ -83,7 +83,7 @@ class GameRender
       actions: card_detail.fetch('actions'),
       visible: 'face',
       stackId: stack_id,
-      objectId: object_ref(card),
+      objectRef: object_ref(card),
     }
   end
 

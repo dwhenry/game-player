@@ -15,7 +15,7 @@ class EventSerializer
   def move_json(event)
     _, from_location_id, from_stack, _ = event.object_ref.split(':')
     {
-      objectId: event.object_ref,
+      objectRef: event.object_ref,
       eventType: event.event_type,
       from: { locationId: from_location_id, stack: from_stack },
       to: { locationId: event.data.fetch(:location_id), stack: event.data.fetch(:stack) },
@@ -27,7 +27,7 @@ class EventSerializer
   def default_json(event)
     _, from_location_id, from_stack, _ = event.object_ref.split(':')
     {
-      objectId: event.object_ref,
+      objectRef: event.object_ref,
       eventType: event.event_type,
       timestamp: event.created_at.to_i,
       from: { locationId: from_location_id, stack: from_stack },

@@ -8,15 +8,15 @@ import {addEvent, updateCard, watch, unWatch} from '../state/CardState';
 const CardStack = (props) => {
   // const [cards, setCards] = useState()
   // const [cardIds, setCardIds] = useState({ids: 'pending'})
-  const itemDropped = ([objectId, fromLocationId, fromStack]) => {
+  const itemDropped = ([objectRef, fromLocationId, fromStack]) => {
     let event = {
-      objectId: objectId,
+      objectRef: objectRef,
       from: { locationId: fromLocationId, stack: fromStack },
       to: { locationId: props.locationId, stack: props.stack },
       timestamp: new Date().getTime()
     }
-    if(addEvent(objectId, event)) {
-      postEvent(objectId, event);
+    if(addEvent(objectRef, event)) {
+      postEvent(objectRef, event);
       // move the card in the stack
       updateCard({...event, pending: true})
     }
@@ -35,7 +35,7 @@ const CardStack = (props) => {
 
   useEffect(() => {
     let watchCallback = (cards) => { setCards(cards) }
-    
+
     watch(props.locationId + '-' + props.stack, watchCallback)
     return () => { unWatch(props.locationId + '-' + props.stack, watchCallback) }
   });
@@ -45,7 +45,7 @@ const CardStack = (props) => {
     // all cards are face down so group them an d just show a number
     return <DropTarget onItemDropped={itemDropped} className={"stack stack-" + props.stack} >
       <div className="stack__name" data-testid={props.locationId + '-' + props.stack}>{props.name}</div>
-      <CardBack key={card.id} card={card} size={props.size} count={cards.length} dragEventId={[card.objectId, props.locationId, props.stack]} />
+      <CardBack key={card.id} card={card} size={props.size} count={cards.length} dragEventId={[card.objectRef, props.locationId, props.stack]} />
     </DropTarget>
 
   } else {
@@ -54,11 +54,11 @@ const CardStack = (props) => {
       {cards && cards.map((card) => {
         switch(card.visible) {
           case 'face':
-            return <CardFace key={card.id} card={card} size={props.size} dragEventId={[card.objectId, props.locationId, props.stack]} />
+            return <CardFace key={card.id} card={card} size={props.size} dragEventId={[card.objectRef, props.locationId, props.stack]} />
           case 'back':
-            // TODO: work out how to render this cards on top of each other..        
-            return <CardBack key={card.id} card={card} size={props.size} dragEventId={[card.objectId, props.locationId, props.stack]} />
-        }    
+            // TODO: work out how to render this cards on top of each other..
+            return <CardBack key={card.id} card={card} size={props.size} dragEventId={[card.objectRef, props.locationId, props.stack]} />
+        }
       })}
       {renderSpots(cards)}
     </DropTarget>

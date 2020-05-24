@@ -55,14 +55,14 @@ RSpec.describe GameRender do
           deck: 'tasks',
           visible: 'back',
           stackId: 'tasks-pile',
-          objectLocator: 'location:tasks:pile',
+          objectLocator: 'location:tasks:pile:',
         },
         {
           id: an_instance_of(String),
           deck: 'tasks',
           visible: 'back',
           stackId: 'tasks-pile',
-          objectLocator: 'location:tasks:pile',
+          objectLocator: 'location:tasks:pile:',
         }
       ])
     end
@@ -115,14 +115,14 @@ RSpec.describe GameRender do
           deck: 'tasks',
           visible: 'back',
           stackId: 'tasks-pile',
-          objectLocator: 'location:tasks:pile',
+          objectLocator: 'location:tasks:pile:',
         },
         {
           id: an_instance_of(String),
             deck: 'tasks',
             visible: 'back',
             stackId: 'tasks-pile',
-            objectLocator: 'location:tasks:pile',
+            objectLocator: 'location:tasks:pile:',
         }
       ])
     end
@@ -142,7 +142,7 @@ RSpec.describe GameRender do
               deck: 'tasks',
               visible: 'back',
               stackId: 'tasks-pile',
-              objectLocator: 'location:tasks:pile',
+              objectLocator: 'location:tasks:pile:',
             },
             {
               id: card.id,
@@ -168,7 +168,7 @@ RSpec.describe GameRender do
             deck: 'tasks',
             visible: 'back',
             stackId: 'tasks-pile',
-            objectLocator: 'location:tasks:pile',
+            objectLocator: 'location:tasks:pile:',
           },
           {
             id: card.id,
@@ -230,14 +230,14 @@ RSpec.describe GameRender do
           deck: 'tasks',
           visible: 'back',
           stackId: 'tasks-pile',
-          objectLocator: 'location:tasks:pile',
+          objectLocator: 'location:tasks:pile:',
         },
         {
           id: an_instance_of(String),
           deck: 'tasks',
           visible: 'back',
           stackId: 'tasks-pile',
-          objectLocator: 'location:tasks:pile',
+          objectLocator: 'location:tasks:pile:',
         }
       ])
     end
@@ -260,7 +260,7 @@ RSpec.describe GameRender do
               deck: 'tasks',
               visible: 'back',
               stackId: 'tasks-pile',
-              objectLocator: 'location:tasks:pile',
+              objectLocator: 'location:tasks:pile:',
             },
             {
               id: card.id,
@@ -286,7 +286,7 @@ RSpec.describe GameRender do
             deck: 'tasks',
             visible: 'back',
             stackId: 'tasks-pile',
-            objectLocator: 'location:tasks:pile',
+            objectLocator: 'location:tasks:pile:',
           },
           {
             id: card.id,

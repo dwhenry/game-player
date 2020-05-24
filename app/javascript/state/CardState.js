@@ -12,11 +12,11 @@ export const watch = (stackId, w) => {
   watchers[stackId].push(w);
 
   w(cardsByStack[stackId]);
-}
+};
 
 export const unWatch = (stackId, w) => {
   watchers[stackId] = watchers[stackId].filter(watcher => watcher !== w);
-}
+};
 
 export const updateCard = (event) => {
   let fromStackId = event.from.locationId + '-' + event.from.stack;
@@ -42,6 +42,7 @@ export const updateCard = (event) => {
 };
 
 export const setCards = (cards) => {
+  cardsByStack = {}; // need to reset
   cards.forEach((c) => {
     if(cardsByStack[c.stackId] === undefined) cardsByStack[c.stackId] = [];
     if(c.objectLocator.match(/^location:/)) {
@@ -51,12 +52,11 @@ export const setCards = (cards) => {
       cardsByStack[c.stackId].push(c);
     }
   });
-  console.log(cardsByStack)
 };
 
 /*
 Lifecycles:
-a: simple ownershiip: get ownership... log move events... realise move events
+a: simple ownership: get ownership... log move events... realise move events
 b: fail early: get ownership... fail http ownership request.. release card.. ensuring actual owner has ownership in UI
 c: fail late: get ownership... log move events... fail http ownership request.. release card..  revert move events.. ensuring actual owner has ownership in UI
 */
@@ -107,32 +107,30 @@ export const events = (objectLocator) => {
   return ownershipEvents[objectLocator];
 };
 
-const processMoveEvents = (events) => {
-  events.filter(ev => ev.eventType === 'move').forEach((event) => {
-    let eventsForObject = ownershipEvents[event.objectLocator];
-    if(eventsForObject === undefined || eventsForObject.length === 0) {
-      // if events arrive but we are waiting on ownership, just fail it
-      ownershipEvents[event.objectLocator] = undefined;
-      // event came from a different user so just apply them
+const processMoveEvent = (event) => {
+ let eventsForObject = ownershipEvents[event.objectLocator];
+  if(eventsForObject === undefined || eventsForObject.length === 0) {
+    // if events arrive but we are waiting on ownership, just fail it
+    ownershipEvents[event.objectLocator] = undefined;
+    // event came from a different user so just apply them
+    updateCard(event)
+  } else {
+    if(eventsForObject[0].timestamp !== event.timestamp) {
+      // well this is bad.. We must be waiting for ownership so lets just revert now and apply the new events...
+      revertPhantomEvents(event.objectLocator);
       updateCard(event)
     } else {
-      if(eventsForObject[0].timestamp !== event.timestamp) {
-        // well this is bad.. We must be waiting for ownership so lets just revert now and apply the new events...
-        revertPhantomEvents(event.objectLocator);
+      eventsForObject.shift();
+      // just realise the events locally
+      if(eventsForObject.length === 0) {
+        // set the state to not be pending and update the card object
         updateCard(event)
-      } else {
-        eventsForObject.shift();
-        // just realise the events locally
-        if(eventsForObject.length === 0) {
-          // set the state to not be pending and update the card object
-          updateCard(event)
-        }
       }
     }
-  })
+  }
 };
 
-const processLogEvents = (events) => {
+const processEvents = (events) => {
   events.forEach((event) => {
     switch(event.eventType) {
       case "failed_move":
@@ -142,12 +140,14 @@ const processLogEvents = (events) => {
       case "keyframe":
         break;
       case "move":
+        processMoveEvent(event);
         break;
       case "pickup_card":
         break;
       case "pickup_location":
         break;
       case "player_join":
+        setters.setLocations(events.players);
         break;
       case "returned_card":
         break;
@@ -155,8 +155,11 @@ const processLogEvents = (events) => {
   })
 };
 
+let setters = {}
+export const setSetters = (s) => {
+  setters = {...setters, ...s}
+}
 export const pollEvents = async () => {
   let events = (await getUpdates()).events;
-  processMoveEvents(events);
-  processLogEvents(events);
+  processEvents(events);
 };

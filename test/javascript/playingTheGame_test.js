@@ -7,9 +7,9 @@ import { events, pollEvents, getCards } from '../../app/javascript/state/CardSta
 jest.useFakeTimers();
 
 const initialBoardState = [
-  "Tasks",                    "Backlog", "Hidden: 10", "Discard", "None", "Face up", "None", "None",
-  "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
-  "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]
+  "Tasks",                    "Backlog", "Hidden: 3", "Discard", "None", "Face up", "None", "None",
+  "Player: Make me editable", "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
+  "Player: Player 2",         "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]
 
 describe('Playing the game', () => {
   let elem;
@@ -35,7 +35,7 @@ describe('Playing the game', () => {
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
 
-    let objectLocator = pickupCard(0, ownershipPromise)
+    let objectLocator = pickupCard(-1, ownershipPromise)
 
     // we resolve the promise immediately in this test case
     ownershipPromiseResolver({success: true});
@@ -47,17 +47,17 @@ describe('Playing the game', () => {
 
     // check the local view is up to date
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
-      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+      "Tasks",                    "Backlog", "Hidden: 2", "Discard", "None", "Face up", "None", "None",
+      "Player: Make me editable", "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
+      "Player: Player 2",         "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
 
     await pollServerForUpdates(objectLocator);
 
     // check the page is fully updated
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card",
-      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+      "Tasks",                    "Backlog", "Hidden: 2", "Discard", "None", "Face up", "None", "None",
+      "Player: Make me editable", "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card",
+      "Player: Player 2",         "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
 
     // check it updated the objectLocator on the card
     let playerCards = getCards(initialGameState.locations[1].id + '-hand')
@@ -79,7 +79,6 @@ describe('Playing the game', () => {
           visible: 'face',
           stackId: initialGameState.locations[2].id + '-hand',
           objectLocator: 'card:' + nextUuid() + ':',
-          count: null,
           name: 'Test Card'
         }
       }]
@@ -89,16 +88,16 @@ describe('Playing the game', () => {
 
     // check the page is fully updated
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
-      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card", ]);
+      "Tasks",                    "Backlog", "Hidden: 2", "Discard", "None", "Face up", "None", "None",
+      "Player: Make me editable", "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
+      "Player: Player 2",         "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card", ]);
   });
 
   it("Rejecting ownership before you drop the card should just ignore the card drop", async () => {
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
 
-    let objectLocator = pickupCard(0, ownershipPromise)
+    let objectLocator = pickupCard(-1, ownershipPromise)
 
     // we did get ownership this time around
     ownershipPromiseResolver({success: false});
@@ -121,7 +120,7 @@ describe('Playing the game', () => {
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
 
-    let objectLocator = pickupCard(0, ownershipPromise)
+    let objectLocator = pickupCard(-1, ownershipPromise)
 
     dropCard(
       objectLocator,
@@ -129,9 +128,9 @@ describe('Playing the game', () => {
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
-      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+      "Tasks",                    "Backlog", "Hidden: 2", "Discard", "None", "Face up", "None", "None",
+      "Player: Make me editable", "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
+      "Player: Player 2",         "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
 
     // we did NOT get ownership this time around
     act(() => ownershipPromiseResolver({success: false}));
@@ -149,7 +148,7 @@ describe('Playing the game', () => {
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
 
-    let objectLocator = pickupCard(0, ownershipPromise)
+    let objectLocator = pickupCard(-1, ownershipPromise)
 
     dropCard(
       objectLocator,
@@ -157,9 +156,9 @@ describe('Playing the game', () => {
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
-      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+      "Tasks",                    "Backlog", "Hidden: 2", "Discard", "None", "Face up", "None", "None",
+      "Player: Make me editable", "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
+      "Player: Player 2",         "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
 
     let card = initialGameState.cards[0];
     let mockedEventResponse = {
@@ -175,7 +174,6 @@ describe('Playing the game', () => {
           visible: 'face',
           stackId: initialGameState.locations[2].id + '-hand',
           objectLocator: 'card:' + nextUuid() + ':',
-          count: null,
           name: 'Test Card'
         }
       }]
@@ -185,9 +183,9 @@ describe('Playing the game', () => {
 
     // check the page is fully updated
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
-      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card", ]);
+      "Tasks",                    "Backlog", "Hidden: 2", "Discard", "None", "Face up", "None", "None",
+      "Player: Make me editable", "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
+      "Player: Player 2",         "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card", ]);
 
     // This is now a NO-OP but we should still resolve events..
     // enabling this actually causes in with unwatching which I don't understand...
@@ -220,7 +218,7 @@ describe('Playing the game', () => {
     if(response) {
       mockEventsResponse = response;
     } else {
-      let realobjectLocator = objectLocator.replace(/-[^-]+$/, ''); // drop position element for face down card stacks
+      let realobjectLocator = objectLocator.replace(/:[^:]+$/, ':'); // drop position element for face down card stacks
       let card = initialGameState.cards.find(c => c.objectLocator === realobjectLocator)
 
       mockEventsResponse = {
@@ -232,9 +230,8 @@ describe('Playing the game', () => {
               ...card,
               visible: 'face',
               stackId: event.to.locationId + '-' + event.to.stack,
-              objectLocator: 'card:' + card.id + ':' ,
+              objectLocator: 'card:' + event.to.locationId + ':' + event.to.stack + ":" + card.id,
               name: 'Test Card',
-              count: null
             }
           }
         })
@@ -248,9 +245,10 @@ describe('Playing the game', () => {
   };
 
   const pickupCard = (cardPos, ownershipPromise, objectLocator) => {
+    if(cardPos < 0) cardPos = initialGameState.cards.length + cardPos;
     const card = initialGameState.cards[cardPos];
     if(!objectLocator) {
-      let cards = getCards(card.stackId)
+      let cards = getCards(card.stackId);
       objectLocator = cards[cards.length - 1].objectLocator;
     }
 
@@ -305,7 +303,6 @@ describe('Playing the game', () => {
   }
 
   function buildGameState() {
-    let taskLocationId = nextUuid();
     let player1Id = nextUuid();
     let player2Id = nextUuid();
     return {
@@ -318,34 +315,35 @@ describe('Playing the game', () => {
           id: nextUuid(),
           deck: 'tasks',
           visible: 'back',
-          stackId: taskLocationId + '-pile',
-          objectLocator: 'location:tasks:pile',
-          count: 10
+          stackId: 'tasks-pile',
+          objectLocator: 'location:tasks:pile:',
+        },
+        {
+          id: nextUuid(),
+          deck: 'tasks',
+          visible: 'back',
+          stackId: 'tasks-pile',
+          objectLocator: 'location:tasks:pile:',
+        },
+        {
+          id: nextUuid(),
+          deck: 'tasks',
+          visible: 'back',
+          stackId: 'tasks-pile',
+          objectLocator: 'location:tasks:pile:',
         }
       ],
       locations: [
-        {
-          id: taskLocationId,
-          name: 'Tasks',
-          type: 'deck',
-        },
-        {
-          id: player1Id,
-          name: "Make me editable",
-          type: 'player',
-        },
-        {
-          id: player2Id,
-          name: "Player 2",
-          type: 'player',
-        },
+        { id: 'tasks', name: 'Tasks', type: 'deck' },
+        { id: player1Id, name: "Make me editable", type: 'player' },
+        { id: player2Id, name: "Player 2", type: 'player' },
       ],
       stacks: {
         deck: [['Backlog', 'pile'], ['Discard', 'discard'], ['Face up', 'fu_cards']],
         player: [['Backlog', 'pile'], ['Board', 'board'], ['Face up', 'fu_cards'], ['Staff', 'employees'], ['Hand', 'hand']],
       },
       params: {
-        [taskLocationId]: { fu_cards: { min_cards: 2 } },
+        tasks: { fu_cards: { min_cards: 2 } },
         [player1Id]: {cash: 0, energy: 0, sp: 0},
         [player2Id]: {cash: 0, energy: 0, sp: 0},
       }

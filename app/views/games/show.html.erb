@@ -1,6 +1,6 @@
 <div><%= flash[:error] %></div>
 
-<%= react_component 'GameBoard', @game_board %>
+<%= react_component 'GameBoardSetter', @game_board %>
 <% unless game_player_id(@game)  %>
   <div class="overlay overlay__preview">
     <% if @game.players.values.include?(Game::PENDING_PLAYER) %>

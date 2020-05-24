@@ -14,7 +14,7 @@ const CardStack = (props) => {
       from: { locationId: fromLocationId, stack: fromStack },
       to: { locationId: props.locationId, stack: props.stack },
       timestamp: new Date().getTime()
-    }
+    };
     if(addEvent(objectLocator, event)) {
       postEvent(objectLocator, event);
       // move the card in the stack
@@ -29,7 +29,7 @@ const CardStack = (props) => {
       result.push(<CardSpot key={props.locationId + ':' + props.stack + ':' + i} size={props.size} />)
     }
     return result
-  }
+  };
 
   const [cards, setCards] = useState();
 

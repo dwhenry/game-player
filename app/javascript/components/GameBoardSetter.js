@@ -5,6 +5,8 @@ import { setSetters } from '../state/CardState'
 import { setCards, pollEvents } from '../state/CardState';
 
 const GameBoardSetter = (props) => {
+  window.gameBoardId = props.id;
+
   const [locations, setLocations] = useState(props.locations);
 
   setCards(props.cards);
@@ -28,26 +30,20 @@ const GameBoardSetter = (props) => {
   });
 
   return <GameBoard
-    id={props.id}
-    key={props.key}
     name={props.name}
-    gameId={props.gameId}
-    cards={props.cards}
     locations={locations}
     stacks={props.stacks}
     params={props.params}
-    skipPolling={props.skipPolling}
   />
 }
 
 GameBoardSetter.propTypes = {
   id: PropTypes.string,
-  key: PropTypes.string,
   name: PropTypes.string,
-  gameId: PropTypes.string,
   cards: PropTypes.array,
   locations: PropTypes.array,
   stacks: PropTypes.object,
   params: PropTypes.object
+  skipPolling: PropTypes.bool
 };
 export default GameBoardSetter

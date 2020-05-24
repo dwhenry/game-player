@@ -7,8 +7,6 @@ import Dices from "./Dices";
 import { pollEvents } from '../state/CardState';
 
 const GameBoard = (props) =>  {
-  window.gameBoardId = props.id;
-
   const [displayCard, setDisplayCard] = useState(false);
   const [card, setCard] = useState();
   const [params, setParams] = useState(props.params);
@@ -18,12 +16,6 @@ const GameBoard = (props) =>  {
     setCard(newCard);
     setDisplayCard(true)
   };
-
-  // window.update_board = (locations, players, next_action) => {
-  //   setLocations(locations);
-  //   setPlayers(players);
-  //   window.actionId = nextAction;
-  // };
 
   function removeCard(event) {
     if(event.target === event.currentTarget)
@@ -58,10 +50,7 @@ const GameBoard = (props) =>  {
 
 GameBoard.propTypes = {
   id: PropTypes.string,
-  key: PropTypes.string,
   name: PropTypes.string,
-  gameId: PropTypes.string,
-  cards: PropTypes.array,
   locations: PropTypes.array,
   stacks: PropTypes.object,
   params: PropTypes.object

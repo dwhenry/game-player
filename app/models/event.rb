@@ -6,6 +6,7 @@ class Event < ApplicationRecord
     MOVE = "move",
     PICKUP_CARD = "pickup_card",
     PICKUP_LOCATION = "pickup_location",
+    PLAYER_JOIN = "player_join",
     RETURNED_CARD = "returned_card"
   ]
 

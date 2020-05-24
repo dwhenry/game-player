@@ -29,7 +29,10 @@ RSpec.describe GameRender do
           },
           params: {
             player_1_id => { 'cash' => 10, 'energy' => 0, 'sp' => 0 },
-            player_2_id => { 'cash' => 10, 'energy' => 0, 'sp' => 0 }
+            player_2_id => { 'cash' => 10, 'energy' => 0, 'sp' => 0 },
+            'tasks' => { 'fu_cards' => { 'min_cards' => 2 } },
+            'achievements' => { 'fu_cards' => { 'min_cards' => 2 } },
+            'employees' => { 'fu_cards' => { 'min_cards' => 2 } },
           }
         )
       )

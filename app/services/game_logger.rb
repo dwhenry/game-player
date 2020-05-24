@@ -38,6 +38,13 @@ class GameLogger
     )
   end
 
+  def player_join
+    create_event(
+      Event::PLAYER_JOIN,
+      game.players
+    )
+  end
+
   def move(location_id:, stack:, card_id:)
     create_event(
       Event::MOVE,
@@ -45,7 +52,6 @@ class GameLogger
       location_id: location_id,
       stack: stack
     )
-
   end
 
   def return_card(location_id:, stack:)
@@ -76,11 +82,12 @@ class GameLogger
   end
 
   def create_event(type, data)
+    data.merge!(card_name: card_name) if card_name
     event = game.events.create!(
       user: user,
       object_ref: object_ref,
       event_type: type,
-      data: data.merge(card_name: card_name)
+      data: data
     )
     event.reload
     if (event.order % KEYFRAME_FREQUENCY).zero?

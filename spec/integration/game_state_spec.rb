@@ -3,10 +3,12 @@ require 'rails_helper'
 RSpec.describe 'Playing the game', type: :request do
   let(:config) { FactoryBot.create(:game_config, :single_task) }
   let(:card_id) { config.decks["tasks"].keys.first }
+  let(:username) { SecureRandom.uuid }
   let(:player_id) { 'Jim Bob' }
 
   before do
-    cookies[:username] = player_id
+    cookies[:username] = username
+    cookies[:playername] = player_id
   end
 
   context 'initialising a game from a config' do
@@ -50,6 +52,7 @@ RSpec.describe 'Playing the game', type: :request do
 
   context 'waiting for players to join' do
     let(:game) { GameInitializer.new(config).call(players: 2) }
+    let(:game_player_id) { game.reload.players.keys[0] }
 
     it 'allows a player to join' do
       post "/games/#{game.id}/join"
@@ -67,7 +70,18 @@ RSpec.describe 'Playing the game', type: :request do
     it 'sets the game_player_id cookie' do
       post "/games/#{game.id}/join"
 
-      expect(cookies["game_player_id_#{game.id}"]).to eq(game.reload.players.keys[0])
+      expect(cookies["game_player_id_#{game.id}"]).to eq(game_player_id)
+    end
+
+    it 'creates an event to log the player joining' do
+      post "/games/#{game.id}/join"
+
+      expect(Event.last).to have_attributes(
+        "user" => player_id,
+        "object_ref" => "player:#{game_player_id}",
+        "event_type" => Event::PLAYER_JOIN,
+        "data" => game.reload.players
+      )
     end
   end
 

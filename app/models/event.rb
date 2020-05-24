@@ -11,6 +11,7 @@ class Event < ApplicationRecord
   ]
 
   belongs_to :game
+  belongs_to :card
 
   validates :game_id, :user, :event_type, presence: true
   validates :event_type, inclusion: { in: EVENT_TYPES }

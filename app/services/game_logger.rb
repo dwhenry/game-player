@@ -41,7 +41,7 @@ class GameLogger
   def player_join
     create_event(
       Event::PLAYER_JOIN,
-      game.players
+      players: game.players
     )
   end
 
@@ -85,6 +85,7 @@ class GameLogger
     data.merge!(card_name: card_name) if card_name
     event = game.events.create!(
       user: user,
+      card_id: data[:card_id],
       object_ref: object_ref,
       event_type: type,
       data: data

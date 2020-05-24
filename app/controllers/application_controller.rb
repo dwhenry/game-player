@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-  helper_method :current_user, :player_name
+  helper_method :current_user, :player_name, :game_player_id
   def current_user
     cookies[:username] ||= "Tester: #{SecureRandom.uuid.split('-').first}"
   end

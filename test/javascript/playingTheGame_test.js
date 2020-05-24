@@ -69,6 +69,7 @@ describe('Playing the game', () => {
     let mockedEventResponse = {
       events: [{
         objectId: getCards(card.stackId).find(c => c.id === card.id).objectId,
+        eventType: 'move',
         from: { locationId: initialGameState.locations[0].id, stack: 'pile' },
         to: { locationId: initialGameState.locations[2].id, stack: 'hand' },
         timestamp: new Date().getTime(),
@@ -82,7 +83,7 @@ describe('Playing the game', () => {
           name: 'Test Card'
         }
       }]
-    }
+    };
 
     await pollServerForUpdates(null, mockedEventResponse);
 
@@ -164,6 +165,7 @@ describe('Playing the game', () => {
     let mockedEventResponse = {
       events: [{
         objectId: objectId,
+        eventType: 'move',
         from: { locationId: initialGameState.locations[0].id, stack: 'pile' },
         to: { locationId: initialGameState.locations[2].id, stack: 'hand' },
         timestamp: new Date().getTime(),
@@ -209,7 +211,7 @@ describe('Playing the game', () => {
     let actual = [...document.querySelectorAll('.player__title,.location__title,.stack__name,.card__type')].map(e => e.textContent);
 
     expect(actual).toEqual(expectedState)
-  }
+  };
 
   const pollServerForUpdates = async (objectId, response) => {
     let lastUpdate = 0;
@@ -225,6 +227,7 @@ describe('Playing the game', () => {
         events: events(objectId).map((event) => {
           return {
             ...event,
+            eventType: 'move',
             card: {
               ...card,
               visible: 'face',
@@ -239,10 +242,10 @@ describe('Playing the game', () => {
     }
 
 
-    fetchMock.get({url: '/games/' + initialGameState.id + '/events', body: { since: lastUpdate }}, mockEventsResponse);
+    fetchMock.get({url: '/games/' + initialGameState.id + '/events?since=' + lastUpdate }, mockEventsResponse);
 
     await act(pollEvents)
-  }
+  };
 
   const pickupCard = (cardPos, ownershipPromise, objectId) => {
     const card = initialGameState.cards[cardPos];
@@ -253,14 +256,14 @@ describe('Playing the game', () => {
 
     let startingNode = document.querySelector(".card-" + card.id);
 
-    fetchMock.post({url: '/games/' + initialGameState.id + '/ownership/' + objectId}, ownershipPromise);
+    fetchMock.post({url: '/games/' + initialGameState.id + '/cards/' + objectId + '/take'}, ownershipPromise);
 
     startingNode.dispatchEvent(
       createBubbledEvent("dragstart", { dataTransfer: mockDataTransfer, clientX: 0, clientY: 0 })
     );
 
     return objectId;
-  }
+  };
   const dropCard = (objectId, fromStack, toStack) => {
     let endingNode = elem.getByTestId(toStack.locationId + '-' + toStack.stack);
 
@@ -275,23 +278,23 @@ describe('Playing the game', () => {
     };
 
     // mock the event move call to the backend
-    fetchMock.patch({url: '/games/' + initialGameState.id + '/ownership/' + objectId, matchPartialBody: true, body: mockDropEvent}, {}, {
+    fetchMock.patch({url: '/games/' + initialGameState.id + '/cards/' + objectId + '/move', matchPartialBody: true, body: mockDropEvent}, {}, {
       delay: 10, // fake a slow network
     });
 
     endingNode.dispatchEvent(
       createBubbledEvent("drop", { dataTransfer: mockDataTransfer, clientX: 0, clientY: 1 })
     );
-  }
+  };
 
   const MockDataTransfer = () => {
     let data = {}
     data.setData = (key, value) => {
       data[key] = value;
-    }
+    };
     data.getData = (key) => {
       return data[key];
-    }
+    };
     return data;
   };
 
@@ -299,13 +302,14 @@ describe('Playing the game', () => {
     const event = new Event(type, { bubbles: true });
     Object.assign(event, props);
     return event;
-  };
+  }
 
   function buildGameState() {
     let taskLocationId = nextUuid();
     let player1Id = nextUuid();
     let player2Id = nextUuid();
     return {
+      skipPolling: true,
       id: nextUuid(),
       name: "Test 123",
       game_config_id: 'Config-111',

@@ -67,7 +67,7 @@ class GameRender
       deck: card_detail.fetch('deck'),
       visible: 'back',
       stackId: stack_id,
-      objectId: object_id(card, show_object_id: show_object_id)
+      objectId: object_ref(card, show_object_id: show_object_id)
     }
   end
 
@@ -83,13 +83,13 @@ class GameRender
       actions: card_detail.fetch('actions'),
       visible: 'face',
       stackId: stack_id,
-      objectId: object_id(card),
+      objectId: object_ref(card),
     }
   end
 
-  def object_id(card, show_object_id: true)
+  def object_ref(card, show_object_id: true)
     return "card:#{card['location_id']}:#{card['stack']}:#{card['id']}" if show_object_id
-    "location:#{card['location_id']}:#{card['stack']}"
+    "location:#{card['location_id']}:#{card['stack']}:"
   end
 
     #

@@ -1,7 +1,7 @@
 import React from 'react';
 import { takeEvent, getUpdates } from '../modules/utils'
 
-let ownershipEvents = {}
+let ownershipEvents = {};
 let cardsByStack = {};
 let watchers = {};
 
@@ -39,20 +39,19 @@ export const updateCard = (event) => {
 
   watchers[fromStackId].forEach((watcher) => watcher(cardsByStack[fromStackId]));
   watchers[toStackId].forEach((watcher) => watcher(cardsByStack[toStackId]));
-}
+};
 
 export const setCards = (cards) => {
   cards.forEach((c) => {
     if(cardsByStack[c.stackId] == undefined) cardsByStack[c.stackId] = [];
-    if(c.count) {
-      for(let i=0; i < c.count; i++) {
-        cardsByStack[c.stackId].push({...c, objectId: c.objectId + "-" + Math.random().toString(36).substr(2, 9)});
-      }
+    if(c.objectId =~ /^location:/) {
+      cardsByStack[c.stackId].push({...c, objectId: c.objectId + "-" + Math.random().toString(36).substr(2, 9)});
     } else {
       cardsByStack[c.stackId].push(c);
     }
-  })
-}
+  });
+  console.log(cardsByStack);
+};
 
 /*
 Lifecycles:
@@ -66,7 +65,7 @@ const revertPhantomEvents = (objectId) => {
 
   let lastEvent = (events && events[events.length - 1]) || returnEvent
   if(returnEvent === undefined) {
-    // process has already been reverted... 
+    // process has already been reverted...
     // maybe we received the update from an actaul card owner while we waited
     return;
   }
@@ -95,22 +94,20 @@ export function takeOwnership(event) {
     ownershipEvents[event.objectId] = [];
     takeEvent(event.objectId).then(async (response) => {
       let json = await response.json();
-      if(json.success !== true) {        
+      if(json.success !== true) {
         revertPhantomEvents(event.objectId)
       }
     })
   }
-};
+}
 
 // this is exposed for testing only
 export const events = (objectId) => {
   return ownershipEvents[objectId];
-}
+};
 
-export const pollEvents = async () => {
-  let events = (await getUpdates()).events;
-
-  events.forEach((event) => {
+const processMoveEvents = (events) => {
+  events.filter(ev => ev.eventType === 'move').forEach((event) => {
     let eventsForObject = ownershipEvents[event.objectId];
     if(eventsForObject === undefined || eventsForObject.length === 0) {
       // if events arrive but we are waiting on ownership, just fail it
@@ -132,4 +129,33 @@ export const pollEvents = async () => {
       }
     }
   })
-}
+};
+
+const processLogEvents = (events) => {
+  events.forEach((event) => {
+    switch(event.eventType) {
+      case "failed_move":
+        break;
+      case "failed_pickup":
+        break;
+      case "keyframe":
+        break;
+      case "move":
+        break;
+      case "pickup_card":
+        break;
+      case "pickup_location":
+        break;
+      case "player_join":
+        break;
+      case "returned_card":
+        break;
+    }
+  })
+};
+
+export const pollEvents = async () => {
+  let events = (await getUpdates()).events;
+  processMoveEvents(events);
+  processLogEvents(events);
+};

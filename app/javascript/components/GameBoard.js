@@ -13,10 +13,14 @@ const GameBoard = (props) =>  {
   const [card, setCard] = useState();
   const [params, setParams] = useState(props.params);
 
-  useEffect(() => {
-    let interval = setInterval(pollEvents, 5000);
-    return () => { clearInterval(interval) }
-  })
+  if(!props.skipPolling) {
+    useEffect(() => {
+      let interval = setInterval(pollEvents, 5000);
+      return () => {
+        clearInterval(interval)
+      }
+    })
+  }
 
   setCards(props.cards);
 
@@ -71,5 +75,6 @@ GameBoard.propTypes = {
   locations: PropTypes.array,
   stacks: PropTypes.object,
   params: PropTypes.object,
+  skipPolling: PropTypes.bool,
 };
 export default GameBoard

@@ -80,7 +80,7 @@ RSpec.describe 'Playing the game', type: :request do
         "user" => player_id,
         "object_ref" => "player:#{game_player_id}",
         "event_type" => Event::PLAYER_JOIN,
-        "data" => game.reload.players
+        "data" => { "players" => game.reload.players }
       )
     end
   end

@@ -7,9 +7,10 @@ import { events, pollEvents, getCards } from '../../app/javascript/state/CardSta
 jest.useFakeTimers();
 
 const initialBoardState = [
-  "Tasks",                    "Backlog", "Hidden: 3", "Discard", "None", "Face up", "None", "None",
-  "Player: Make me editable", "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
-  "Player: Player 2",         "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]
+  "Tasks",            "Backlog: Hidden 3", "Discard: Spot", "Face up: Spot", "Face up: Spot",
+  "Make me editable", "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot",
+  "Player 2",         "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot"
+];
 
 describe('Playing the game', () => {
   let elem;
@@ -47,17 +48,19 @@ describe('Playing the game', () => {
 
     // check the local view is up to date
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 2", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
-      "Player: Player 2",         "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+      "Tasks",            "Backlog: Hidden 2", "Discard: Spot", "Face up: Spot", "Face up: Spot",
+      "Make me editable", "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Hidden pending",
+      "Player 2",         "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot"
+    ]);
 
     await pollServerForUpdates(objectLocator);
 
     // check the page is fully updated
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 2", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card",
-      "Player: Player 2",         "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+      "Tasks",            "Backlog: Hidden 2", "Discard: Spot", "Face up: Spot", "Face up: Spot",
+      "Make me editable", "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Test Card",
+      "Player 2",         "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot"
+    ]);
 
     // check it updated the objectLocator on the card
     let playerCards = getCards(initialGameState.locations[1].id + '-hand')
@@ -88,9 +91,10 @@ describe('Playing the game', () => {
 
     // check the page is fully updated
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 2", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
-      "Player: Player 2",         "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card", ]);
+      "Tasks",            "Backlog: Hidden 2", "Discard: Spot", "Face up: Spot", "Face up: Spot",
+      "Make me editable", "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot",
+      "Player 2",         "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Test Card"
+    ]);
   });
 
   it("Rejecting ownership before you drop the card should just ignore the card drop", async () => {
@@ -128,9 +132,10 @@ describe('Playing the game', () => {
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 2", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
-      "Player: Player 2",         "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+      "Tasks",            "Backlog: Hidden 2", "Discard: Spot", "Face up: Spot", "Face up: Spot",
+      "Make me editable", "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Hidden pending",
+      "Player 2",         "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot"
+    ]);
 
     // we did NOT get ownership this time around
     act(() => ownershipPromiseResolver({success: false}));
@@ -156,9 +161,10 @@ describe('Playing the game', () => {
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 2", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
-      "Player: Player 2",         "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+      "Tasks",            "Backlog: Hidden 2", "Discard: Spot", "Face up: Spot", "Face up: Spot",
+      "Make me editable", "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Hidden pending",
+      "Player 2",         "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot"
+    ]);
 
     let card = initialGameState.cards[0];
     let mockedEventResponse = {
@@ -183,10 +189,10 @@ describe('Playing the game', () => {
 
     // check the page is fully updated
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 2", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
-      "Player: Player 2",         "Backlog", "None",      "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card", ]);
-
+      "Tasks",            "Backlog: Hidden 2", "Discard: Spot", "Face up: Spot", "Face up: Spot",
+      "Make me editable", "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot",
+      "Player 2",         "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Test Card"
+    ]);
     // This is now a NO-OP but we should still resolve events..
     // enabling this actually causes in with unwatching which I don't understand...
     // await ownershipPromiseResolver({success: false});

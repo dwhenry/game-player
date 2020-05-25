@@ -12,14 +12,20 @@
 
   <body>
     <div class="container">
-      <div class="header">
-        <h1 class="inline">
-          <%= link_to 'Games Testing Arena', root_path %>
-        </h1>
-        <div class="top-right">
+      <div class="header row">
+        <div class="col-lg-8">
+          <h1 class="inline">
+            <%= link_to 'Games Testing Arena', root_path %>
+          </h1>
+        </div>
+        <div class="col-lg-4">
           <%= yield :top_right if content_for? :top_right %>
         </div>
-        <h3 class="inline"><%= yield :title %></h3>
+        <% if content_for? :title %>
+          <div class="col-sm-12">
+            <h3 class="inline"><%= yield :title %></h3>
+          </div>
+        <% end %>
       </div>
       <%= yield %>
     </div>

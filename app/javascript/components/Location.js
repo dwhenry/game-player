@@ -11,17 +11,24 @@ const Location = (props) => {
   }
 
   return (
-    <div className={"location location-" + props.id}>
-      <div className="location__title">{props.name}</div>
+    <div className={"col-md-4 grey-center location location-" + props.id}>
       <div className="row">
-        {props.stacks.map(([name, stack]) => {
-          return <CardStack key={props.id + '-' + stack}
-                            locationId={props.id}
-                            name={name}
-                            size="small"
-                            stack={stack}
-                            {...props.params[stack]} />
-        })}
+        <div className="col-md-1 center-md location__title">
+          <div className="text-rotate-right">
+            {props.name}
+          </div>
+        </div>
+        <div className="col-md-11 center-md">
+          {props.stacks.map(([name, stack]) => {
+            return <CardStack key={props.id + '-' + stack}
+                              locationId={props.id}
+                              name={name}
+                              size="small"
+                              stack={stack}
+                              {...props.params[stack]} />
+          })}
+        </div>
+
       </div>
     </div>
   );

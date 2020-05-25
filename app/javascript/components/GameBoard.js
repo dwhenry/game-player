@@ -23,28 +23,26 @@ const GameBoard = (props) =>  {
   }
 
   return (
-    <div>
+    <React.Fragment>
       <div className="game__title">{props.name}</div>
       <a href="#" onClick={pollEvents}>Manually Poll</a>
-      <div className="row">
-          <Dices />
+      <div className="row grey-middle">
+        {props.locations.filter(l => l.type == 'deck').map((location) => (
+          <Location key={location.id} {...location} stacks={props.stacks['deck']} params={params[location.id]} />
+        ))}
       </div>
-      <div className="row">
-        <div className="four columns">
-          {props.locations.filter(l => l.type == 'deck').map((location) => (
-            <Location key={location.id} {...location} stacks={props.stacks['deck']} params={params[location.id]} />
-          ))}
-        </div>
-        <div className="eight columns">
-          {props.locations.filter(l => l.type === 'player').map((player) => (
-            <Player key={player.id} {...player} stacks={props.stacks['player']} tokens={params[player.id]} />
-          ))}
-        </div>
+      <div className="row grey-middle">
+        {props.locations.filter(l => l.type === 'player').map((player) => (
+          <Player key={player.id} {...player} stacks={props.stacks['player']} tokens={params[player.id]} />
+        ))}
       </div>
       <div className="fixed__top-right" style={{display: card ? 'block' : 'none'}} onClick={removeCard}>
         <CardActions card={card} />
       </div>
-    </div>
+      <div className="row grey-middle">
+        <Dices />
+      </div>
+    </React.Fragment>
   );
 }
 

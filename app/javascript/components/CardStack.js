@@ -26,7 +26,7 @@ const CardStack = (props) => {
     let result = [];
     cards = cards || []
     for (let i = 0; i < (props.min_cards - cards.length); i++) {
-      result.push(<CardSpot key={props.locationId + ':' + props.stack + ':' + i} size={props.size} />)
+      result.push(<CardSpot key={props.locationId + ':' + props.stack + ':' + i} title={props.name} size={props.size} />)
     }
     return result
   };
@@ -44,22 +44,24 @@ const CardStack = (props) => {
     let card = cards[cards.length-1];
     // all cards are face down so group them an d just show a number
     return <DropTarget onItemDropped={itemDropped} className={"stack stack-" + props.stack} >
-      <div className="stack__name" data-testid={props.locationId + '-' + props.stack}>{props.name}</div>
-      <CardBack key={card.id} card={card} size={props.size} count={cards.length} dragEventId={[card.objectLocator, props.locationId, props.stack]} />
+      <div data-testid={props.locationId + '-' + props.stack}>
+        <CardBack key={card.id} title={props.name} card={card} size={props.size} count={cards.length} dragEventId={[card.objectLocator, props.locationId, props.stack]} />
+      </div>
     </DropTarget>
 
   } else {
     return <DropTarget onItemDropped={itemDropped} className={"stack stack-" + props.stack} >
-      <div className="stack__name" data-testid={props.locationId + '-' + props.stack}>{props.name}</div>
-      {cards && cards.map((card) => {
-        switch(card.visible) {
-          case 'face':
-            return <CardFace key={card.id} card={card} size={props.size} dragEventId={[card.objectLocator, props.locationId, props.stack]} />
-          case 'back':
-            // TODO: work out how to render this cards on top of each other..
-            return <CardBack key={card.id} card={card} size={props.size} dragEventId={[card.objectLocator, props.locationId, props.stack]} />
-        }
-      })}
+      <div data-testid={props.locationId + '-' + props.stack}>
+        {cards && cards.map((card) => {
+          switch(card.visible) {
+            case 'face':
+              return <CardFace key={card.id} title={props.name} card={card} size={props.size} dragEventId={[card.objectLocator, props.locationId, props.stack]} />
+            case 'back':
+              // TODO: work out how to render this cards on top of each other..
+              return <CardBack key={card.id} title={props.name} card={card} size={props.size} dragEventId={[card.objectLocator, props.locationId, props.stack]} />
+          }
+        })}
+      </div>
       {renderSpots(cards)}
     </DropTarget>
   }

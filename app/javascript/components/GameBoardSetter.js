@@ -22,8 +22,8 @@ const GameBoardSetter = (props) => {
 
   useEffect(() => {
     setSetters({setLocations: (l) => {
-      debugger;
       console.log(l);
+      debugger;
       setLocations({...locations, ...l})
     }});
     return () => { setSetters({setLocations: () => {}}) }
@@ -43,7 +43,7 @@ GameBoardSetter.propTypes = {
   cards: PropTypes.array,
   locations: PropTypes.array,
   stacks: PropTypes.object,
-  params: PropTypes.object
+  params: PropTypes.object,
   skipPolling: PropTypes.bool
 };
 export default GameBoardSetter

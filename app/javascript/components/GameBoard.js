@@ -4,6 +4,7 @@ import Location from "./Location";
 import Player from "./Player";
 import CardActions from "./CardActions";
 import Dices from "./Dices";
+import Logs from "./Logs";
 import { pollEvents } from '../state/CardState';
 
 const GameBoard = (props) =>  {
@@ -36,11 +37,18 @@ const GameBoard = (props) =>  {
           <Player key={player.id} {...player} stacks={props.stacks['player']} tokens={params[player.id]} />
         ))}
       </div>
+      <div className="row grey-middle">
+        <div className="col-md-4">
+          <Dices />
+        </div>
+        <div className="col-md-4">
+          <Logs />
+        </div>
+      </div>
+
+
       <div className="fixed__top-right" style={{display: card ? 'block' : 'none'}} onClick={removeCard}>
         <CardActions card={card} />
-      </div>
-      <div className="row grey-middle">
-        <Dices />
       </div>
     </React.Fragment>
   );

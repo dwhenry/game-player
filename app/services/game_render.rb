@@ -8,23 +8,26 @@ class GameRender
   end
 
   def call
-    {
-      id: game.id,
-      name: game.name,
-      game_config_id: game.game_config_id,
-      state: game.state,
-      cards: cards,
-      locations: locations,
-      stacks: {
-        deck: [['Backlog', 'pile'], ['Discard', 'discard'], ['Face up', 'fu_cards']],
-        player: [['Backlog', 'pile'], ['Board', 'board'], ['Face up', 'fu_cards'], ['Staff', 'employees'], ['Hand', 'hand']],
-      },
-      params: game.params.merge(
-        'tasks' => { 'fu_cards' => { 'min_cards' => 2 } },
-        'achievements' => { 'fu_cards' => { 'min_cards' => 2 } },
-        'employees' => { 'fu_cards' => { 'min_cards' => 2 } },
-      )
-    }
+    game.transaction do
+      {
+        id: game.id,
+        name: game.name,
+        game_config_id: game.game_config_id,
+        state: game.state,
+        cards: cards,
+        locations: locations,
+        lastEventId: 0, #game.events.maximum(:order) || 0,
+        stacks: {
+          deck: [['Backlog', 'pile'], ['Discard', 'discard'], ['Face up', 'fu_cards']],
+          player: [['Backlog', 'pile'], ['Board', 'board'], ['Face up', 'fu_cards'], ['Staff', 'employees'], ['Hand', 'hand']],
+        },
+        params: game.params.merge(
+          'tasks' => { 'fu_cards' => { 'min_cards' => 2 } },
+          'achievements' => { 'fu_cards' => { 'min_cards' => 2 } },
+          'employees' => { 'fu_cards' => { 'min_cards' => 2 } },
+        )
+      }
+    end
   end
 
   def locations

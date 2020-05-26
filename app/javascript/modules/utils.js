@@ -46,10 +46,8 @@ export async function ajaxUpdate(data, error) {
   }
 }
 
-export async function getUpdates() {
-  let lastUpdateTimestamp = 0; //new Date().getTime();
-
-  const response = await fetch('/games/' + window.gameBoardId + '/events?since=' + lastUpdateTimestamp, {
+export async function getUpdates(lastEventId) {
+  const response = await fetch('/games/' + window.gameBoardId + '/events?since=' + lastEventId, {
     method: 'GET',
     headers: {
       // "X-CSRF-Token": getCSRFToken(),
@@ -81,7 +79,7 @@ export async function postEvent(objectLocator, data) {
 }
 
 export async function cardUpdate(data) {
-  const response = await fetch('/game_configs/' + window.gameId, {
+  const response = await fetch('/game_configs/' + window.gameID, {
     method: 'PATCH',
     headers: {
       "X-CSRF-Token": getCSRFToken(),

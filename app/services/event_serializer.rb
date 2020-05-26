@@ -1,5 +1,6 @@
 class EventSerializer
   attr_reader :game, :user
+
   def initialize(game:, user:)
     @game = game
     @user = user
@@ -15,6 +16,10 @@ class EventSerializer
   def move_json(event)
     _, from_location_id, from_stack, _ = event.object_locator.split(':')
     {
+      key: event.id,
+      order: event.order,
+      user: user,
+      gameID: game.id,
       objectLocator: event.object_locator,
       eventType: event.event_type,
       from: { locationId: from_location_id, stack: from_stack },
@@ -27,9 +32,13 @@ class EventSerializer
   def default_json(event)
     _, from_location_id, from_stack, _ = event.object_locator.split(':')
     {
+      key: event.id,
+      order: event.order,
+      user: user,
+      gameID: game.id,
       objectLocator: event.object_locator,
       eventType: event.event_type,
-      timestamp: event.created_at.to_i,
+      timestamp: event.created_at.to_s(:short),
       from: { locationId: from_location_id, stack: from_stack },
       data: event.data
     }

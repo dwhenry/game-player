@@ -9,58 +9,55 @@
 <% end %>
 
 <div class="row"}>
-  <h3>Games</h3>
+  <div class="col-sm-12">
+    <h3>Games</h3>
+  </div>
 
-  <table class="u-full-width">
-    <thead>
-    <tr>
-      <th>Game</th>
-      <th>State</th>
-      <th>Players</th>
-      <th>Sprint</th>
-    </tr>
-    </thead>
-    <tbody>
+  <div class="col-sm-12">
+    <div class="row row__header">
+      <div class="col-sm-4">Game</div>
+      <div class="col-sm-2">State</div>
+      <div class="col-sm-4">Players</div>
+      <div class="col-sm-2">Sprint</div>
+    </div>
+
     <% Game.order(updated_at: :desc).each do |game| %>
-      <tr onclick="window.location='<%= game_path(game) %>';" title="Config: <%= game.game_config.name %>">
-        <td><%= game.name %></td>
-        <td><%= game.state %></td>
-        <td><%= game.players.values.map { |name| name == Game::PENDING_PLAYER ? "-" : name }.join(', ') %></td>
-        <td><%= game.sprint %></td>
-      </tr>
+      <div class="row row__data" onclick="window.location='<%= game_path(game) %>';" title="Config: <%= game.game_config.name %>">
+        <div class="col-sm-4"><%= game.name %></div>
+        <div class="col-sm-2"><%= game.state.humanize %></div>
+        <div class="col-sm-4"><%= game.players.values.map { |name| name == Game::PENDING_PLAYER ? "-" : name }.join(', ') %></div>
+        <div class="col-sm-2"><%= game.sprint %></div>
+      </div>
     <% end %>
-    </tbody>
-  </table>
+  </div>
 
-  <h3>
-    Game Configs
-    <%= link_to '+', new_game_config_path, class: "add-object" %>
-  </h3>
+  <div class="col-sm-12">
+    <h3>
+      Game Configs
+      <%= link_to '+', new_game_config_path, class: "add-object" %>
+    </h3>
+  </div>
 
-  <table class="u-full-width">
-    <thead>
-    <tr>
-      <th>Name</th>
-      <th>Cards</th>
-      <th>Players</th>
-      <th></th>
-      <th></th>
-    </tr>
-    </thead>
-    <tbody>
+  <div class="col-sm-12">
+    <div class="row row__header">
+      <div class="col-sm-4">Name</div>
+      <div class="col-sm-3">Cards</div>
+      <div class="col-sm-2">Players</div>
+      <div class="col-sm-3"></div>
+    </div>
     <% @game_configs.each do |game_config| %>
       <%= form_tag games_path(game_config_id: game_config.id) do %>
-        <tr data-selector="config-<%= game_config.id %>">
-          <td><%= game_config.name %></td>
-          <td>
+        <div class="row row__data" data-selector="config-<%= game_config.id %>">
+          <div class="col-sm-4"><%= game_config.name %></div>
+          <div class="col-sm-3">
             <% game_config.decks.each do |deckname, cards| %>
               <div>
                 <%= "#{deckname}: #{cards.count}" %>
               </div>
             <% end %>
-          </td>
-          <td><%= select_tag :players, options_for_select((2..4).to_a, 4) %></td>
-          <td>
+          </div>
+          <div class="col-sm-2"><%= select_tag :players, options_for_select((2..4).to_a, 4) %></div>
+          <div class="col-sm-3">
             <%= submit_tag "Start Game" %>
             <br>
             <% if game_config.locked %>
@@ -68,10 +65,9 @@
             <% else %>
               <%= link_to "Edit", edit_game_config_path(game_config) %>
             <% end %>
-          </td>
-        </tr>
+          </div>
+        </div>
       <% end %>
     <% end %>
-    </tbody>
-  </table>
+  </div>
 </div>

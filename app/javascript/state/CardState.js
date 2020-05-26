@@ -132,34 +132,45 @@ const processMoveEvent = (event) => {
 
 const processEvents = (events) => {
   events.forEach((event) => {
-    switch(event.eventType) {
-      case "failed_move":
-        break;
-      case "failed_pickup":
-        break;
-      case "keyframe":
-        break;
-      case "move":
-        processMoveEvent(event);
-        break;
-      case "pickup_card":
-        break;
-      case "pickup_location":
-        break;
-      case "player_join":
-        setters.setLocations(event.data.players);
-        break;
-      case "returned_card":
-        break;
+    if(setters.lastEventId() < event.order) {
+      setters.setlastEventId(event.order);
+      switch (event.eventType) {
+        case "failed_move":
+          break;
+        case "failed_pickup":
+          break;
+        case "keyframe":
+          break;
+        case "move":
+          processMoveEvent(event);
+          break;
+        case "pickup_card":
+          break;
+        case "pickup_location":
+          break;
+        case "player_join":
+          let position = setters.setLocations(event.data);
+          setters.addLog({
+            key: event.key,
+            order: event.order,
+            gameID: event.gameID,
+            timestamp: event.timestamp,
+            user: event.data.player_name,
+            message: event.data.player_name + " joined the game in position " + position
+          });
+          break;
+        case "returned_card":
+          break;
+      }
     }
   })
 };
 
-let setters = {}
+let setters = {};
 export const setSetters = (s) => {
   setters = {...setters, ...s}
-}
+};
 export const pollEvents = async () => {
-  let events = (await getUpdates()).events;
+  let events = (await getUpdates(setters.lastEventId())).events;
   processEvents(events);
 };

@@ -13,7 +13,7 @@ class GamesController < ApplicationController
   def show
     @game = Game.find_by(id: params[:id])
     if @game
-      @game_board = GameRender.new(@game, game_player_id(@game)).call
+      @game_board = GameSerializer.new(@game, game_player_id(@game)).as_json
       @game_board['skipPolling'] = true if params[:skip_polling]
 
       respond_to do |format|
@@ -27,30 +27,28 @@ class GamesController < ApplicationController
     end
   end
 
-  # def update
-  #   game = Game.find_by(id: params[:id])
-  #   if game
-  #     action = case params[:task]
-  #              when 'cardMove'
-  #                CardMover.new(game, params[:card], params[:action_id])
-  #              when 'incRound'
-  #                IncrementRound.new(game, params[:player][:id], params[:action_id])
-  #              when 'changeTokens'
-  #                ChangeToken.new(game, params[:token], params[:action_id])
-  #              else
-  #                render json: { error: "Unknown action: #{params[:taskl]}", next_action: game.next_action }, status: 500
-  #                return
-  #              end
-  #     action.call
-  #     if action.error.present?
-  #       render json: { error: action.error, next_action: game.next_action }, status: 500
-  #     else
-  #       render json: GameRender.new(game, current_user).call
-  #     end
-  #   else
-  #     redirect_to root_path
-  #   end
-  # end
+  def update
+    game = Game.find_by(id: params[:id])
+    if game
+      action = case params[:task]
+               when 'incRound'
+                 IncrementRound.new(game, params[:player][:id], params[:action_id])
+               when 'changeTokens'
+                 ChangeToken.new(game, params[:token], params[:action_id])
+               else
+                 render json: { error: "Unknown action: #{params[:taskl]}", next_action: game.next_action }, status: 500
+                 return
+               end
+      action.call
+      if action.error.present?
+        render json: { error: action.error, next_action: game.next_action }, status: 500
+      else
+        render json: GameSerializer.new(game, current_user).call
+      end
+    else
+      redirect_to root_path
+    end
+  end
 
   def join
     game = Game.find_by(id: params[:id])

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe GameRender do
+RSpec.describe GameSerializer do
   let(:config) { FactoryBot.create(:game_config, :single_task) }
   let(:game) do
     GameInitializer.new(config).call(players: 2).tap do |game|
@@ -10,8 +10,8 @@ RSpec.describe GameRender do
   let(:player_1_id) { game.players.keys.first }
   let(:player_2_id) { game.players.keys.last }
 
-  let(:player_1_view) { described_class.new(game, player_1_id).call }
-  let(:player_2_view) { described_class.new(game, player_2_id).call }
+  let(:player_1_view) { described_class.new(game, player_1_id).as_json }
+  let(:player_2_view) { described_class.new(game, player_2_id).as_json }
 
   context "when the game is waiting for players" do
     it "renders the games fields" do

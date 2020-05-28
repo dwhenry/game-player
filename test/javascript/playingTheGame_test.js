@@ -71,8 +71,9 @@ describe('Playing the game', () => {
     let card = initialGameState.cards[0]
     let mockedEventResponse = {
       events: [{
-        objectLocator: getCards(card.stackId).find(c => c.id === card.id).objectLocator,
+        objectLocator: 'location:' + initialGameState.locations[0].id + ':stack:AAAA',
         eventType: 'move',
+        order: 1,
         from: { locationId: initialGameState.locations[0].id, stack: 'pile' },
         to: { locationId: initialGameState.locations[2].id, stack: 'hand' },
         timestamp: new Date().getTime(),
@@ -232,6 +233,7 @@ describe('Playing the game', () => {
           return {
             ...event,
             eventType: 'move',
+            order: 1,
             card: {
               ...card,
               visible: 'face',
@@ -316,6 +318,7 @@ describe('Playing the game', () => {
       id: nextUuid(),
       name: "Test 123",
       game_config_id: 'Config-111',
+      lastEventId: 0,
       cards: [
         {
           id: nextUuid(),

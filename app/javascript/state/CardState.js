@@ -27,7 +27,11 @@ export const updateCard = (event) => {
 
   // remove it from the old location
   let card = fromStack.find(l => l.objectLocator === event.objectLocator);
+  let fromStackLength = fromStack.length
   fromStack = fromStack.filter(l => l.objectLocator !== event.objectLocator);
+  if(fromStackLength === fromStack.length && l.objectLocator.match('location')) {
+    // nothing was removed so assume
+  }
   if(fromStack.length === 0) fromStack = undefined;
 
   // add it to the new location

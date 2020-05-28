@@ -1,4 +1,4 @@
-class GameRender
+class GameSerializer
   FACE_DOWN_STACK = %w[tasks-pile achievements-pile employees-pile].freeze
   attr_reader :game, :current_user
 
@@ -7,7 +7,7 @@ class GameRender
     @current_user = current_user
   end
 
-  def call
+  def as_json(*)
     game.transaction do
       {
         id: game.id,
@@ -94,65 +94,4 @@ class GameRender
     return "card:#{card['location_id']}:#{card['stack']}:#{card['id']}" if show_object_id
     "location:#{card['location_id']}:#{card['stack']}:"
   end
-
-    #
-  # def players
-  #   game.player_stacks(status: 'active').map do |stack|
-  #     player = stack['id']
-  #     {
-  #       status: stack['status'],
-  #       id: player,
-  #       name: player.titleize,
-  #       tokens: stack['tokens'],
-  #       # cards
-  #       employees: render_cards(stack['employees'], min: 1),
-  #       backlog: [render_card_back(*stack['backlog'].last)],
-  #       hand: render_hand(stack, player),
-  #       fu_cards: render_cards(stack['fu'], min: 1),
-  #       board: render_cards(stack['board'], min: 1),
-  #     }
-  #   end
-  # end
-  #
-  # def render_hand(stack, player)
-  #   return [empty_slot] if stack['hand'].empty?
-  #
-  #   stack['hand'].map { |card| (player == current_user) ? render_card(*card) : render_card_back(*card) }
-  # end
-  #
-  # def render_cards(cards, min:)
-  #   result = cards.map { |args| render_card(*args) }
-  #   (min - cards.length).times { result << empty_slot }
-  #   result
-  # end
-  #
-  # def render_card(id = nil, card_id = nil, round = nil)
-  #   card = card_id && lookup_card(card_id)
-  #   return empty_slot unless card
-  #
-  #   card.merge('id' => id, 'visible' => 'face', round: round)
-  # end
-  #
-  # def render_card_back(id = nil, card_id = nil, round = nil)
-  #   card = card_id && lookup_card(card_id)
-  #   return empty_slot unless card
-  #
-  #   {
-  #     id: id,
-  #     deck: card['deck'],
-  #     visible: 'back'
-  #   }
-  # end
-  #
-  # def empty_slot
-  #   {
-  #     id: SecureRandom.uuid,
-  #     visible: 'slot'
-  #   }
-  # end
-  #
-  # def lookup_card(card_id)
-  #   @cards ||= game.game_config.decks.values.inject(&:merge)
-  #   @cards[card_id]
-  # end
 end

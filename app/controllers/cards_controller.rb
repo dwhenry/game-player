@@ -35,9 +35,8 @@ class CardsController < ApplicationController
   end
 
   def validate_player
-    unless game.players.keys.include?(game_player_id(game))
-      render json: { status: false, error: "NOT A PLAYER", code: ErrorCodes::NOT_A_PLAYER }
-    end
-  end
+    return if game.players[game_player_id(game)]
 
+    render json: { status: false, error: "NOT A PLAYER", code: ErrorCodes::NOT_A_PLAYER }
+  end
 end

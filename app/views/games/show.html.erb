@@ -1,9 +1,9 @@
 <div><%= flash[:error] %></div>
 
-<%= react_component 'GameBoard', @game_board %>
-<% unless @game.player_stacks.map { |stack| stack['id'] }.include?(current_user)  %>
+<%= react_component 'GameBoardSetter', @game_board %>
+<% unless game_player_id(@game)  %>
   <div class="overlay overlay__preview">
-    <% if @game.player_stacks(status: 'pending').any? %>
+    <% if @game.players.values.include?(Game::PENDING_PLAYER) %>
       <div class="join-dialog">
         <h4>Waiting for players:</h4>
         <%= button_to 'Join Game', join_game_path(@game), class: 'btn' %>

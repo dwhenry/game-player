@@ -1,34 +1,17 @@
 .player {
-  border: solid 2px black;
   position: relative;
 }
 
 .player__title {
-  font-size: 1.2em;
-  color: #888;
-  margin-bottom: 4px;
-  position: absolute;
-  top: -8px;
-  left: 15px;
-  height: 20px;
-  border: solid 1px black;
-  border-radius: 10px;
-  line-height: 20px;
-  background: white;
-  padding: 0 15px
+  font-size: 1.5em;
+  color: black;
 }
 .player__inc-round {
   font-size: 1.2em;
   color: #888;
-  margin-bottom: 4px;
   position: absolute;
-  top: -8px;
-  right: 15px;
-  height: 20px;
-  border: solid 1px black;
-  border-radius: 10px;
-  line-height: 20px;
-  background: white;
+  top: 12px;
+  left: 0px;
   padding: 0 15px
 }
 .hand {
@@ -36,9 +19,8 @@
 }
 
 .tokens {
-  display: inline-block;
+  margin-top: -20px;
   vertical-align: top;
-  margin-right: 20px;
 }
 
 .token {
@@ -53,7 +35,6 @@
 .token__count {
   position: absolute;
   display: inline-block;
-  right: -6px;
   background: whitesmoke;
   border: black solid 1px;
   height: 10px;
@@ -67,6 +48,11 @@
   text-decoration: none;
 }
 
+.token__count-buttons {
+  position: relative;
+  display: inline-block;
+  width: 10px;
+}
 .token__count__inc {
   top: 2px;
   color: green;

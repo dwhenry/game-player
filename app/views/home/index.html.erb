@@ -1,65 +1,73 @@
-<div class="row"}>
-  <h3>Games</h3>
-    <table class="u-full-width">
-      <thead>
-        <tr>
-          <th>Game Version</th>
-          <th>Config Version</th>
-          <th>Players</th>
-          <th>Sprint</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% Game.order(updated_at: :desc).each do |game| %>
-          <tr>
-            <td><%= link_to game.id.split('-').first, game_path(game) %></td>
-            <td><%= game.game_config_id.split('-').first %></td>
-            <td><%= game.player_stacks(status: 'active').map { |player| player['id'] }.join(', ') %></td>
-            <td><%= game.sprint %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+<%= content_for :top_right do %>
+  <div class="player-config" data-selector="player">
+    <%= form_tag player_name_path do %>
+      <%= label_tag :name, "Player name" %>
+      <%= text_field_tag :name, player_name %>
+      <%= submit_tag "Update" %>
+    <% end %>
+  </div>
+<% end %>
 
+<div class="row"}>
+  <div class="col-sm-12">
+    <h3>Games</h3>
+  </div>
+
+  <div class="col-sm-12">
+    <div class="row row__header">
+      <div class="col-sm-4">Game</div>
+      <div class="col-sm-2">State</div>
+      <div class="col-sm-4">Players</div>
+      <div class="col-sm-2">Sprint</div>
+    </div>
+
+    <% Game.order(updated_at: :desc).each do |game| %>
+      <div class="row row__data" onclick="window.location='<%= game_path(game) %>';" title="Config: <%= game.game_config.name %>">
+        <div class="col-sm-4"><%= game.name %></div>
+        <div class="col-sm-2"><%= game.state.humanize %></div>
+        <div class="col-sm-4"><%= game.players.values.map { |name| name == Game::PENDING_PLAYER ? "-" : name }.join(', ') %></div>
+        <div class="col-sm-2"><%= game.sprint %></div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-sm-12">
     <h3>
       Game Configs
       <%= link_to '+', new_game_config_path, class: "add-object" %>
     </h3>
+  </div>
 
-    <table class="u-full-width">
-      <thead>
-        <tr>
-          <th>Version</th>
-          <th>Cards</th>
-          <th>Parent</th>
-          <th>Locked</th>
-          <th></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% GameConfig.order(updated_at: :desc).each do |game_config| %>
-          <tr>
-            <td><%= game_config.id.split('-').first %></td>
-            <td>
-              <% game_config.decks.each do |deckname, cards| %>
-                <div>
-                  <%= "#{deckname}: #{cards.count}" %>
-                </div>
-              <% end %>
-            </td>
-            <td><%= game_config.parent_id&.split('-')&.first || '-' %></td>
-            <td><%= game_config.locked ? 'Yes' : 'No' %></td>
-            <td><%= link_to "Start Game", new_game_path(game_config_id: game_config.id) %></td>
-            <td>
-              <% if game_config.locked %>
-                <%= link_to "Clone", new_game_config_path(parent_id: game_config.id) %>
-              <% else %>
-                <%= link_to "Edit", edit_game_config_path(game_config) %>
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+  <div class="col-sm-12">
+    <div class="row row__header">
+      <div class="col-sm-4">Name</div>
+      <div class="col-sm-3">Cards</div>
+      <div class="col-sm-2">Players</div>
+      <div class="col-sm-3"></div>
+    </div>
+    <% @game_configs.each do |game_config| %>
+      <%= form_tag games_path(game_config_id: game_config.id) do %>
+        <div class="row row__data" data-selector="config-<%= game_config.id %>">
+          <div class="col-sm-4"><%= game_config.name %></div>
+          <div class="col-sm-3">
+            <% game_config.decks.each do |deckname, cards| %>
+              <div>
+                <%= "#{deckname}: #{cards.count}" %>
+              </div>
+            <% end %>
+          </div>
+          <div class="col-sm-2"><%= select_tag :players, options_for_select((2..4).to_a, 4) %></div>
+          <div class="col-sm-3">
+            <%= submit_tag "Start Game" %>
+            <br>
+            <% if game_config.locked %>
+              <%= link_to "Clone", new_game_config_path(parent_id: game_config.id) %>
+            <% else %>
+              <%= link_to "Edit", edit_game_config_path(game_config) %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
 </div>

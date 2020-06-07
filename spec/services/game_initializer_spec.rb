@@ -44,7 +44,7 @@ RSpec.describe GameInitializer do
         },
         game_config_id: config.id,
         sprint: 0,
-        name: a_string_starting_with('Game: '),
+        name: a_string_starting_with('Awesome game: '),
         state: 'waiting-for-players',
       )
     end

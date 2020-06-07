@@ -24,8 +24,8 @@ export const CardFace = (props) => {
 
   return (
     <Drag className={"card card-" + props.card.id} onClick={handleClick} dataItem={props.dragEventId} >
-      <div style={{display: 'none'}} className="card__type">Visible: {props.card.name}{props.card.pending ? ' pending' : ''}</div>
-      <div className={"card__element card__" + props.card.deck + "-deck card--size-" + props.size}>
+      <div style={{display: 'none'}} className="card__type">{props.title}: {props.card.name}{props.card.pending ? ' pending' : ''}</div>
+      <div title={props.title} className={"card__element card__" + props.card.deck + "-deck card--size-" + props.size}>
         <div className="card__title">{props.card.name}</div>
         <div className="card__cost">{props.card.cost}</div>
         <div className={"card__round card__round__" + props.card.round + " card__rounds__" + props.card.rounds} >
@@ -48,8 +48,8 @@ export const CardBack = (props) => {
 
   return (
     <Drag className={"card card-" + props.card.id} onClick={handleClick} dataItem={props.dragEventId} >
-      <div style={{display: 'none'}} className="card__type">Hidden: {props.card.pending ? 'pending' : props.count}</div>
-      <div className={"card__element card__" + props.card.deck + "-deck card--face-down card--size-" + props.size}>
+      <div style={{display: 'none'}} className="card__type">{props.title}: Hidden {props.card.pending ? 'pending' : props.count}</div>
+      <div title={props.title} className={"card__element card__" + props.card.deck + "-deck card--face-down card--size-" + props.size}>
         <div className="card__cost">{props.count}</div>
       </div>
     </Drag>
@@ -62,15 +62,18 @@ export const CardSpot = (props) => {
   };
 
   return (
-    <div className="card" onClick={handleClick}>
-      <div style={{display: 'none'}} className="card__type">None</div>
-      <div className={"card__element card--face-down card--size-" + props.size} />
+    <div className="card card--spot" onClick={handleClick}>
+      <div style={{display: 'none'}} className="card__type">{props.title}: Spot</div>
+      <div title={props.title} className={"card__element card--spot card--size-" + props.size}>
+        <div className="card--spot--rotated_text">{props.title}</div>
+      </div>
     </div>
   )
 };
 
 CardFace.propTypes = CardBack.propTypes = {
   card: PropTypes.object,
+  title: PropTypes.string,
   count: PropTypes.number,
   size: PropTypes.string,
   dragEventId: PropTypes.array,

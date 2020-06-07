@@ -46,9 +46,11 @@ class Game < ApplicationRecord
       key, _ = players.detect { |_, v| v == PENDING_PLAYER }
       players[key] = username
 
-      self.state = 'ready-to-play' if ready?
-
       save!
+      logger = GameLogger.new(game: self, user: key, card_name: nil, object_locator: "player:#{key}")
+      logger.player_join
+
+      play if ready?
 
       key
     end

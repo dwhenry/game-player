@@ -23,8 +23,10 @@ class Token extends React.Component {
     return (
      <div className={"token token__" + this.props.name}>
        <span className={"token__image token__image-" + this.props.name}>{this.props.quantity}</span>
-       <a href="#" className={"token__count token__count__inc"} onClick={this.incTokens} >+</a>
-       <a href="#" className={"token__count token__count__dec"} onClick={this.decTokens} >-</a>
+       <div className="token__count-buttons">
+         <a href="#" className={"token__count token__count__inc"} onClick={this.incTokens} >+</a>
+         <a href="#" className={"token__count token__count__dec"} onClick={this.decTokens} >-</a>
+       </div>
      </div>
     );
   }

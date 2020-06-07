@@ -1,15 +1,16 @@
 import React from 'react';
 import fetchMock from 'fetch-mock';
 import { render, act } from '@testing-library/react';
-import GameBoard from '../../app/javascript/components/GameBoard'
+import GameBoardSetter from '../../app/javascript/components/GameBoardSetter'
 import { events, pollEvents, getCards } from '../../app/javascript/state/CardState'
 
 jest.useFakeTimers();
 
 const initialBoardState = [
-  "Tasks",                    "Backlog", "Hidden: 10", "Discard", "None", "Face up", "None", "None",
-  "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
-  "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]
+  "Tasks",            "Backlog: Hidden 3", "Discard: Spot", "Face up: Spot", "Face up: Spot",
+  "Make me editable", "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot",
+  "Player 2",         "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot"
+];
 
 describe('Playing the game', () => {
   let elem;
@@ -21,7 +22,7 @@ describe('Playing the game', () => {
     mockDataTransfer = MockDataTransfer();
 
     act(() => {
-      elem = render(<GameBoard {...initialGameState} />);
+      elem = render(<GameBoardSetter {...initialGameState} />);
     });
 
     done()
@@ -35,40 +36,44 @@ describe('Playing the game', () => {
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
 
-    let objectId = pickupCard(0, ownershipPromise)
+    let objectLocator = pickupCard(-1, ownershipPromise);
 
     // we resolve the promise immediately in this test case
     ownershipPromiseResolver({success: true});
 
     dropCard(
-      objectId, 
-      { locationId: initialGameState.locations[0].id, stack: 'pile' }, 
+      objectLocator,
+      { locationId: initialGameState.locations[0].id, stack: 'pile' },
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
     // check the local view is up to date
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
-      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+      "Tasks",            "Backlog: Hidden 2", "Discard: Spot", "Face up: Spot", "Face up: Spot",
+      "Make me editable", "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Hidden pending",
+      "Player 2",         "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot"
+    ]);
 
-    await pollServerForUpdates(objectId);
+    await pollServerForUpdates(objectLocator);
 
     // check the page is fully updated
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card",
-      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+      "Tasks",            "Backlog: Hidden 2", "Discard: Spot", "Face up: Spot", "Face up: Spot",
+      "Make me editable", "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Test Card",
+      "Player 2",         "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot"
+    ]);
 
-    // check it updated the objectId on the card
+    // check it updated the objectLocator on the card
     let playerCards = getCards(initialGameState.locations[1].id + '-hand')
-    expect(playerCards[0].objectId).toMatch(/^card:/);
-  }); 
+    expect(playerCards[0].objectLocator).toMatch(/^card:/);
+  });
 
   it("Can process other player card move events", async () => {
     let card = initialGameState.cards[0]
     let mockedEventResponse = {
       events: [{
-        objectId: getCards(card.stackId).find(c => c.id === card.id).objectId,
+        objectLocator: 'location:' + initialGameState.locations[0].id + ':stack:AAAA',
+        eventType: 'move',
+        order: 1,
         from: { locationId: initialGameState.locations[0].id, stack: 'pile' },
         to: { locationId: initialGameState.locations[2].id, stack: 'hand' },
         timestamp: new Date().getTime(),
@@ -77,27 +82,27 @@ describe('Playing the game', () => {
           deck: 'tasks',
           visible: 'face',
           stackId: initialGameState.locations[2].id + '-hand',
-          objectId: 'card:' + nextUuid() + ':',
-          count: null,
+          objectLocator: 'card:' + nextUuid() + ':',
           name: 'Test Card'
         }
       }]
-    }
+    };
 
     await pollServerForUpdates(null, mockedEventResponse);
 
     // check the page is fully updated
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
-      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card", ]);
+      "Tasks",            "Backlog: Hidden 2", "Discard: Spot", "Face up: Spot", "Face up: Spot",
+      "Make me editable", "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot",
+      "Player 2",         "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Test Card"
+    ]);
   });
 
   it("Rejecting ownership before you drop the card should just ignore the card drop", async () => {
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
 
-    let objectId = pickupCard(0, ownershipPromise)
+    let objectLocator = pickupCard(-1, ownershipPromise)
 
     // we did get ownership this time around
     ownershipPromiseResolver({success: false});
@@ -106,8 +111,8 @@ describe('Playing the game', () => {
     await new Promise(setImmediate)
 
     dropCard(
-      objectId, 
-      { locationId: initialGameState.locations[0].id, stack: 'pile' }, 
+      objectLocator,
+      { locationId: initialGameState.locations[0].id, stack: 'pile' },
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
     // check the local view is up to date
@@ -120,24 +125,25 @@ describe('Playing the game', () => {
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
 
-    let objectId = pickupCard(0, ownershipPromise)
+    let objectLocator = pickupCard(-1, ownershipPromise)
 
     dropCard(
-      objectId, 
-      { locationId: initialGameState.locations[0].id, stack: 'pile' }, 
+      objectLocator,
+      { locationId: initialGameState.locations[0].id, stack: 'pile' },
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
-      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+      "Tasks",            "Backlog: Hidden 2", "Discard: Spot", "Face up: Spot", "Face up: Spot",
+      "Make me editable", "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Hidden pending",
+      "Player 2",         "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot"
+    ]);
 
     // we did NOT get ownership this time around
     act(() => ownershipPromiseResolver({success: false}));
 
     // we need to wait for all pormises to be resolved
     await act(() => new Promise(setImmediate));
-  
+
     // check the local view is up to date
     matchPageState(initialBoardState);
 
@@ -148,22 +154,25 @@ describe('Playing the game', () => {
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
 
-    let objectId = pickupCard(0, ownershipPromise)
+    let objectLocator = pickupCard(-1, ownershipPromise)
 
     dropCard(
-      objectId, 
-      { locationId: initialGameState.locations[0].id, stack: 'pile' }, 
+      objectLocator,
+      { locationId: initialGameState.locations[0].id, stack: 'pile' },
       { locationId: initialGameState.locations[1].id, stack: 'hand' });
 
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Hidden: pending",
-      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None", ]);
+      "Tasks",            "Backlog: Hidden 2", "Discard: Spot", "Face up: Spot", "Face up: Spot",
+      "Make me editable", "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Hidden pending",
+      "Player 2",         "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot"
+    ]);
 
     let card = initialGameState.cards[0];
     let mockedEventResponse = {
       events: [{
-        objectId: objectId,
+        objectLocator: objectLocator,
+        eventType: 'move',
+        order: 1,
         from: { locationId: initialGameState.locations[0].id, stack: 'pile' },
         to: { locationId: initialGameState.locations[2].id, stack: 'hand' },
         timestamp: new Date().getTime(),
@@ -172,8 +181,7 @@ describe('Playing the game', () => {
           deck: 'tasks',
           visible: 'face',
           stackId: initialGameState.locations[2].id + '-hand',
-          objectId: 'card:' + nextUuid() + ':',
-          count: null,
+          objectLocator: 'card:' + nextUuid() + ':',
           name: 'Test Card'
         }
       }]
@@ -183,10 +191,10 @@ describe('Playing the game', () => {
 
     // check the page is fully updated
     matchPageState([
-      "Tasks",                    "Backlog", "Hidden: 9", "Discard", "None", "Face up", "None", "None",
-      "Player: Make me editable", "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "None",
-      "Player: Player 2",         "Backlog", "None",       "Board", "None", "Face up", "None", "Staff", "None", "Hand", "Visible: Test Card", ]);
-    
+      "Tasks",            "Backlog: Hidden 2", "Discard: Spot", "Face up: Spot", "Face up: Spot",
+      "Make me editable", "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Spot",
+      "Player 2",         "Backlog: Spot",     "Board: Spot",   "Face up: Spot", "Staff: Spot", "Hand: Test Card"
+    ]);
     // This is now a NO-OP but we should still resolve events..
     // enabling this actually causes in with unwatching which I don't understand...
     // await ownershipPromiseResolver({success: false});
@@ -209,89 +217,91 @@ describe('Playing the game', () => {
     let actual = [...document.querySelectorAll('.player__title,.location__title,.stack__name,.card__type')].map(e => e.textContent);
 
     expect(actual).toEqual(expectedState)
-  }
+  };
 
-  const pollServerForUpdates = async (objectId, response) => {
+  const pollServerForUpdates = async (objectLocator, response) => {
     let lastUpdate = 0;
     let mockEventsResponse;
 
     if(response) {
       mockEventsResponse = response;
     } else {
-      let realObjectId = objectId.replace(/-[^-]+$/, ''); // drop position element for face down card stacks
-      let card = initialGameState.cards.find(c => c.objectId === realObjectId)
-  
+      let realobjectLocator = objectLocator.replace(/:[^:]+$/, ':'); // drop position element for face down card stacks
+      let card = initialGameState.cards.find(c => c.objectLocator === realobjectLocator)
+
       mockEventsResponse = {
-        events: events(objectId).map((event) => {
+        events: events(objectLocator).map((event) => {
           return {
-            ...event, 
+            ...event,
+            eventType: 'move',
+            order: 1,
             card: {
-              ...card, 
-              visible: 'face', 
-              stackId: event.to.locationId + '-' + event.to.stack, 
-              objectId: 'card:' + card.id + ':' ,
+              ...card,
+              visible: 'face',
+              stackId: event.to.locationId + '-' + event.to.stack,
+              objectLocator: 'card:' + event.to.locationId + ':' + event.to.stack + ":" + card.id,
               name: 'Test Card',
-              count: null
             }
           }
         })
-      }  
+      }
     }
 
 
-    fetchMock.get({url: '/games/' + initialGameState.id + '/events', body: { since: lastUpdate }}, mockEventsResponse);
+    fetchMock.get({url: '/games/' + initialGameState.id + '/events?since=' + lastUpdate }, mockEventsResponse);
 
     await act(pollEvents)
-  }
+  };
 
-  const pickupCard = (cardPos, ownershipPromise, objectId) => {
+  const pickupCard = (cardPos, ownershipPromise, objectLocator) => {
+    if(cardPos < 0) cardPos = initialGameState.cards.length + cardPos;
     const card = initialGameState.cards[cardPos];
-    if(!objectId) {
-      let cards = getCards(card.stackId)
-      objectId = cards[cards.length - 1].objectId;
+    if(!objectLocator) {
+      let cards = getCards(card.stackId);
+      objectLocator = cards[cards.length - 1].objectLocator;
     }
-  
+
     let startingNode = document.querySelector(".card-" + card.id);
 
-    fetchMock.post({url: '/games/' + initialGameState.id + '/ownership/' + objectId}, ownershipPromise);
-    
+    fetchMock.post({url: '/games/' + initialGameState.id + '/cards/' + objectLocator + '/take'}, ownershipPromise);
+
     startingNode.dispatchEvent(
       createBubbledEvent("dragstart", { dataTransfer: mockDataTransfer, clientX: 0, clientY: 0 })
     );
 
-    return objectId;
-  }
-  const dropCard = (objectId, fromStack, toStack) => {
+    return objectLocator;
+  };
+  const dropCard = (objectLocator, fromStack, toStack) => {
     let endingNode = elem.getByTestId(toStack.locationId + '-' + toStack.stack);
 
     let mockDropEvent = {
-      event: 'cardMove', 
+      event: 'cardMove',
       data: {
         // timestamp: new Date().getTime(), // as we can't get the same value that will be set in the code for this wwe will instead use partial matching
-        objectId: objectId,
+        objectLocator: objectLocator,
         from: fromStack,
         to: toStack,
       }
     };
 
     // mock the event move call to the backend
-    fetchMock.patch({url: '/games/' + initialGameState.id + '/ownership/' + objectId, matchPartialBody: true, body: mockDropEvent}, {}, {
+    fetchMock.patch({url: '/games/' + initialGameState.id + '/cards/' + objectLocator + '/move', matchPartialBody: true, body: mockDropEvent}, {}, {
       delay: 10, // fake a slow network
     });
 
     endingNode.dispatchEvent(
       createBubbledEvent("drop", { dataTransfer: mockDataTransfer, clientX: 0, clientY: 1 })
     );
-  }
+  };
 
   const MockDataTransfer = () => {
     let data = {}
     data.setData = (key, value) => {
       data[key] = value;
-    }
+    };
     data.getData = (key) => {
       return data[key];
-    }
+    };
     return data;
   };
 
@@ -299,52 +309,51 @@ describe('Playing the game', () => {
     const event = new Event(type, { bubbles: true });
     Object.assign(event, props);
     return event;
-  };
+  }
 
   function buildGameState() {
-    let taskLocationId = nextUuid();
     let player1Id = nextUuid();
     let player2Id = nextUuid();
     return {
+      skipPolling: true,
       id: nextUuid(),
       name: "Test 123",
       game_config_id: 'Config-111',
+      lastEventId: 0,
       cards: [
-        { 
+        {
           id: nextUuid(),
           deck: 'tasks',
           visible: 'back',
-          stackId: taskLocationId + '-pile',
-          objectId: 'location:tasks:pile',
-          count: 10
+          stackId: 'tasks-pile',
+          objectLocator: 'location:tasks:pile:',
+        },
+        {
+          id: nextUuid(),
+          deck: 'tasks',
+          visible: 'back',
+          stackId: 'tasks-pile',
+          objectLocator: 'location:tasks:pile:',
+        },
+        {
+          id: nextUuid(),
+          deck: 'tasks',
+          visible: 'back',
+          stackId: 'tasks-pile',
+          objectLocator: 'location:tasks:pile:',
         }
       ],
       locations: [
-        {
-          id: taskLocationId,
-          name: 'Tasks',
-          deck: 'tasks',
-          type: 'deck',
-        },
-        {
-          status: "starting",
-          id: player1Id,
-          name: "Make me editable",
-          type: 'player',
-        },
-        {
-          status: "starting",
-          id: player2Id,
-          name: "Player 2",
-          type: 'player',
-        },
+        { id: 'tasks', name: 'Tasks', type: 'deck' },
+        { id: player1Id, name: "Make me editable", type: 'player' },
+        { id: player2Id, name: "Player 2", type: 'player' },
       ],
       stacks: {
         deck: [['Backlog', 'pile'], ['Discard', 'discard'], ['Face up', 'fu_cards']],
         player: [['Backlog', 'pile'], ['Board', 'board'], ['Face up', 'fu_cards'], ['Staff', 'employees'], ['Hand', 'hand']],
       },
       params: {
-        [taskLocationId]: { fu_cards: { min_cards: 2 } },
+        tasks: { fu_cards: { min_cards: 2 } },
         [player1Id]: {cash: 0, energy: 0, sp: 0},
         [player2Id]: {cash: 0, energy: 0, sp: 0},
       }

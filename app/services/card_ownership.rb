@@ -1,14 +1,14 @@
 class CardOwnership
   attr_reader :game, :user, :location_id, :stack, :error_message, :error_code, :logger
 
-  def self.build(game:, user:, object_ref:)
-    type, location_id, stack, id = object_ref.split(":")
+  def self.build(game:, user:, object_locator:)
+    type, location_id, stack, id = object_locator.split(":")
 
     case type
     when "card"
-      CardActions.new(game: game, user: user, object_ref: object_ref, location_id: location_id, stack: stack, card_id: id)
+      CardActions.new(game: game, user: user, object_locator: object_locator, location_id: location_id, stack: stack, card_id: id)
     when "location"
-      LocationActions.new(game: game, user: user, object_ref: object_ref, location_id: location_id, stack: stack)
+      LocationActions.new(game: game, user: user, object_locator: object_locator, location_id: location_id, stack: stack)
     else
       raise "Invalid object type"
     end
@@ -39,11 +39,11 @@ class CardOwnership
   class CardActions < CardOwnership
     attr_reader :card_id, :card
 
-    def initialize(game:, user:, object_ref:, card_id:, location_id:, stack:)
+    def initialize(game:, user:, object_locator:, card_id:, location_id:, stack:)
       super(game: game, user: user, location_id: location_id, stack: stack)
       @card_id = card_id
       @card = game.card_objects.find(card_id)
-      @logger = GameLogger.new(game: game, user: user, card_name: card_name(card), object_ref: object_ref)
+      @logger = GameLogger.new(game: game, user: user, card_name: card_name(card), object_locator: object_locator)
     end
 
     def move(to_location_id:, to_stack:)
@@ -56,6 +56,7 @@ class CardOwnership
           )
           logger.move(location_id: to_location_id, stack: to_stack, card_id: card.id)
         end
+        card
       else
         logger.failed_move_to(location_id: to_location_id, stack: to_stack)
         error(ErrorCodes::NOT_YOUR_CARD, "not your card to move")
@@ -98,9 +99,9 @@ class CardOwnership
   class LocationActions < CardOwnership
     attr_reader :game, :user, :location_id, :stack
 
-    def initialize(game:, user:, object_ref:, location_id:, stack:)
+    def initialize(game:, user:, object_locator:, location_id:, stack:)
       super(game: game, user: user, location_id: location_id, stack: stack)
-      @logger = GameLogger.new(game: game, user: user, card_name: "#{location_id} (#{stack})", object_ref: object_ref)
+      @logger = GameLogger.new(game: game, user: user, card_name: "#{location_id} (#{stack})", object_locator: object_locator)
     end
 
     def move(to_location_id:, to_stack:)
@@ -113,6 +114,7 @@ class CardOwnership
         )
         logger.move(location_id: to_location_id, stack: to_stack, card_id: card.id)
       end
+      card
     rescue ActiveRecord::LockWaitTimeout, ActiveRecord::RecordNotFound
       logger.failed_move_to(location_id: to_location_id, stack: to_stack)
       error(ErrorCodes::NOT_YOUR_CARD, "not your card to move")

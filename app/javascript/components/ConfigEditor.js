@@ -4,7 +4,7 @@ import CardEditor from './CardEditor'
 import { cardUpdate, sortedInsert } from "../modules/utils";
 
 const ConfigEditor = ({ id, card :selectedCard, cards :initialCards }) => {
-  window.gameId = id;
+  window.gameID = id;
 
   const [card, setCard] = useState(selectedCard);
   const [cards, setCards] = useState(initialCards);

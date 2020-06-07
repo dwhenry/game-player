@@ -21,7 +21,7 @@ RSpec.describe 'moving cards around' do
 
   context 'when I do not own the card' do
     before do
-      card.update(owner_id: player2_id)
+      card.update!(owner_id: player2_id)
     end
 
     it 'I can not move the card' do
@@ -41,18 +41,20 @@ RSpec.describe 'moving cards around' do
 
       post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/move", params: { location_id: player1_id, stack: 'hand' }
 
-      expect(game.reload.events).to match_array([
-        have_attributes(
-          "user" => player1_id,
-          "object_ref" => "card:tasks:pile:#{card.id}",
-          "event_type" => Event::FAILED_MOVE,
-          "data" => {
-            "card_name" => card_name,
-            "location_id" => player1_id,
-            "stack" => "hand"
-          }
+      expect(game.reload.events).to match(
+        array_including(
+          have_attributes(
+            "user" => player1_id,
+            "object_locator" => "card:tasks:pile:#{card.id}",
+            "event_type" => Event::FAILED_MOVE,
+            "data" => {
+              "card_name" => card_name,
+              "location_id" => player1_id,
+              "stack" => "hand"
+            }
+          )
         )
-      ])
+      )
     end
 
     context 'when the card was picked up from a location' do
@@ -71,18 +73,20 @@ RSpec.describe 'moving cards around' do
       it 'the event has the card id so that other players can render the card' do
         post "/games/#{game.id}/cards/location:tasks:pile:AAAA/move", params: { location_id: player1_id, stack: 'hand' }
 
-        expect(game.reload.events).to match_array([
-          have_attributes(
-            "user" => player1_id,
-            "object_ref" => "location:tasks:pile:AAAA",
-            "event_type" => Event::FAILED_MOVE,
-            "data" => {
-              "card_name" => "tasks (pile)",
-              "location_id" => player1_id,
-              "stack" => "hand"
-            }
+        expect(game.reload.events).to match(
+          array_including(
+            have_attributes(
+              "user" => player1_id,
+              "object_locator" => "location:tasks:pile:AAAA",
+              "event_type" => Event::FAILED_MOVE,
+              "data" => {
+                "card_name" => "tasks (pile)",
+                "location_id" => player1_id,
+                "stack" => "hand"
+              }
+            )
           )
-        ])
+        )
       end
     end
   end
@@ -109,19 +113,21 @@ RSpec.describe 'moving cards around' do
 
       post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/move", params: { location_id: player1_id, stack: 'hand' }
 
-      expect(game.reload.events).to match_array([
-        have_attributes(
-          "user" => player1_id,
-          "object_ref" => "card:tasks:pile:#{card.id}",
-          "event_type" => Event::MOVE,
-          "data" => {
-            "card_id" => card.id,
-            "card_name" => card_name,
-            "location_id" => player1_id,
-            "stack" => "hand"
-          }
+      expect(game.reload.events).to match(
+        array_including(
+          have_attributes(
+            "user" => player1_id,
+            "object_locator" => "card:tasks:pile:#{card.id}",
+            "event_type" => Event::MOVE,
+            "data" => {
+              "card_id" => card.id,
+              "card_name" => card_name,
+              "location_id" => player1_id,
+              "stack" => "hand"
+            }
+          )
         )
-      ])
+      )
     end
 
     context 'when the card was picked up from a location' do
@@ -133,20 +139,21 @@ RSpec.describe 'moving cards around' do
 
       it 'the event has the card id so that other players can render the card' do
         post "/games/#{game.id}/cards/location:tasks:pile:AAAA/move", params: { location_id: player1_id, stack: 'hand' }
-
-        expect(game.reload.events).to match_array([
-          have_attributes(
-            "user" => player1_id,
-            "object_ref" => "location:tasks:pile:AAAA",
-            "event_type" => Event::MOVE,
-            "data" => {
-              "card_id" => card.id,
-              "card_name" => "tasks (pile)",
-              "location_id" => player1_id,
-              "stack" => "hand"
-            }
+        expect(game.reload.events).to match(
+          array_including(
+            have_attributes(
+              "user" => player1_id,
+              "object_locator" => "location:tasks:pile:AAAA",
+              "event_type" => Event::MOVE,
+              "data" => {
+                "card_id" => card.id,
+                "card_name" => "tasks (pile)",
+                "location_id" => player1_id,
+                "stack" => "hand"
+              }
+            )
           )
-        ])
+        )
       end
     end
   end

@@ -37,18 +37,20 @@ RSpec.describe 'Playing the game', type: :request do
 
       post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/take"
 
-      expect(game.reload.events).to match_array([
-        have_attributes(
-          "user" => player1_id,
-          "object_ref" => "card:::#{card.id}",
-          "event_type" => Event::PICKUP_CARD,
-          "data" => {
-            "card_name" => card_name,
-            "location_id" => "tasks",
-            "stack" => "pile"
-          }
+      expect(game.reload.events).to match(
+        array_including(
+          have_attributes(
+            "user" => player1_id,
+            "object_locator" => "card:tasks:pile:#{card.id}",
+            "event_type" => Event::PICKUP_CARD,
+            "data" => {
+              "card_name" => card_name,
+              "location_id" => "tasks",
+              "stack" => "pile"
+            }
+          )
         )
-      ])
+      )
     end
 
     context 'if someone else already owns this card' do
@@ -73,18 +75,20 @@ RSpec.describe 'Playing the game', type: :request do
 
         post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/take"
 
-        expect(game.reload.events).to match_array([
-          have_attributes(
-            "user" => player1_id,
-            "object_ref" => "card:::#{card.id}",
-            "event_type" => Event::FAILED_PICKUP,
-            "data" => {
-              "card_name" => card_name,
-              "location_id" => "tasks",
-              "stack" => "pile"
-            }
+        expect(game.reload.events).to match(
+          array_including(
+            have_attributes(
+              "user" => player1_id,
+              "object_locator" => "card:tasks:pile:#{card.id}",
+              "event_type" => Event::FAILED_PICKUP,
+              "data" => {
+                "card_name" => card_name,
+                "location_id" => "tasks",
+                "stack" => "pile"
+              }
+            )
           )
-        ])
+        )
       end
     end
 
@@ -123,18 +127,20 @@ RSpec.describe 'Playing the game', type: :request do
 
         post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/take"
 
-        expect(game.reload.events).to match_array([
-          have_attributes(
-            "user" => player1_id,
-            "object_ref" => "card:::#{card.id}",
-            "event_type" => Event::FAILED_PICKUP,
-            "data" => {
-              "card_name" => card_name,
-              "location_id" => "tasks",
-              "stack" => "pile"
-            }
+        expect(game.reload.events).to match(
+          array_including(
+            have_attributes(
+              "user" => player1_id,
+              "object_locator" => "card:tasks:pile:#{card.id}",
+              "event_type" => Event::FAILED_PICKUP,
+              "data" => {
+                "card_name" => card_name,
+                "location_id" => "tasks",
+                "stack" => "pile"
+              }
+            )
           )
-        ])
+        )
       end
     end
 
@@ -162,28 +168,30 @@ RSpec.describe 'Playing the game', type: :request do
 
         post "/games/#{game.id}/cards/card:tasks:pile:#{card.id}/take"
 
-        expect(game.reload.events).to match_array([
-          have_attributes(
-            "user" => player1_id,
-            "object_ref" => "card:::#{card.id}",
-            "event_type" => Event::RETURNED_CARD,
-            "data" => {
-              "card_name" => card_name,
-              "location_id" => "tasks",
-              "stack" => "pile"
-            }
-          ),
-          have_attributes(
-            "user" => player1_id,
-            "object_ref" => "card:::#{card.id}",
-            "event_type" => Event::PICKUP_CARD,
-            "data" => {
-              "card_name" => card_name,
-              "location_id" => "tasks",
-              "stack" => "pile"
-            }
+        expect(game.reload.events).to match(
+          array_including(
+            have_attributes(
+              "user" => player1_id,
+              "object_locator" => "card:tasks:pile:#{card.id}",
+              "event_type" => Event::RETURNED_CARD,
+              "data" => {
+                "card_name" => card_name,
+                "location_id" => "tasks",
+                "stack" => "pile"
+              }
+            ),
+            have_attributes(
+              "user" => player1_id,
+              "object_locator" => "card:tasks:pile:#{card.id}",
+              "event_type" => Event::PICKUP_CARD,
+              "data" => {
+                "card_name" => card_name,
+                "location_id" => "tasks",
+                "stack" => "pile"
+              }
+            )
           )
-        ])
+        )
       end
     end
 
@@ -208,18 +216,20 @@ RSpec.describe 'Playing the game', type: :request do
     it 'Logs the successful pickup of the card' do
       post "/games/#{game.id}/cards/location:tasks:pile:ABCD/take"
 
-      expect(game.reload.events).to match_array([
-        have_attributes(
-          "user" => player1_id,
-          "object_ref" => "location:tasks:pile:",
-          "event_type" => Event::PICKUP_LOCATION,
-          "data" => {
-            "card_name" => "tasks(pile)",
-            "location_id" => "tasks",
-            "stack" => "pile"
-          }
+      expect(game.reload.events).to match(
+        array_including(
+          have_attributes(
+            "user" => player1_id,
+            "object_locator" => "location:tasks:pile:ABCD",
+            "event_type" => Event::PICKUP_LOCATION,
+            "data" => {
+              "card_name" => "tasks (pile)",
+              "location_id" => "tasks",
+              "stack" => "pile"
+            }
+          )
         )
-      ])
+      )
     end
 
 
@@ -280,7 +290,7 @@ RSpec.describe 'Playing the game', type: :request do
     it 'I get an appropriate error and message' do
       post "/games/#{game.id}/cards/card:#{card_id}/take"
 
-      expect(parsed_response).to eq(status: false, error: "Please restart game to make a mode", code: "GRR")
+      expect(parsed_response).to eq(status: false, error: "Please restart game to make a move", code: "GRR")
     end
   end
 end

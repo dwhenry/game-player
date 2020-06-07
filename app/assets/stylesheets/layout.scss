@@ -1,26 +1,3 @@
-.row {
-  margin: 10px 0;
-  padding: 10px;
-}
-
-.col-3 {
-  display: inline-block;
-  width: 24%;
-  vertical-align: top;
-}
-
-.col-6 {
-  display: inline-block;
-  width: 48%;
-  vertical-align: top;
-}
-
-.col-9 {
-  display: inline-block;
-  width: 72%;
-  vertical-align: top;
-}
-
 ul {
   margin: 0;
   padding: 0px;
@@ -72,7 +49,7 @@ ul {
 .header {
   z-index: 1000;
   position: relative;
-  text-align: center;
+  text-align: left;
 }
 
 .join-dialog {
@@ -105,3 +82,47 @@ ul {
     margin-bottom: 0;
   }
 }
+
+.grey-center {
+  border-right: solid 2px lightgrey;
+}
+.tasks {
+  .grey-center:first-child {
+    border-left: none;
+  }
+  .grey-center:last-child {
+    border-right: none;
+  }
+}
+.player.grey-center:nth-child(2n) {
+  border-left: solid 2px lightgrey;
+  border-right: none;
+}
+
+.grey-middle {
+  border-top: solid 2px lightgrey;
+  border-bottom: solid 2px lightgrey;
+}
+.grey-middle:first-child {
+  border-top: none;
+}
+.grey-middle:last-child {
+  border-bottom: none;
+}
+
+.text-rotate-right {
+  position: absolute;
+  padding: 2px 7px;
+  top: 0;
+  left: 0;
+
+  /* Border is the new background */
+  background: none;
+
+  /* Rotate from top left corner (not default) */
+  transform-origin: 1em 1em;
+  transform: rotate(90deg);
+
+}
+
+

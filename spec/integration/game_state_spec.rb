@@ -3,21 +3,23 @@ require 'rails_helper'
 RSpec.describe 'Playing the game', type: :request do
   let(:config) { FactoryBot.create(:game_config, :single_task) }
   let(:card_id) { config.decks["tasks"].keys.first }
-  let(:player_id) { SecureRandom.uuid }
+  let(:username) { SecureRandom.uuid }
+  let(:player_name) { 'Jim Bob' }
 
   before do
-    cookies[:username] = player_id
+    cookies[:username] = username
+    cookies[:playername] = player_name
   end
 
   context 'initialising a game from a config' do
     let(:game) { Game.last }
     before do
-      get "/games/new", params: { game_config_id: config.id, players: 3 }
+      post "/games", params: { game_config_id: config.id, players: 3 }
     end
 
-    it 'creates a game with specific number of player slots' do
+    it 'creates a game with specific number of player slots and the created assigned to the game' do
       expect(game.players.size).to eq(3)
-      expect(game.players.values.uniq).to eq(["__FUCK YOU_PHILE__"])
+      expect(game.players.values.uniq).to eq([player_name, "__FUCK YOU_PHILE__"])
     end
 
     it 'locks the config for editing' do
@@ -50,24 +52,36 @@ RSpec.describe 'Playing the game', type: :request do
 
   context 'waiting for players to join' do
     let(:game) { GameInitializer.new(config).call(players: 2) }
+    let(:game_player_id) { game.reload.players.keys[0] }
 
     it 'allows a player to join' do
       post "/games/#{game.id}/join"
 
-      expect(game.reload.players.values).to eq([player_id, Game::PENDING_PLAYER])
+      expect(game.reload.players.values).to eq([player_name, Game::PENDING_PLAYER])
     end
 
     it 'does not allow a player to join twice' do
       post "/games/#{game.id}/join"
       post "/games/#{game.id}/join"
 
-      expect(game.reload.players.values).to eq([player_id, Game::PENDING_PLAYER])
+      expect(game.reload.players.values).to eq([player_name, Game::PENDING_PLAYER])
     end
 
     it 'sets the game_player_id cookie' do
       post "/games/#{game.id}/join"
 
-      expect(cookies["game_player_id_#{game.id}"]).to eq(game.reload.players.keys[0])
+      expect(cookies["game_player_id_#{game.id}"]).to eq(game_player_id)
+    end
+
+    it 'creates an event to log the player joining' do
+      post "/games/#{game.id}/join"
+
+      expect(Event.last).to have_attributes(
+        "user" => game_player_id,
+        "object_locator" => "player:#{game_player_id}",
+        "event_type" => Event::PLAYER_JOIN,
+        "data" => { }
+      )
     end
   end
 
@@ -80,8 +94,8 @@ RSpec.describe 'Playing the game', type: :request do
       post "/games/#{game.id}/join"
     end
 
-    it 'has a state of ready-to-play' do
-      expect(game.reload).to have_attributes(state: 'ready-to-play')
+    it 'has a state of playing' do
+      expect(game.reload).to have_attributes(state: 'playing')
     end
 
     xit 'will not allow games moves to be taken'
@@ -92,47 +106,6 @@ RSpec.describe 'Playing the game', type: :request do
       post "/games/#{game.id}/join"
 
       expect(response).to redirect_to(root_path)
-    end
-
-    context 'starting the game' do
-      let(:cards) { game.card_objects }
-      before do
-        post "/games/#{game.id}/start"
-      end
-
-      it 'will populate the cards table from the game object representation' do
-        expect(cards.map(&:attributes)).to match([
-          hash_including(
-            "game_id" => game.id,
-            "card_id" => card_id,
-            "location_id" => "tasks",
-            "stack" => "pile",
-            "stage" => 0,
-            "last_move_id" => 0
-          ),
-          hash_including(
-            "game_id" => game.id,
-            "card_id" => card_id,
-            "location_id" => "tasks",
-            "stack" => "pile",
-            "stage" => 0,
-            "last_move_id" => 1
-          )
-        ])
-      end
-
-      it 'will move the game state to playing' do
-        expect(game.reload).to have_attributes(state: 'playing')
-      end
-
-      xit 'will allow games moves to be taken'
-      xit 'gives a sensibkle response if two people try and start the game'
-
-      it 'can not be started a second time' do
-        travel_to(5.minutes.from_now) do
-          expect { post "/games/#{game.id}/start" }.not_to change { cards.reload.pluck(:updated_at) }
-        end
-      end
     end
   end
 
@@ -149,11 +122,12 @@ RSpec.describe 'Playing the game', type: :request do
     let(:game) do
       GameInitializer.new(config).call(players: 2).tap do |game|
         game.join(SecureRandom.uuid)
-        game.join(player_id)
+        game.join(player_name)
 
         game.play
       end
     end
+    let(:game_player_id) { game.reload.players.keys[1] }
 
     it 'will allow games moves to be taken'
 
@@ -179,27 +153,29 @@ RSpec.describe 'Playing the game', type: :request do
         let(:pre_archive_action) do
           card = game.card_objects.last
           card.update!(
-            location_id: player_id,
+            location_id: game_player_id,
             stack: 'hand',
             last_move_id: game.card_objects.maximum(:last_move_id) + 1
           )
         end
 
         it 'will store the cards state back onto the game' do
-          expect(game.reload.cards).to match([
-            hash_including(
-              "card_id" => card_id,
-              "location_id" => "tasks",
-              "stack" => "pile",
-              "stage" => 0
-            ),
-            hash_including(
-              "card_id" => card_id,
-              "location_id" => player_id,
-              "stack" => "hand",
-              "stage" => 0
+          expect(game.reload.cards).to match(
+            array_including(
+              hash_including(
+                "card_id" => card_id,
+                "location_id" => "tasks",
+                "stack" => "pile",
+                "stage" => 0
+              ),
+              hash_including(
+                "card_id" => card_id,
+                "location_id" => game_player_id,
+                "stack" => "hand",
+                "stage" => 0
+              )
             )
-          ])
+          )
         end
       end
 
@@ -213,7 +189,7 @@ RSpec.describe 'Playing the game', type: :request do
     let(:game) do
       GameInitializer.new(config).call(players: 2).tap do |game|
         game.join(SecureRandom.uuid)
-        game.join(player_id)
+        game.join(player_name)
 
         game.play
         game.archive
@@ -230,24 +206,26 @@ RSpec.describe 'Playing the game', type: :request do
       end
 
       it 'will populate the cards table from the game object representation' do
-        expect(cards.reload.map(&:attributes)).to match([
-          hash_including(
-            "game_id" => game.id,
-            "card_id" => card_id,
-            "location_id" => "tasks",
-            "stack" => "pile",
-            "stage" => 0,
-            "last_move_id" => 0
-          ),
-          hash_including(
-            "game_id" => game.id,
-            "card_id" => card_id,
-            "location_id" => "tasks",
-            "stack" => "pile",
-            "stage" => 0,
-            "last_move_id" => 1
+        expect(cards.reload.map(&:attributes)).to match(
+          array_including(
+            hash_including(
+              "game_id" => game.id,
+              "card_id" => card_id,
+              "location_id" => "tasks",
+              "stack" => "pile",
+              "stage" => 0,
+              "last_move_id" => 0
+            ),
+            hash_including(
+              "game_id" => game.id,
+              "card_id" => card_id,
+              "location_id" => "tasks",
+              "stack" => "pile",
+              "stage" => 0,
+              "last_move_id" => 1
+            )
           )
-        ])
+        )
       end
 
       it 'will move the game state to playing' do

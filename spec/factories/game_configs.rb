@@ -5,7 +5,7 @@ FactoryBot.define do
       employees { {} }
       achievements { { }}
     end
-
+    name { "Awesome game" }
     parent_id { nil }
     rules { nil }
     locked { false }
@@ -13,7 +13,7 @@ FactoryBot.define do
 
     trait :single_task do
       transient do
-        tasks do 
+        tasks do
           card1_id = SecureRandom.uuid
           {
             card1_id => {
@@ -25,7 +25,7 @@ FactoryBot.define do
               rounds: "",
               actions: "+1 Employee"
             }
-           } 
+           }
         end
       end
     end

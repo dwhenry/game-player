@@ -1,9 +1,11 @@
-$decks: ("tasks": blue, "achievements": red, "employees": gray);
+@import "./constants";
 
 .card {
   display: inline-block;
   vertical-align: top;
   position: relative;
+  border-radius: 5px;
+  overflow: hidden;
 }
 
 .card__element, .card-stack__element {
@@ -62,7 +64,27 @@ $decks: ("tasks": blue, "achievements": red, "employees": gray);
     linear-gradient(-45deg, #92baac 11px, transparent 11px, transparent 34px,#92baac 34px,#92baac 56px,transparent 56px,transparent 79px,#92baac 79px);
     background-color: $color;
     background-size: 64px 64px;
+  }
+}
 
+.card--spot {
+  border-color: lightgrey;
+  color: lightgrey;
+
+  .card--spot--rotated_text {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    /* Border is the new background */
+    background: none;
+
+    /* Rotate from top left corner (not default) */
+    transform-origin: 33px 33px;
+    transform: rotate(-90deg);
+
+    width: 100%;
+    height: 100%;
   }
 }
 
@@ -99,13 +121,13 @@ $decks: ("tasks": blue, "achievements": red, "employees": gray);
 }
 
 .card--size-small .card__cost {
-  top: -11px;
-  right: -2px;
+  top: -4px;
+  right: -4px;
   width: 16px;
   text-align: center;
   line-height: 10px;
   height: 10px;
-  border-radius: 5px;
+  border-radius: 0 0 0 10px;
   border: solid gray 1px;
   font-size: 8px;
 }
@@ -177,10 +199,14 @@ ul.card__actions {
 
 .stack {
   display: inline-block;
-  border: 1px solid black;
-  padding: 3px;
+  padding: 10px 12px;
   border-radius: 3px;
   vertical-align: top;
+  border-left: dashed lightgrey 4px;
+}
+
+.stack:first-child {
+  border-left: none;
 }
 
 .card-actions {

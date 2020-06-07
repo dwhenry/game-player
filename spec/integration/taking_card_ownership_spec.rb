@@ -290,7 +290,7 @@ RSpec.describe 'Playing the game', type: :request do
     it 'I get an appropriate error and message' do
       post "/games/#{game.id}/cards/card:#{card_id}/take"
 
-      expect(parsed_response).to eq(status: false, error: "Please restart game to make a mode", code: "GRR")
+      expect(parsed_response).to eq(status: false, error: "Please restart game to make a move", code: "GRR")
     end
   end
 end

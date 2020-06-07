@@ -30,7 +30,7 @@ class CardsController < ApplicationController
 
   def validate_game_state
     if game.state != 'playing'
-      render json: { status: false, error: "Please restart game to make a mode", code: ErrorCodes::GAME_RESTART_REQUIRED }
+      render json: { status: false, error: "Please restart game to make a move", code: ErrorCodes::GAME_RESTART_REQUIRED }
     end
   end
 

@@ -84,15 +84,20 @@ ul {
 }
 
 .grey-center {
-  border-left: solid 2px lightgrey;
   border-right: solid 2px lightgrey;
 }
-//.grey-center:first-child {
-//  border-left: none;
-//}
-//.grey-center:last-child {
-//  border-right: none;
-//}
+.tasks {
+  .grey-center:first-child {
+    border-left: none;
+  }
+  .grey-center:last-child {
+    border-right: none;
+  }
+}
+.player.grey-center:nth-child(2n) {
+  border-left: solid 2px lightgrey;
+  border-right: none;
+}
 
 .grey-middle {
   border-top: solid 2px lightgrey;

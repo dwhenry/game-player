@@ -27,12 +27,12 @@ const GameBoard = (props) =>  {
     <React.Fragment>
       <div className="game__title">{props.name}</div>
       <a href="#" onClick={pollEvents}>Manually Poll</a>
-      <div className="row grey-middle">
-        {props.locations.filter(l => l.type == 'deck').map((location) => (
+      <div className="row grey-middle tasks">
+        {props.locations.filter(l => l.type === 'deck').map((location) => (
           <Location key={location.id} {...location} stacks={props.stacks['deck']} params={params[location.id]} />
         ))}
       </div>
-      <div className="row grey-middle">
+      <div className="row grey-middle players">
         {props.locations.filter(l => l.type === 'player').map((player) => (
           <Player key={player.id} {...player} stacks={props.stacks['player']} tokens={params[player.id]} />
         ))}

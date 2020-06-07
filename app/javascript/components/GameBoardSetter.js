@@ -2,15 +2,12 @@ import React, { useState, useEffect } from "react"
 import PropTypes from "prop-types"
 import GameBoard from "./GameBoard";
 import { setSetters } from '../state/CardState'
-import { setCards, pollEvents } from '../state/CardState';
+import { setCards, pollEvents, setLastEventId } from '../state/CardState';
 
 const GameBoardSetter = (props) => {
   window.gameBoardId = props.id;
 
   const [locations, setLocations] = useState(props.locations);
-  const [lastEventId, setlastEventId] = useState(props.lastEventId);
-
-  setCards(props.cards);
 
   if(!props.skipPolling) {
     useEffect(() => {
@@ -22,6 +19,8 @@ const GameBoardSetter = (props) => {
   }
 
   useEffect(() => {
+    setLastEventId(props.lastEventId);
+    setCards(props.cards);
     setSetters({
       setLocations: (l) => {
         setLocations(locations.map((location) => {
@@ -31,11 +30,12 @@ const GameBoardSetter = (props) => {
         }));
         return locations.filter(l => l.type === 'player').map(l => l.id).indexOf(l.player_id) + 1;
       },
-      setlastEventId: setlastEventId,
-      lastEventId: () => lastEventId,
       location: locations
     });
-    return () => { setSetters({setLocations: () => {}, locations: [], lastEventId: () => {}, setlastEventId: () => {}}) }
+    return () => {
+      setCards([]);
+      setSetters({setLocations: () => {}, locations: [], lastEventId: () => {}, setlastEventId: () => {}})
+    }
   });
 
   return <GameBoard

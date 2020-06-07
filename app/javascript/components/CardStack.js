@@ -6,8 +6,6 @@ import { postEvent } from "../modules/utils"
 import {addEvent, updateCard, watch, unWatch} from '../state/CardState';
 
 const CardStack = (props) => {
-  // const [cards, setCards] = useState()
-  // const [cardIds, setCardIds] = useState({ids: 'pending'})
   const itemDropped = ([objectLocator, fromLocationId, fromStack]) => {
     let event = {
       objectLocator: objectLocator,
@@ -24,35 +22,35 @@ const CardStack = (props) => {
 
   const renderSpots = (cards) => {
     let result = [];
-    cards = cards || []
+    cards = cards || [];
     for (let i = 0; i < (props.min_cards - cards.length); i++) {
       result.push(<CardSpot key={props.locationId + ':' + props.stack + ':' + i} title={props.name} size={props.size} />)
     }
     return result
   };
 
-  const [cards, setCards] = useState();
+  const [stackCards, setStackCards] = useState();
 
   useEffect(() => {
-    let watchCallback = (cards) => { setCards(cards) }
+    let watchCallback = (cards) => { setStackCards(cards) }
 
     watch(props.locationId + '-' + props.stack, watchCallback)
     return () => { unWatch(props.locationId + '-' + props.stack, watchCallback) }
   });
 
-  if(cards && cards.find(card => card.visible === 'face') === undefined) {
-    let card = cards[cards.length-1];
+  if(stackCards && stackCards.find(card => card.visible === 'face') === undefined) {
+    let card = stackCards[stackCards.length-1];
     // all cards are face down so group them an d just show a number
     return <DropTarget onItemDropped={itemDropped} className={"stack stack-" + props.stack} >
       <div data-testid={props.locationId + '-' + props.stack}>
-        <CardBack key={card.id} title={props.name} card={card} size={props.size} count={cards.length} dragEventId={[card.objectLocator, props.locationId, props.stack]} />
+        <CardBack key={card.id} title={props.name} card={card} size={props.size} count={stackCards.length} dragEventId={[card.objectLocator, props.locationId, props.stack]} />
       </div>
     </DropTarget>
 
   } else {
     return <DropTarget onItemDropped={itemDropped} className={"stack stack-" + props.stack} >
       <div data-testid={props.locationId + '-' + props.stack}>
-        {cards && cards.map((card) => {
+        {stackCards && stackCards.map((card) => {
           switch(card.visible) {
             case 'face':
               return <CardFace key={card.id} title={props.name} card={card} size={props.size} dragEventId={[card.objectLocator, props.locationId, props.stack]} />
@@ -62,7 +60,7 @@ const CardStack = (props) => {
           }
         })}
       </div>
-      {renderSpots(cards)}
+      {renderSpots(stackCards)}
     </DropTarget>
   }
 };
@@ -70,7 +68,6 @@ const CardStack = (props) => {
 CardStack.propTypes = {
   locationId: PropTypes.string,
   name: PropTypes.string,
-  cards: PropTypes.array,
   size: PropTypes.string,
   stack: PropTypes.string,
   min_cards: PropTypes.number,

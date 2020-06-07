@@ -41,8 +41,7 @@ class GameLogger
   def player_join
     create_event(
       Event::PLAYER_JOIN,
-      player_id: game.players.key(user),
-      player_name: user
+      {}
     )
   end
 

@@ -22,6 +22,7 @@ class EventsSerializer
       key: event.id,
       order: event.order,
       user: user,
+      username: game.players[user],
       gameID: game.id,
       objectLocator: event.object_locator,
       eventType: event.event_type,
@@ -37,7 +38,8 @@ class EventsSerializer
     {
       key: event.id,
       order: event.order,
-      user: user,
+      user: event.user,
+      username: game.players[event.user],
       gameID: game.id,
       objectLocator: event.object_locator,
       eventType: event.event_type,

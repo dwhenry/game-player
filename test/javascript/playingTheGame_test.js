@@ -36,7 +36,7 @@ describe('Playing the game', () => {
     let ownershipPromiseResolver;
     let ownershipPromise = new Promise((resolve) => { ownershipPromiseResolver = resolve });
 
-    let objectLocator = pickupCard(-1, ownershipPromise)
+    let objectLocator = pickupCard(-1, ownershipPromise);
 
     // we resolve the promise immediately in this test case
     ownershipPromiseResolver({success: true});
@@ -172,6 +172,7 @@ describe('Playing the game', () => {
       events: [{
         objectLocator: objectLocator,
         eventType: 'move',
+        order: 1,
         from: { locationId: initialGameState.locations[0].id, stack: 'pile' },
         to: { locationId: initialGameState.locations[2].id, stack: 'hand' },
         timestamp: new Date().getTime(),

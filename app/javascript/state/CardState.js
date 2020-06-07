@@ -18,7 +18,7 @@ export const unWatch = (stackId, w) => {
   watchers[stackId] = watchers[stackId].filter(watcher => watcher !== w);
 };
 
-export const updateCard = (event) => {
+export const updateCard = (event, matchRequired) => {
   let fromStackId = event.from.locationId + '-' + event.from.stack;
   let toStackId = event.to.locationId + '-' + event.to.stack;
 
@@ -27,10 +27,11 @@ export const updateCard = (event) => {
 
   // remove it from the old location
   let card = fromStack.find(l => l.objectLocator === event.objectLocator);
-  let fromStackLength = fromStack.length
+  let fromStackLength = fromStack.length;
+
   fromStack = fromStack.filter(l => l.objectLocator !== event.objectLocator);
-  if(fromStackLength === fromStack.length && l.objectLocator.match('location')) {
-    // nothing was removed so assume
+  if(fromStackLength === fromStack.length && event.objectLocator.match(/^location:/) && !matchRequired) {
+    fromStack.shift();
   }
   if(fromStack.length === 0) fromStack = undefined;
 
@@ -47,8 +48,12 @@ export const updateCard = (event) => {
 
 export const setCards = (cards) => {
   cardsByStack = {}; // need to reset
+  let stacks = []
   cards.forEach((c) => {
-    if(cardsByStack[c.stackId] === undefined) cardsByStack[c.stackId] = [];
+    if(cardsByStack[c.stackId] === undefined) {
+      cardsByStack[c.stackId] = [];
+      stacks.push(c.stackId)
+    }
     if(c.objectLocator.match(/^location:/)) {
       let locator = c.objectLocator + Math.random().toString(36).substr(2, 9);
       cardsByStack[c.stackId].push({...c, objectLocator: locator});
@@ -56,6 +61,10 @@ export const setCards = (cards) => {
       cardsByStack[c.stackId].push(c);
     }
   });
+
+  stacks.forEach(stack => {
+    watchers[stack].forEach((watcher) => watcher(cardsByStack[stack]));
+  })
 };
 
 /*
@@ -117,18 +126,22 @@ const processMoveEvent = (event) => {
     // if events arrive but we are waiting on ownership, just fail it
     ownershipEvents[event.objectLocator] = undefined;
     // event came from a different user so just apply them
-    updateCard(event)
+    updateCard(event, false)
   } else {
     if(eventsForObject[0].timestamp !== event.timestamp) {
       // well this is bad.. We must be waiting for ownership so lets just revert now and apply the new events...
       revertPhantomEvents(event.objectLocator);
-      updateCard(event)
+      updateCard(event, false)
     } else {
       eventsForObject.shift();
       // just realise the events locally
       if(eventsForObject.length === 0) {
         // set the state to not be pending and update the card object
-        updateCard(event)
+        updateCard(event, true)
+      } else if(event.card.objectLocator !== event.objectLocator) {
+        // locator has updated to fix the events stack to represent this
+        ownershipEvents[event.card.objectLocator] = ownershipEvents[event.objectLocator];
+        ownershipEvents[event.objectLocator] = undefined;
       }
     }
   }
@@ -136,12 +149,14 @@ const processMoveEvent = (event) => {
 
 const processEvents = (events) => {
   events.forEach((event) => {
-    if(setters.lastEventId() < event.order) {
-      setters.setlastEventId(event.order);
+    if(lastEventId < event.order) {
+      let message;
+      setLastEventId(event.order);
       switch (event.eventType) {
         case "failed_move":
           break;
         case "failed_pickup":
+          message = event.username + " failed to picked up the " + event.data.card_name + " card from " + event.data.location_id + ':' + event.data.stack;
           break;
         case "keyframe":
           break;
@@ -149,32 +164,43 @@ const processEvents = (events) => {
           processMoveEvent(event);
           break;
         case "pickup_card":
+          message = event.username + " picked up the " + event.data.card_name + " card from " + event.data.location_id + ':' + event.data.stack;
           break;
         case "pickup_location":
+          message = event.username + " picked up a card from " + event.data.location_id + ':' + event.data.stack;
           break;
         case "player_join":
           let position = setters.setLocations(event.data);
-          setters.addLog({
-            key: event.key,
-            order: event.order,
-            gameID: event.gameID,
-            timestamp: event.timestamp,
-            user: event.data.player_name,
-            message: event.data.player_name + " joined the game in position " + position
-          });
+          message = event.username + " joined the game in position " + position;
           break;
         case "returned_card":
           break;
       }
+      if(message) {
+        setters.addLog({
+          key: event.key,
+          order: event.order,
+          gameID: event.gameID,
+          timestamp: event.timestamp,
+          user: event.data.player_name,
+          message: message
+        });
+      }
     }
   })
 };
+
+let lastEventId;
+export const setLastEventId = (eventId) => {
+  lastEventId = eventId
+};
+
 
 let setters = {};
 export const setSetters = (s) => {
   setters = {...setters, ...s}
 };
 export const pollEvents = async () => {
-  let events = (await getUpdates(setters.lastEventId())).events;
+  let events = (await getUpdates(lastEventId)).events;
   processEvents(events);
 };

@@ -47,7 +47,7 @@ class Game < ApplicationRecord
       players[key] = username
 
       save!
-      logger = GameLogger.new(game: self, user: username, card_name: nil, object_locator: "player:#{key}")
+      logger = GameLogger.new(game: self, user: key, card_name: nil, object_locator: "player:#{key}")
       logger.player_join
 
       play if ready?

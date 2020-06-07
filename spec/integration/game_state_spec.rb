@@ -77,10 +77,10 @@ RSpec.describe 'Playing the game', type: :request do
       post "/games/#{game.id}/join"
 
       expect(Event.last).to have_attributes(
-        "user" => player_name,
+        "user" => game_player_id,
         "object_locator" => "player:#{game_player_id}",
         "event_type" => Event::PLAYER_JOIN,
-        "data" => { "player_id" => game_player_id, "player_name" => player_name }
+        "data" => { }
       )
     end
   end

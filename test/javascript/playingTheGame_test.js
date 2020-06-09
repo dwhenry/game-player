@@ -63,8 +63,8 @@ describe('Playing the game', () => {
     ]);
 
     // check it updated the objectLocator on the card
-    let playerCards = getCards(initialGameState.locations[1].id + '-hand')
-    expect(playerCards[0].objectLocator).toMatch(/^card:/);
+    // let playerCards = getCards(initialGameState.locations[1].id + '-hand')
+    // expect(playerCards[0].objectLocator).toMatch(/^card:/);
   });
 
   it("Can process other player card move events", async () => {
@@ -256,10 +256,10 @@ describe('Playing the game', () => {
   const pickupCard = (cardPos, ownershipPromise, objectLocator) => {
     if(cardPos < 0) cardPos = initialGameState.cards.length + cardPos;
     const card = initialGameState.cards[cardPos];
-    if(!objectLocator) {
-      let cards = getCards(card.stackId);
-      objectLocator = cards[cards.length - 1].objectLocator;
-    }
+    // if(!objectLocator) {
+    //   let cards = getCards(card.stackId);
+    //   objectLocator = cards[cards.length - 1].objectLocator;
+    // }
 
     let startingNode = document.querySelector(".card-" + card.id);
 

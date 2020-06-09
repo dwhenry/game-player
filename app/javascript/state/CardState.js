@@ -1,69 +1,35 @@
 import React from 'react';
 import { takeEvent, getUpdates } from '../modules/utils'
+import { RecoilAPI } from './RecoilAPI'
 
 let ownershipEvents = {};
-let cardsByStack = {};
-let watchers = {};
-
-export const getCards = (stackId) => cardsByStack[stackId]
-
-export const watch = (stackId, w) => {
-  watchers[stackId] = watchers[stackId] || [];
-  watchers[stackId].push(w);
-
-  w(cardsByStack[stackId]);
-};
-
-export const unWatch = (stackId, w) => {
-  watchers[stackId] = watchers[stackId].filter(watcher => watcher !== w);
-};
 
 export const updateCard = (event, matchRequired) => {
   let fromStackId = event.from.locationId + '-' + event.from.stack;
   let toStackId = event.to.locationId + '-' + event.to.stack;
+  let card;
 
-  let fromStack = cardsByStack[fromStackId];
-  let toStack = cardsByStack[toStackId] || [];
+  RecoilAPI.stackSetter(fromStackId)((fromStack) => {
+    // remove it from the old location
+    card = fromStack.find(l => l.objectLocator === event.objectLocator);
+    let fromStackLength = fromStack.length;
 
-  // remove it from the old location
-  let card = fromStack.find(l => l.objectLocator === event.objectLocator);
-  let fromStackLength = fromStack.length;
-
-  fromStack = fromStack.filter(l => l.objectLocator !== event.objectLocator);
-  if(fromStackLength === fromStack.length && event.objectLocator.match(/^location:/) && !matchRequired) {
-    fromStack.shift();
-  }
-  if(fromStack.length === 0) fromStack = undefined;
-
-  // add it to the new location
-  toStack = toStack.filter(l => l.objectLocator !== event.objectLocator);
-  toStack.push(event.card || {...card, pending: !!event.pending});
-
-  cardsByStack[fromStackId] = fromStack;
-  cardsByStack[toStackId] = toStack;
-
-  watchers[fromStackId].forEach((watcher) => watcher(cardsByStack[fromStackId]));
-  watchers[toStackId].forEach((watcher) => watcher(cardsByStack[toStackId]));
-};
-
-export const setCards = (cards) => {
-  cardsByStack = {}; // need to reset
-  let stacks = []
-  cards.forEach((c) => {
-    if(cardsByStack[c.stackId] === undefined) {
-      cardsByStack[c.stackId] = [];
-      stacks.push(c.stackId)
+    fromStack = fromStack.filter(l => l.objectLocator !== event.objectLocator);
+    if(fromStackLength === fromStack.length && event.objectLocator.match(/^location:/) && !matchRequired) {
+      fromStack.shift();
     }
-    if(c.objectLocator.match(/^location:/)) {
-      let locator = c.objectLocator + Math.random().toString(36).substr(2, 9);
-      cardsByStack[c.stackId].push({...c, objectLocator: locator});
-    } else {
-      cardsByStack[c.stackId].push(c);
-    }
-  });
+    if(fromStack.length === 0) fromStack = undefined;
 
-  stacks.forEach(stack => {
-    watchers[stack].forEach((watcher) => watcher(cardsByStack[stack]));
+    fromStack
+  })
+
+  RecoilAPI.stackSetter(toStackId)((toStack) => {
+    // add it to the new location
+    toStack = toStackId || [];
+    toStack = toStack.filter(l => l.objectLocator !== event.objectLocator);
+    toStack.push(event.card || {...card, pending: !!event.pending});
+
+    toStack
   })
 };
 

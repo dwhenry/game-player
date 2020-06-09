@@ -3,11 +3,16 @@ import PropTypes from "prop-types"
 import {CardFace, CardBack, CardSpot} from './Card'
 import DropTarget from "./DropTarget";
 import { postEvent } from "../modules/utils"
-import {addEvent, updateCard, watch, unWatch} from '../state/CardState';
+import {addEvent, updateCard} from '../state/CardState';
+import { stack } from '../state/atoms'
+import {useRecoilValue} from 'recoil';
 
 const CardStack = (props) => {
+  const stackCards = useRecoilValue(stack(props.locationId + '-' + props.stack))
+
+  let event;
   const itemDropped = ([objectLocator, fromLocationId, fromStack]) => {
-    let event = {
+    event = {
       objectLocator: objectLocator,
       from: { locationId: fromLocationId, stack: fromStack },
       to: { locationId: props.locationId, stack: props.stack },
@@ -15,10 +20,14 @@ const CardStack = (props) => {
     };
     if(addEvent(objectLocator, event)) {
       postEvent(objectLocator, event);
-      // move the card in the stack
-      updateCard({...event, pending: true})
     }
   };
+
+  // useEffect(() => {
+  //   // move the card in the stack
+  //   updateCard({...event, pending: true})
+  // }, [event])
+
 
   const renderSpots = (cards) => {
     let result = [];
@@ -28,15 +37,6 @@ const CardStack = (props) => {
     }
     return result
   };
-
-  const [stackCards, setStackCards] = useState();
-
-  useEffect(() => {
-    let watchCallback = (cards) => { setStackCards(cards) }
-
-    watch(props.locationId + '-' + props.stack, watchCallback)
-    return () => { unWatch(props.locationId + '-' + props.stack, watchCallback) }
-  });
 
   if(stackCards && stackCards.find(card => card.visible === 'face') === undefined) {
     let card = stackCards[stackCards.length-1];

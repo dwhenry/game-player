@@ -4,15 +4,12 @@ import {CardFace, CardBack, CardSpot} from './Card'
 import DropTarget from "./DropTarget";
 import { postEvent } from "../modules/utils"
 import {addEvent, updateCard} from '../state/CardState';
-// import { stack } from '../state/atoms'
-import {atomFamily, useRecoilState} from 'recoil';
-
-const stack = atomFamily({
-  key: 'stack1',
-  default: null,
-});
+import { stack } from '../state/atoms'
+import {useRecoilValue} from 'recoil';
 
 const CardStack = (props) => {
+  const stackCards = useRecoilValue(stack(props.locationId + '-' + props.stack))
+
   let event;
   const itemDropped = ([objectLocator, fromLocationId, fromStack]) => {
     event = {
@@ -40,12 +37,6 @@ const CardStack = (props) => {
     }
     return result
   };
-  let stackCards, setStackCards;
-  useEffect(() => {
-    [stackCards, setStackCards] = useRecoilState(stack(props.locationId + '-' + props.stack))
-  })
-  // let [stackCards, setStackCards] = useRecoilState(stack(props.locationId + '-' + props.stack))
-  // let stackCards = undefined;
 
   if(stackCards && stackCards.find(card => card.visible === 'face') === undefined) {
     let card = stackCards[stackCards.length-1];

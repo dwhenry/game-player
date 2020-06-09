@@ -89,3 +89,22 @@ export async function cardUpdate(data) {
   });
   return response.json();
 }
+
+export const groupCardsByStack = (cards) => {
+  let cardsByStack = {}; // need to reset
+  let stacks = []
+  cards.forEach((c) => {
+    if(cardsByStack[c.stackId] === undefined) {
+      cardsByStack[c.stackId] = [];
+      stacks.push(c.stackId)
+    }
+    if(c.objectLocator.match(/^location:/)) {
+      let locator = c.objectLocator + Math.random().toString(36).substr(2, 9);
+      cardsByStack[c.stackId].push({...c, objectLocator: locator});
+    } else {
+      cardsByStack[c.stackId].push(c);
+    }
+  });
+
+  return [stacks, cardsByStack];
+};

@@ -4,12 +4,6 @@ import CardStack from "./CardStack";
 
 
 const Location = (props) => {
-  function sentenceCase (str) {
-    return str.replace(/[a-z]/i, function (letter) {
-      return letter.toUpperCase();
-    }).trim();
-  }
-
   return (
     <div className={"col-md-4 grey-center location location-" + props.id}>
       <div className="row">

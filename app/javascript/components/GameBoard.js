@@ -1,16 +1,17 @@
-import React, { useState } from "react"
+import React, {useEffect, useState} from "react"
 import PropTypes from "prop-types"
 import Location from "./Location";
 import Player from "./Player";
 import CardActions from "./CardActions";
 import Dices from "./Dices";
 import Logs from "./Logs";
-import { pollEvents } from '../state/CardState';
+import {pollEvents} from '../state/CardState';
 
 const GameBoard = (props) =>  {
   const [displayCard, setDisplayCard] = useState(false);
   const [card, setCard] = useState();
   const [params, setParams] = useState(props.params);
+
 
   // TODO: stop these being window functions and final a better way to pass state
   window.setCard = (newCard) => {

@@ -1,23 +1,27 @@
 import React from "react"
 import PropTypes from "prop-types"
+import store from '../state/store'
+import { useSelector } from 'react-redux'
+
+const cardsForDeck = deck => state => {
+  return state.config.cards[deck];
+}
 
 const CardItem = (props) => {
   function cloneCard(event) {
     event.preventDefault();
-    props.setCard({
-      id: "",
-      name: props.card.name,
-      cost: props.card.cost,
-      actions: props.card.actions,
-      deck: props.card.deck,
-      number: props.card.number,
-      rounds: props.card.rounds,
+    store.dispatch({
+      type: 'config/SET_CARD',
+      payload: { selected: {...props.card, id: ""} }
     })
   }
 
   function editCard(event) {
     event.preventDefault();
-    props.setCard(props.card)
+    store.dispatch({
+      type: 'config/SET_CARD',
+      payload: { selected: {...props.card} }
+    })
   }
 
   return <li className="deck__card">
@@ -29,17 +33,20 @@ const Decks = (props) => {
   function addCard(event) {
     event.preventDefault();
     const deckName = event.currentTarget.getAttribute('data-deck');
-    props.setCard({deck: deckName})
+    store.dispatch({
+      type: 'config/SET_CARD',
+      payload: { selected: {deck: deckName} }
+    })
   }
 
-  function renderDeck(cards, name) {
-    const filteredCards = cards.filter(c => c.deck === name);
+  function renderDeck(name) {
+    const cards = useSelector(cardsForDeck(name))
     return <div className={"deck-" + name}>
-      <div className="deck__title">({filteredCards.length}) {name} </div>
+      <div className="deck__title">({cards.length}) {name} </div>
       <a className="deck__add-link" href="#" data-deck={name} onClick={addCard}>Add Card</a>
       <ul>
-        {filteredCards.map((card) => (
-          <CardItem key={card.id} card={card} setCard={props.setCard} />
+        {cards.map((card) => (
+          <CardItem key={card.id} card={card} />
         ))}
       </ul>
     </div>
@@ -47,19 +54,13 @@ const Decks = (props) => {
 
   return (
     <div className="decks">
-      { renderDeck(props.cards, 'tasks') }
+      { renderDeck('tasks') }
       <br />
-      { renderDeck(props.cards, 'achievements') }
+      { renderDeck('achievements') }
       <br />
-      { renderDeck(props.cards, 'employees') }
+      { renderDeck('employees') }
     </div>
   );
 };
 
-Decks.propTypes = {
-  tasks: PropTypes.array,
-  employees: PropTypes.array,
-  achievements: PropTypes.array,
-  rules: PropTypes.object
-};
 export default Decks

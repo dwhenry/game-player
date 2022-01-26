@@ -8,6 +8,7 @@ Bundler.require(*Rails.groups)
 
 module CardPlayer
   class Application < Rails::Application
+    config.hosts << ".ngrok.io"
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.0
 

@@ -18,32 +18,35 @@ const GameBoardSetter = (props) => {
     })
   }
 
-  useEffect(() => {
-    setLastEventId(props.lastEventId);
-    setCards(props.cards);
-    setSetters({
-      setLocations: (l) => {
-        setLocations(locations.map((location) => {
-          if(location.id === l.player_id) {
-            return {...location, [location.name]: l.player_name }
-          } else { return location }
-        }));
-        return locations.filter(l => l.type === 'player').map(l => l.id).indexOf(l.player_id) + 1;
-      },
-      location: locations
-    });
-    return () => {
-      setCards([]);
-      setSetters({setLocations: () => {}, locations: [], lastEventId: () => {}, setlastEventId: () => {}})
-    }
-  });
 
-  return <GameBoard
-    name={props.name}
-    locations={locations}
-    stacks={props.stacks}
-    params={props.params}
-  />
+  // useEffect(() => {
+  //   setLastEventId(props.lastEventId);
+  //   setSetters({
+  //     setLocations: (l) => {
+  //       setLocations(locations.map((location) => {
+  //         if(location.id === l.player_id) {
+  //           return {...location, [location.name]: l.player_name }
+  //         } else { return location }
+  //       }));
+  //       return locations.filter(l => l.type === 'player').map(l => l.id).indexOf(l.player_id) + 1;
+  //     },
+  //     location: locations
+  //   });
+  //   return () => {
+  //     setSetters({setLocations: () => {}, locations: [], lastEventId: () => {}, setlastEventId: () => {}})
+  //   }
+  // });
+
+  return <Provider store={store}>
+    <GameBoard
+      name={props.name}
+      locations={locations}
+      stacks={props.stacks}
+      params={props.params}
+    />
+    <StateSetup cards={props.cards} />
+    <Counter />
+  </Provider>
 };
 
 GameBoardSetter.propTypes = {

@@ -47,6 +47,7 @@ This allows us to play an online card game in 'real time'.
 
 ## Technical TODO
 
+- [ ] Replace current state model with Redux
 - [ ] Replace decks with flattened card model in teh game config
 - [ ] Move to Puma
 - [ ] Encrypt cookies so they can't be modified

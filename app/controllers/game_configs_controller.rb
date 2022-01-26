@@ -5,7 +5,7 @@ class GameConfigsController < ApplicationController
       attrs = parent.attributes.except(:id, :created_at, :updated_at)
       game_config = GameConfig.create!(attrs.except(*%w[id created_at updated_at locked]).merge(parent_id: parent.id))
     else
-      game_config = GameConfig.create!(decks: { tasks: {}, achievements: {}, employees: {} })
+      game_config = GameConfig.create!(name: "New: #{Time.now.to_i}", decks: { tasks: {}, achievements: {}, employees: {} })
     end
 
     redirect_to edit_game_config_path(game_config)
